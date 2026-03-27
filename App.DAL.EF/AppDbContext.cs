@@ -10,6 +10,7 @@ namespace App.DAL.EF;
 
 public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProtectionKeyContext
 {
+    public DbSet<ListItem> ListItems { get; set; }
     
     public DbSet<AppRefreshToken> RefreshTokens { get; set; } = default!;
 
@@ -35,13 +36,13 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
 
 
         // use reflection, find all LangStrs and apply conversion to them
-        /*
-        builder.Entity<ContactType>().Property(e => e.ContactTypeName)
+        
+        builder.Entity<ListItem>().Property(e => e.Summary)
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                 v => JsonSerializer.Deserialize<LangStr>(v, (JsonSerializerOptions?)null)!
             )
             .HasColumnType("jsonb");
-            */
+            
     }
 }

@@ -1,0 +1,193 @@
+@model ProviderManageViewModel
+@{
+    ViewData["Title"] = L["ManageProviderTitle"];
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["ManageProviderTitle"]</h1>
+        <p class="text-muted mb-0">@Model.ProfileName</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="ProviderProfile" asp-action="Details" asp-route-id="@Model.ProviderId">@L["ViewPublicProfile"]</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@L["AddService"]</h2>
+                <form asp-action="AddService" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label asp-for="NewService.ServiceCategoryId" class="form-label">@L["Category"]</label>
+                            <select asp-for="NewService.ServiceCategoryId" class="form-select">
+                                <option value="">@L["Choose"]</option>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id">@category.Name</option>
+                                }
+                            </select>
+                            <span asp-validation-for="NewService.ServiceCategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.NameEn" class="form-label">@L["NameEn"]</label>
+                            <input asp-for="NewService.NameEn" class="form-control"/>
+                            <span asp-validation-for="NewService.NameEn" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.NameEt" class="form-label">@L["NameEt"]</label>
+                            <input asp-for="NewService.NameEt" class="form-control"/>
+                            <span asp-validation-for="NewService.NameEt" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.DescriptionEn" class="form-label">@L["DescriptionEn"]</label>
+                            <textarea asp-for="NewService.DescriptionEn" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.DescriptionEt" class="form-label">@L["DescriptionEt"]</label>
+                            <textarea asp-for="NewService.DescriptionEt" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.Price" class="form-label"></label>
+                            <input asp-for="NewService.Price" class="form-control"/>
+                            <span asp-validation-for="NewService.Price" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="NewService.DurationMinutes" class="form-label"></label>
+                            <input asp-for="NewService.DurationMinutes" class="form-control"/>
+                            <span asp-validation-for="NewService.DurationMinutes" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">@L["AddService"]</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@L["CurrentServices"]</h2>
+                @if (Model.Services.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>@L["Services"]</th>
+                                <th>@L["Category"]</th>
+                                <th>@L["Price"]</th>
+                                <th>@L["Status"]</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var service in Model.Services)
+                            {
+                                <tr>
+                                    <td>@service.Name</td>
+                                    <td>@service.CategoryName</td>
+                                    <td>@service.Price.ToString("0.00") EUR</td>
+                                    <td>@(service.IsActive ? "Active" : "Inactive")</td>
+                                    <td class="text-end">
+                                        @if (service.IsActive)
+                                        {
+                                            <form asp-action="DeactivateService" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@service.Id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">@L["Deactivate"]</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">@L["NoServicesYet"]</div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@L["AddAvailability"]</h2>
+                <form asp-action="AddAvailability" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="NewAvailability.Date" class="form-label"></label>
+                            <input asp-for="NewAvailability.Date" class="form-control" type="date"/>
+                            <span asp-validation-for="NewAvailability.Date" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="NewAvailability.StartTime" class="form-label"></label>
+                            <input asp-for="NewAvailability.StartTime" class="form-control" type="time"/>
+                            <span asp-validation-for="NewAvailability.StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="NewAvailability.EndTime" class="form-label"></label>
+                            <input asp-for="NewAvailability.EndTime" class="form-control" type="time"/>
+                            <span asp-validation-for="NewAvailability.EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">@L["AddSlot"]</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5 mb-3">@L["FutureAvailability"]</h2>
+                @if (Model.Availabilities.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle mb-0">
+                            <thead>
+                            <tr>
+                                <th>@L["Date"]</th>
+                                <th>@L["Time"]</th>
+                                <th>@L["Status"]</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var slot in Model.Availabilities)
+                            {
+                                <tr>
+                                    <td>@slot.Date.ToString("dd.MM.yyyy")</td>
+                                    <td>@slot.StartTime - @slot.EndTime</td>
+                                    <td>@(slot.IsBooked ? "Booked" : "Open")</td>
+                                    <td class="text-end">
+                                        @if (!slot.IsBooked)
+                                        {
+                                            <form asp-action="DeleteAvailability" method="post">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@slot.Id"/>
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">@L["Remove"]</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-muted">@L["NoFutureAvailability"]</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

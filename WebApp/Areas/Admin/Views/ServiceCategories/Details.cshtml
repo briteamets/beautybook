@@ -1,0 +1,32 @@
+@model ServiceCategory
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["ServiceCategoryDetails"]</h1>
+        <p class="text-muted mb-0">@Model.Name.Translate(culture)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+        <a class="btn btn-outline-dark" asp-action="Index">@L["Back"]</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@L["NameEn"]</dt>
+            <dd class="col-sm-9">@Model.Name.Translate("en")</dd>
+            <dt class="col-sm-3">@L["NameEt"]</dt>
+            <dd class="col-sm-9">@Model.Name.Translate("et")</dd>
+            <dt class="col-sm-3">@L["DescriptionEn"]</dt>
+            <dd class="col-sm-9">@Model.Description?.Translate("en")</dd>
+            <dt class="col-sm-3">@L["DescriptionEt"]</dt>
+            <dd class="col-sm-9">@Model.Description?.Translate("et")</dd>
+            <dt class="col-sm-3">@L["Services"]</dt>
+            <dd class="col-sm-9">@(Model.Services?.Count ?? 0)</dd>
+        </dl>
+    </div>
+</div>

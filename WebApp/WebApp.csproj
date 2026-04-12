@@ -28,6 +28,7 @@
       <ProjectReference Include="..\App.DTO\App.DTO.csproj" />
       <ProjectReference Include="..\App.Resources\App.Resources.csproj" />
       <ProjectReference Include="..\Base.Helpers\Base.Helpers.csproj" />
+      <ProjectReference Include="..\App.BLL\App.BLL.csproj" />
     </ItemGroup>
 
     <ItemGroup>

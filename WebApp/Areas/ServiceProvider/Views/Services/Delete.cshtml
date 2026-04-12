@@ -1,0 +1,18 @@
+@model ProviderServiceDetailsViewModel
+
+<h1>@L["DeleteService"]</h1>
+<p class="alert alert-warning">@L["ConfirmDelete"]</p>
+
+<dl class="row">
+    <dt class="col-sm-3">@L["ServiceName"]</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+    <dt class="col-sm-3">@L["Category"]</dt>
+    <dd class="col-sm-9">@Model.CategoryName</dd>
+    <dt class="col-sm-3">@L["Price"]</dt>
+    <dd class="col-sm-9">@Model.Price.ToString("0.00") EUR</dd>
+</dl>
+
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">@L["Delete"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+</form>

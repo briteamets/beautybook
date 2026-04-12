@@ -1,0 +1,33 @@
+@model BookingCancelViewModel
+
+<h1 class="h3 mb-4">@L["CancelBooking"]</h1>
+
+<form asp-action="Cancel" method="post" class="card shadow-sm">
+    <div class="card-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input asp-for="Id" type="hidden"/>
+        <dl class="row">
+            <dt class="col-sm-3">@L["Customer"]</dt>
+            <dd class="col-sm-9">@Model.ClientName</dd>
+            <dt class="col-sm-3">@L["Provider"]</dt>
+            <dd class="col-sm-9">@Model.ProviderName</dd>
+            <dt class="col-sm-3">@L["ServiceType"]</dt>
+            <dd class="col-sm-9">@Model.ServiceName</dd>
+            <dt class="col-sm-3">@L["Appointment"]</dt>
+            <dd class="col-sm-9">@Model.AppointmentDateTime.ToLocalTime()</dd>
+        </dl>
+        <div class="mb-3">
+            <label asp-for="Reason" class="form-label">@L["CancellationReason"]</label>
+            <textarea asp-for="Reason" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Reason" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">@L["Back"]</a>
+        <button type="submit" class="btn btn-danger">@L["CancelBooking"]</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

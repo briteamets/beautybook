@@ -1,0 +1,62 @@
+@model Salon
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["SalonDetails"]</h1>
+        <p class="text-muted mb-0">@Model.Name.Translate(culture)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+        <a class="btn btn-outline-dark" asp-action="Index">@L["Back"]</a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">@L["Content"]</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@L["NameEn"]</dt>
+                    <dd class="col-sm-8">@Model.Name.Translate("en")</dd>
+                    <dt class="col-sm-4">@L["NameEt"]</dt>
+                    <dd class="col-sm-8">@Model.Name.Translate("et")</dd>
+                    <dt class="col-sm-4">@L["DescriptionEn"]</dt>
+                    <dd class="col-sm-8">@Model.Description?.Translate("en")</dd>
+                    <dt class="col-sm-4">@L["DescriptionEt"]</dt>
+                    <dd class="col-sm-8">@Model.Description?.Translate("et")</dd>
+                    <dt class="col-sm-4">@L["Address"]</dt>
+                    <dd class="col-sm-8">@Model.Address</dd>
+                    <dt class="col-sm-4">@L["Coordinates"]</dt>
+                    <dd class="col-sm-8">@Model.Latitude, @Model.Longitude</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["Staff"]</h2>
+                @if (Model.Staff?.Any() == true)
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var member in Model.Staff)
+                        {
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+                                <span>@member.BeautyProvider?.ProfileName</span>
+                                <span class="text-muted">@member.Role</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">@L["NoStaffMembersLinked"]</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,87 @@
+@model ProviderAvailabilityIndexViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>@L["TimeRanges"]</h1>
+        <p class="text-muted mb-0">@L["TimeRangesHelp"]</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Services" asp-action="Index">@L["MyServices"]</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["AddTimeRange"]</h2>
+                <form asp-action="Create" method="post" class="mt-3">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="NewAvailability.Date" class="form-label">@L["Date"]</label>
+                        <input asp-for="NewAvailability.Date" class="form-control" type="date"/>
+                        <span asp-validation-for="NewAvailability.Date" class="text-danger"></span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NewAvailability.StartTime" class="form-label">@L["StartTime"]</label>
+                            <input asp-for="NewAvailability.StartTime" class="form-control" type="time"/>
+                            <span asp-validation-for="NewAvailability.StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NewAvailability.EndTime" class="form-label">@L["EndTime"]</label>
+                            <input asp-for="NewAvailability.EndTime" class="form-control" type="time"/>
+                            <span asp-validation-for="NewAvailability.EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">@L["AddTimeRange"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["FutureAvailability"]</h2>
+                @if (!Model.Availabilities.Any())
+                {
+                    <div class="alert alert-info">@L["NoFutureAvailability"]</div>
+                }
+                else
+                {
+                    <table class="table table-striped align-middle">
+                        <thead>
+                        <tr>
+                            <th>@L["Date"]</th>
+                            <th>@L["Time"]</th>
+                            <th>@L["Status"]</th>
+                            <th class="text-end">@L["Actions"]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var slot in Model.Availabilities)
+                        {
+                            <tr>
+                                <td>@slot.Date.ToString("dd.MM.yyyy")</td>
+                                <td>@slot.StartTime.ToString("HH:mm") - @slot.EndTime.ToString("HH:mm")</td>
+                                <td>@(slot.IsBooked ? L["Booked"] : L["Open"])</td>
+                                <td class="text-end">
+                                    @if (!slot.IsBooked)
+                                    {
+                                        <form asp-action="Delete" method="post">
+                                            <input type="hidden" name="id" value="@slot.Id"/>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">@L["Remove"]</button>
+                                        </form>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml"/>
+}

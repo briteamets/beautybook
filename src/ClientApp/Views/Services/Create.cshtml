@@ -1,0 +1,8 @@
+@model ServiceFormViewModel
+
+<h1>@L["Create"] @L["Service"]</h1>
+<form asp-action="Create" method="post">
+    <partial name="_ServiceForm" model="Model"/>
+    <button type="submit" class="btn btn-primary">@L["Save"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+</form>

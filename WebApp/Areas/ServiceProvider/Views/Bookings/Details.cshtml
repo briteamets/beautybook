@@ -1,0 +1,73 @@
+@model ProviderBookingDetailsViewModel
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <h1>@L["BookingDetails"]</h1>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@L["Customer"]</dt>
+            <dd class="col-sm-9">@Model.CustomerEmail</dd>
+            <dt class="col-sm-3">@L["ServiceName"]</dt>
+            <dd class="col-sm-9">@Model.ServiceName</dd>
+            <dt class="col-sm-3">@L["Salon"]</dt>
+            <dd class="col-sm-9">@Model.SalonName</dd>
+            <dt class="col-sm-3">@L["Appointment"]</dt>
+            <dd class="col-sm-9">@Model.AppointmentDateTime.ToString("dd.MM.yyyy") @Model.StartTime.ToString(@"hh\:mm") - @Model.EndTime.ToString(@"hh\:mm")</dd>
+            <dt class="col-sm-3">@L["Status"]</dt>
+            <dd class="col-sm-9">@Model.Status</dd>
+            <dt class="col-sm-3">@L["Total"]</dt>
+            <dd class="col-sm-9">@Model.TotalPrice.ToString("0.00") EUR</dd>
+            <dt class="col-sm-3">@L["Notes"]</dt>
+            <dd class="col-sm-9">@Model.Notes</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-4">
+    @if (Model.Status == Booking.StatusPending)
+    {
+        <form asp-action="Accept" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-success">@L["Accept"]</button>
+        </form>
+        <form asp-action="Reject" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-outline-danger">@L["Reject"]</button>
+        </form>
+    }
+    @if (Model.Status == Booking.StatusConfirmed)
+    {
+        <form asp-action="Complete" asp-route-id="@Model.Id" method="post">
+            <button type="submit" class="btn btn-primary">@L["Complete"]</button>
+        </form>
+    }
+</div>
+
+<h2 class="h4">@L["History"]</h2>
+@if (!Model.History.Any())
+{
+    <p class="text-muted">@L["NoHistory"]</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+        <tr>
+            <th>@L["Status"]</th>
+            <th>@L["Date"]</th>
+            <th>@L["Reason"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.History)
+        {
+            <tr>
+                <td>@(item.OldStatus) -> @(item.NewStatus)</td>
+                <td>@item.ChangedAt.ToString("g")</td>
+                <td>@item.Reason</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

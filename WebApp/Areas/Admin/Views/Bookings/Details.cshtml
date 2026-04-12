@@ -1,0 +1,97 @@
+@model BookingDetailsViewModel
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["BookingDetails"]</h1>
+        <p class="text-muted mb-0">@Model.Booking.Id</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>
+        @if (Model.CanCancel)
+        {
+            <a class="btn btn-outline-danger" asp-action="Cancel" asp-route-id="@Model.Booking.Id">@L["CancelBooking"]</a>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">@L["Booking"]</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@L["Customer"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.User?.Email</dd>
+                    <dt class="col-sm-4">@L["Provider"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.Service?.BeautyProvider?.ProfileName</dd>
+                    <dt class="col-sm-4">@L["ServiceType"]</dt>
+                    <dd class="col-sm-8">@(Model.Booking.Service?.ServiceType?.Name.Translate(culture) ?? Model.Booking.Service?.Name.Translate(culture))</dd>
+                    <dt class="col-sm-4">@L["Salon"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.Salon?.Name.Translate(culture)</dd>
+                    <dt class="col-sm-4">@L["Date"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.BookingDate</dd>
+                    <dt class="col-sm-4">@L["StartTime"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.StartTime</dd>
+                    <dt class="col-sm-4">@L["EndTime"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.EndTime</dd>
+                    <dt class="col-sm-4">@L["Created"]</dt>
+                    <dd class="col-sm-8">@Model.Booking.BookedAt.ToLocalTime()</dd>
+                    <dt class="col-sm-4">@L["Status"]</dt>
+                    <dd class="col-sm-8"><span class="badge bg-info text-dark">@L[Model.Booking.Status]</span></dd>
+                    <dt class="col-sm-4">@L["Notes"]</dt>
+                    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Booking.Notes) ? Model.Booking.Notes : "-")</dd>
+                    <dt class="col-sm-4">@L["CancellationReason"]</dt>
+                    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Booking.CancellationReason) ? Model.Booking.CancellationReason : "-")</dd>
+                    <dt class="col-sm-4">@L["CancelledByAdmin"]</dt>
+                    <dd class="col-sm-8">@(Model.Booking.CancelledByAdmin?.Email ?? "-")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="h5">@L["ChangeStatus"]</h2>
+                <form asp-action="UpdateStatus" method="post" class="row g-3">
+                    <input type="hidden" name="id" value="@Model.Booking.Id"/>
+                    <div class="col-sm-8">
+                        <select class="form-select" name="status">
+                            <option value="@Booking.StatusPending" selected="@(Model.Booking.Status == Booking.StatusPending ? "selected" : null)">@L[Booking.StatusPending]</option>
+                            <option value="@Booking.StatusConfirmed" selected="@(Model.Booking.Status == Booking.StatusConfirmed ? "selected" : null)">@L[Booking.StatusConfirmed]</option>
+                            <option value="@Booking.StatusCompleted" selected="@(Model.Booking.Status == Booking.StatusCompleted ? "selected" : null)">@L[Booking.StatusCompleted]</option>
+                            <option value="@Booking.StatusCancelled" selected="@(Model.Booking.Status == Booking.StatusCancelled ? "selected" : null)">@L[Booking.StatusCancelled]</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <button type="submit" class="btn btn-primary w-100">@L["Update"]</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["History"]</h2>
+                @if (Model.HistoryEntries.Count == 0)
+                {
+                    <p class="text-muted mb-0">@L["NoHistory"]</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var entry in Model.HistoryEntries)
+                        {
+                            <li class="list-group-item px-0">
+                                <div class="fw-semibold">@entry.OldStatus -> @entry.NewStatus</div>
+                                <div class="small text-muted">@entry.ChangedAt.ToLocalTime()</div>
+                                <div>@(!string.IsNullOrWhiteSpace(entry.Reason) ? entry.Reason : "-")</div>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

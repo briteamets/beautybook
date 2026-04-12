@@ -1,0 +1,31 @@
+@model ProviderFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="mb-3">
+    <label asp-for="ProfileName" class="form-label">@L["Name"]</label>
+    <input asp-for="ProfileName" class="form-control"/>
+    <span asp-validation-for="ProfileName" class="text-danger"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Bio" class="form-label">@L["Bio"]</label>
+    <textarea asp-for="Bio" class="form-control"></textarea>
+</div>
+<div class="mb-3">
+    <label asp-for="Address" class="form-label">@L["Address"]</label>
+    <input asp-for="Address" class="form-control"/>
+    <span asp-validation-for="Address" class="text-danger"></span>
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Lat" class="form-label">@L["Latitude"]</label>
+        <input asp-for="Lat" class="form-control"/>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Lng" class="form-label">@L["Longitude"]</label>
+        <input asp-for="Lng" class="form-control"/>
+    </div>
+</div>
+<div class="mb-3">
+    <label asp-for="ProfilePictureUrl" class="form-label">@L["PictureUrl"]</label>
+    <input asp-for="ProfilePictureUrl" class="form-control"/>
+</div>

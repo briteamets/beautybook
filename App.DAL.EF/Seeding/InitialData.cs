@@ -2,20 +2,18 @@ namespace App.DAL.EF.Seeding;
 
 public static class InitialData
 {
-    public static readonly string[] ContactTypes = [
-        "email",
-        "post",
-        "phone"
-    ];
-
     public static readonly string[] Roles = [
-        "user",
-        "admin"
+        "Admin",
+        "Client",
+        "User",
+        "ServiceProvider"
     ];
 
     public static readonly (string email, string password, string[] roles)[] Users = [
-        ("admin@taltech.ee", "Kala.12345", ["admin"]),
-        ("user@taltech.ee", "Kala.12345", ["user"]),
+        ("admin@beautybook.com", "Admin123!", ["Admin"]),
+        ("user@beautybook.com", "User123!", ["Client", "User"]),
+        ("provider@beautybook.com", "Provider123!", ["ServiceProvider"]),
+        ("suspended.provider@beautybook.com", "Provider123!", ["ServiceProvider"]),
     ];
     
 }

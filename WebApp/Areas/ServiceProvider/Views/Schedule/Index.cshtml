@@ -1,0 +1,117 @@
+@model ProviderScheduleIndexViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["MySchedule"]</h1>
+        <p class="text-muted mb-0">@L["MyScheduleHelp"]</p>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form asp-action="Save" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                    <tr>
+                        <th>@L["Day"]</th>
+                        <th>@L["WorkingDay"]</th>
+                        <th>@L["StartTime"]</th>
+                        <th>@L["EndTime"]</th>
+                        <th>@L["Breaks"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @for (var i = 0; i < Model.Days.Count; i++)
+                    {
+                        var day = Model.Days.ElementAt(i);
+                        <tr>
+                            <td>
+                                @day.DayOfWeek
+                                <input type="hidden" name="Days[@i].DayOfWeek" value="@day.DayOfWeek"/>
+                            </td>
+                            <td>
+                                <input class="form-check-input" type="checkbox" name="Days[@i].IsWorkingDay" value="true" checked="@day.IsWorkingDay"/>
+                                <input type="hidden" name="Days[@i].IsWorkingDay" value="false"/>
+                            </td>
+                            <td>
+                                <input class="form-control" type="time" name="Days[@i].StartTime" value="@day.StartTime.ToString(@"hh\:mm")"/>
+                            </td>
+                            <td>
+                                <input class="form-control" type="time" name="Days[@i].EndTime" value="@day.EndTime.ToString(@"hh\:mm")"/>
+                            </td>
+                            <td>
+                                @if (!day.Breaks.Any())
+                                {
+                                    <span class="text-muted">@L["NoBreaks"]</span>
+                                }
+                                else
+                                {
+                                    @foreach (var providerBreak in day.Breaks)
+                                    {
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span>@providerBreak.BreakStart.ToString(@"hh\:mm") - @providerBreak.BreakEnd.ToString(@"hh\:mm")</span>
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    form="remove-break-@providerBreak.Id">
+                                                @L["Remove"]
+                                            </button>
+                                        </div>
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="btn btn-primary">@L["Save"]</button>
+        </form>
+    </div>
+</div>
+
+@foreach (var day in Model.Days)
+{
+    foreach (var providerBreak in day.Breaks)
+    {
+        <form id="remove-break-@providerBreak.Id" asp-action="RemoveBreak" method="post" class="d-none">
+            <input type="hidden" name="id" value="@providerBreak.Id"/>
+        </form>
+    }
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">@L["AddBreak"]</h2>
+        <form asp-action="AddBreak" method="post">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="NewBreak.DayOfWeek" class="form-label">@L["Day"]</label>
+                    <select asp-for="NewBreak.DayOfWeek" class="form-select">
+                        @foreach (var day in Model.Days)
+                        {
+                            <option value="@day.DayOfWeek">@day.DayOfWeek</option>
+                        }
+                    </select>
+                    <span asp-validation-for="NewBreak.DayOfWeek" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="NewBreak.BreakStart" class="form-label">@L["BreakStart"]</label>
+                    <input asp-for="NewBreak.BreakStart" class="form-control" type="time"/>
+                    <span asp-validation-for="NewBreak.BreakStart" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="NewBreak.BreakEnd" class="form-label">@L["BreakEnd"]</label>
+                    <input asp-for="NewBreak.BreakEnd" class="form-control" type="time"/>
+                    <span asp-validation-for="NewBreak.BreakEnd" class="text-danger"></span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">@L["AddBreak"]</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="/Views/Shared/_ValidationScriptsPartial.cshtml"/>
+}

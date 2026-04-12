@@ -1,0 +1,72 @@
+@model AdminUserIndexViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["Users"]</h1>
+        <p class="text-muted mb-0">@L["UsersAdminHelp"]</p>
+    </div>
+    <span class="badge bg-secondary">@L["TotalCount", Model.Page.TotalItems]</span>
+</div>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label" for="search">@L["Search"]</label>
+            <input class="form-control" id="search" name="search" value="@Model.Search"/>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="role">@L["Role"]</label>
+            <select class="form-select" id="role" name="role">
+                <option value="">@L["All"]</option>
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    <option value="@role" selected="@(Model.Role == role ? "selected" : null)">@role</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+            <thead>
+            <tr>
+                <th>@L["Name"]</th>
+                <th>@L["Email"]</th>
+                <th>@L["Role"]</th>
+                <th>@L["RegisteredDate"]</th>
+                <th>@L["Status"]</th>
+                <th class="text-end">@L["Actions"]</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Page.Items)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Email</td>
+                    <td>@item.Role</td>
+                    <td>@item.RegisteredAt.ToLocalTime()</td>
+                    <td>
+                        <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                            @(item.IsActive ? L["Active"] : L["Inactive"])
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="mt-3">
+    <partial name="~/Areas/Admin/Views/Shared/_Pager.cshtml" model="Model.Page"/>
+</div>

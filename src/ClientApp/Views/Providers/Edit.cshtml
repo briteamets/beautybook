@@ -1,0 +1,9 @@
+@model ProviderFormViewModel
+
+<h1>@L["Edit"] @L["Provider"]</h1>
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <partial name="_ProviderForm" model="Model"/>
+    <button type="submit" class="btn btn-primary">@L["Save"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+</form>

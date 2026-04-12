@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppName" xml:space="preserve"><value>BeautyBook</value></data>
+  <data name="Browse" xml:space="preserve"><value>Sirvi</value></data>
+  <data name="Privacy" xml:space="preserve"><value>Privaatsus</value></data>
+  <data name="Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="ManageProvider" xml:space="preserve"><value>Halda teenusepakkujat</value></data>
+  <data name="MyBookings" xml:space="preserve"><value>Minu broneeringud</value></data>
+  <data name="Favorites" xml:space="preserve"><value>Lemmikud</value></data>
+  <data name="User" xml:space="preserve"><value>Kasutaja</value></data>
+  <data name="Register" xml:space="preserve"><value>Registreeru</value></data>
+  <data name="Login" xml:space="preserve"><value>Logi sisse</value></data>
+  <data name="Logout" xml:space="preserve"><value>Logi välja</value></data>
+  <data name="Language" xml:space="preserve"><value>Keel</value></data>
+  <data name="English" xml:space="preserve"><value>EN</value></data>
+  <data name="Estonian" xml:space="preserve"><value>ET</value></data>
+  <data name="BrowseHeroTitle" xml:space="preserve"><value>Broneeri iluteenuseid enda lähedal.</value></data>
+  <data name="BrowseHeroSubtitle" xml:space="preserve"><value>Sirvi teenusepakkujaid, võrdle salonge ja kinnita aeg mõne sammuga.</value></data>
+  <data name="Search" xml:space="preserve"><value>Otsing</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>Teenusepakkuja, salong või aadress</value></data>
+  <data name="All" xml:space="preserve"><value>Kõik</value></data>
+  <data name="Nails" xml:space="preserve"><value>Küüned</value></data>
+  <data name="Hair" xml:space="preserve"><value>Juuksed</value></data>
+  <data name="Lashes" xml:space="preserve"><value>Ripsmed</value></data>
+  <data name="BeautySalon" xml:space="preserve"><value>Ilusalong</value></data>
+  <data name="NearbyProviders" xml:space="preserve"><value>Lähedal olevad teenusepakkujad</value></data>
+  <data name="ResultsCount" xml:space="preserve"><value>{0} tulemust</value></data>
+  <data name="MapPlaceholder" xml:space="preserve"><value>Kaardi koht</value></data>
+  <data name="MapPlaceholderBody" xml:space="preserve"><value>Interaktiivse kaardi saab hiljem sellesse konteinerisse ühendada. Laius- ja pikkuskraad on andmeatribuutides olemas.</value></data>
+  <data name="LocationsCount" xml:space="preserve"><value>{0} asukohta</value></data>
+  <data name="StaffCount" xml:space="preserve"><value>{0} töötajat</value></data>
+  <data name="ViewProfile" xml:space="preserve"><value>Vaata profiili</value></data>
+  <data name="ViewSalon" xml:space="preserve"><value>Vaata salongi</value></data>
+  <data name="AddToFavourite" xml:space="preserve"><value>Lisa lemmikuks</value></data>
+  <data name="Services" xml:space="preserve"><value>Teenused</value></data>
+  <data name="Portfolio" xml:space="preserve"><value>Portfoolio</value></data>
+  <data name="Reviews" xml:space="preserve"><value>Arvustused</value></data>
+  <data name="Book" xml:space="preserve"><value>Broneeri</value></data>
+  <data name="ChooseTimeBelow" xml:space="preserve"><value>Vali aeg alt</value></data>
+  <data name="NoPortfolioImages" xml:space="preserve"><value>Portfoolio pilte veel ei ole.</value></data>
+  <data name="NoReviewsYet" xml:space="preserve"><value>Arvustusi veel ei ole.</value></data>
+  <data name="Availability" xml:space="preserve"><value>Saadavus</value></data>
+  <data name="Date" xml:space="preserve"><value>Kuupäev</value></data>
+  <data name="SelectServiceFirst" xml:space="preserve"><value>Broneerimiseks vali kõigepealt teenus.</value></data>
+  <data name="RescheduleModeActive" xml:space="preserve"><value>Ümberbroneerimise vaade on aktiivne. Vali sellele broneeringule uus tuleviku aeg.</value></data>
+  <data name="UseDarkButtonToConfirm" xml:space="preserve"><value>Kasuta valitud teenuse kaardi all olevat tumedat nuppu, et kinnitada uus aeg.</value></data>
+  <data name="NoFutureSlotsSelectedDate" xml:space="preserve"><value>Valitud kuupäeval tuleviku aegu pole. Vali saadavuse paneelist teine kuupäev.</value></data>
+  <data name="AverageRating" xml:space="preserve"><value>Töötajate keskmine hinnang: {0} / 5</value></data>
+  <data name="Choose" xml:space="preserve"><value>Vali...</value></data>
+  <data name="Show" xml:space="preserve"><value>Näita</value></data>
+  <data name="AvailableSlots" xml:space="preserve"><value>Vabad ajad</value></data>
+  <data name="NoSlotsThisDate" xml:space="preserve"><value>Sellel kuupäeval aegu ei ole.</value></data>
+  <data name="Select" xml:space="preserve"><value>Vali</value></data>
+  <data name="StepSummary" xml:space="preserve"><value>Samm 1: Kokkuvõte</value></data>
+  <data name="RescheduleBooking" xml:space="preserve"><value>Muuda broneeringut</value></data>
+  <data name="Provider" xml:space="preserve"><value>Teenusepakkuja</value></data>
+  <data name="Salon" xml:space="preserve"><value>Salong</value></data>
+  <data name="Duration" xml:space="preserve"><value>Kestus</value></data>
+  <data name="Total" xml:space="preserve"><value>Kokku</value></data>
+  <data name="Notes" xml:space="preserve"><value>Märkused</value></data>
+  <data name="Back" xml:space="preserve"><value>Tagasi</value></data>
+  <data name="ProceedToPayment" xml:space="preserve"><value>Jätka maksmisse</value></data>
+  <data name="ConfirmReschedule" xml:space="preserve"><value>Kinnita ümberbroneerimine</value></data>
+  <data name="StepPayment" xml:space="preserve"><value>Samm 2: Makse</value></data>
+  <data name="Appointment" xml:space="preserve"><value>Aeg</value></data>
+  <data name="CardNumber" xml:space="preserve"><value>Kaardinumber</value></data>
+  <data name="PayNow" xml:space="preserve"><value>Maksa kohe</value></data>
+  <data name="StepConfirmation" xml:space="preserve"><value>Samm 3: Kinnitus</value></data>
+  <data name="BookingReference" xml:space="preserve"><value>Broneeringu viide: </value></data>
+  <data name="Staff" xml:space="preserve"><value>Töötaja</value></data>
+  <data name="Status" xml:space="preserve"><value>Staatus</value></data>
+  <data name="AddToCalendar" xml:space="preserve"><value>Lisa kalendrisse</value></data>
+  <data name="ViewMyBookings" xml:space="preserve"><value>Vaata minu broneeringuid</value></data>
+  <data name="ContinueBrowsing" xml:space="preserve"><value>Jätka sirvimist</value></data>
+  <data name="Upcoming" xml:space="preserve"><value>Tulemas</value></data>
+  <data name="Past" xml:space="preserve"><value>Möödunud</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>Tühistatud</value></data>
+  <data name="Reschedule" xml:space="preserve"><value>Muuda aega</value></data>
+  <data name="CancelBooking" xml:space="preserve"><value>Tühista broneering</value></data>
+  <data name="LeaveAReview" xml:space="preserve"><value>Jäta arvustus</value></data>
+  <data name="NoBookingsSection" xml:space="preserve"><value>Selles jaotises broneeringuid ei ole.</value></data>
+  <data name="LeaveReview" xml:space="preserve"><value>Jäta arvustus</value></data>
+  <data name="Rating" xml:space="preserve"><value>Hinnang</value></data>
+  <data name="Comment" xml:space="preserve"><value>Kommentaar</value></data>
+  <data name="Submit" xml:space="preserve"><value>Saada</value></data>
+  <data name="Remove" xml:space="preserve"><value>Eemalda</value></data>
+  <data name="NoFavorites" xml:space="preserve"><value>Lemmikteenusepakkujaid veel ei ole.</value></data>
+  <data name="ManageProviderTitle" xml:space="preserve"><value>Halda teenusepakkujat</value></data>
+  <data name="ViewPublicProfile" xml:space="preserve"><value>Vaata avalikku profiili</value></data>
+  <data name="AddService" xml:space="preserve"><value>Lisa teenus</value></data>
+  <data name="Category" xml:space="preserve"><value>Kategooria</value></data>
+  <data name="NameEn" xml:space="preserve"><value>Nimi (EN)</value></data>
+  <data name="NameEt" xml:space="preserve"><value>Nimi (ET)</value></data>
+  <data name="DescriptionEn" xml:space="preserve"><value>Kirjeldus (EN)</value></data>
+  <data name="DescriptionEt" xml:space="preserve"><value>Kirjeldus (ET)</value></data>
+  <data name="Price" xml:space="preserve"><value>Hind</value></data>
+  <data name="DurationMinutes" xml:space="preserve"><value>Kestus minutites</value></data>
+  <data name="CurrentServices" xml:space="preserve"><value>Praegused teenused</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>Deaktiveeri</value></data>
+  <data name="Inactive" xml:space="preserve"><value>Mitteaktiivne</value></data>
+  <data name="Active" xml:space="preserve"><value>Aktiivne</value></data>
+  <data name="NoServicesYet" xml:space="preserve"><value>Teenuseid veel ei ole.</value></data>
+  <data name="AddAvailability" xml:space="preserve"><value>Lisa saadavus</value></data>
+  <data name="StartTime" xml:space="preserve"><value>Algusaeg</value></data>
+  <data name="EndTime" xml:space="preserve"><value>Lõppaeg</value></data>
+  <data name="AddSlot" xml:space="preserve"><value>Lisa aeg</value></data>
+  <data name="FutureAvailability" xml:space="preserve"><value>Tuleviku saadavus</value></data>
+  <data name="Time" xml:space="preserve"><value>Kellaaeg</value></data>
+  <data name="Open" xml:space="preserve"><value>Vaba</value></data>
+  <data name="Booked" xml:space="preserve"><value>Broneeritud</value></data>
+  <data name="NoFutureAvailability" xml:space="preserve"><value>Tuleviku saadavust veel ei ole.</value></data>
+  <data name="Users" xml:space="preserve"><value>Kasutajad</value></data>
+  <data name="BeautyProviders" xml:space="preserve"><value>Teenusepakkujad</value></data>
+  <data name="Salons" xml:space="preserve"><value>Salongid</value></data>
+  <data name="ServiceCategories" xml:space="preserve"><value>Teenusekategooriad</value></data>
+  <data name="Bookings" xml:space="preserve"><value>Broneeringud</value></data>
+  <data name="BackToSite" xml:space="preserve"><value>Tagasi avalehele</value></data>
+  <data name="SelectedTimeSlotUnavailable" xml:space="preserve"><value>Valitud aeg ei ole enam saadaval.</value></data>
+  <data name="CancelledBookingsCannotBeRescheduled" xml:space="preserve"><value>Tühistatud broneeringut ei saa ümber broneerida.</value></data>
+  <data name="RescheduleSameServiceOnly" xml:space="preserve"><value>Ümberbroneerimine toetab praegu ainult sama teenust.</value></data>
+  <data name="BookingRescheduled" xml:space="preserve"><value>Broneering on ümber tõstetud.</value></data>
+  <data name="BookingConfirmedPaid" xml:space="preserve"><value>Broneering kinnitati ja makse märgiti tasutuks.</value></data>
+  <data name="BookingAlreadyCancelled" xml:space="preserve"><value>Broneering on juba tühistatud.</value></data>
+  <data name="OnlyCompletedBookingsReviewed" xml:space="preserve"><value>Arvustuse saab jätta ainult lõpetatud broneeringule.</value></data>
+  <data name="ReviewAlreadyExists" xml:space="preserve"><value>Selle broneeringu kohta on arvustus juba olemas.</value></data>
+  <data name="ReviewSubmitted" xml:space="preserve"><value>Arvustus saadeti ära.</value></data>
+  <data name="ProviderAddedToFavorites" xml:space="preserve"><value>Teenusepakkuja lisati lemmikutesse.</value></data>
+  <data name="FavoriteRemoved" xml:space="preserve"><value>Lemmik eemaldati.</value></data>
+  <data name="NoProviderProfile" xml:space="preserve"><value>Praegusele kasutajale ei leitud teenusepakkuja profiili.</value></data>
+  <data name="SelectedCategoryNotFound" xml:space="preserve"><value>Valitud kategooriat ei leitud.</value></data>
+  <data name="ServiceAdded" xml:space="preserve"><value>Teenus lisati.</value></data>
+  <data name="ServiceDeactivated" xml:space="preserve"><value>Teenus deaktiveeriti.</value></data>
+  <data name="EndTimeAfterStartTime" xml:space="preserve"><value>Lõppaeg peab olema pärast algusaega.</value></data>
+  <data name="ChooseFutureTimeSlot" xml:space="preserve"><value>Vali tulevikus olev aeg.</value></data>
+  <data name="AvailabilityAlreadyExists" xml:space="preserve"><value>See saadavuse aeg on juba olemas.</value></data>
+  <data name="AvailabilityAdded" xml:space="preserve"><value>Saadavus lisati.</value></data>
+  <data name="BookedSlotsCannotBeRemoved" xml:space="preserve"><value>Broneeritud aegu ei saa eemaldada.</value></data>
+  <data name="AvailabilityRemoved" xml:space="preserve"><value>Saadavus eemaldati.</value></data>
+  <data name="ServiceProviderPortal" xml:space="preserve"><value>Teenusepakkuja</value></data>
+  <data name="Dashboard" xml:space="preserve"><value>Töölaud</value></data>
+  <data name="MyServices" xml:space="preserve"><value>Minu teenused</value></data>
+  <data name="Requests" xml:space="preserve"><value>Broneeringud / päringud</value></data>
+  <data name="ActiveServices" xml:space="preserve"><value>Aktiivsed teenused</value></data>
+  <data name="PendingRequests" xml:space="preserve"><value>Ootel päringud</value></data>
+  <data name="CompletedBookings" xml:space="preserve"><value>Lõpetatud broneeringud</value></data>
+  <data name="CreateService" xml:space="preserve"><value>Loo teenus</value></data>
+  <data name="EditService" xml:space="preserve"><value>Muuda teenust</value></data>
+  <data name="DeleteService" xml:space="preserve"><value>Kustuta teenus</value></data>
+  <data name="ServiceDetails" xml:space="preserve"><value>Teenuse detailid</value></data>
+  <data name="ServiceName" xml:space="preserve"><value>Teenus</value></data>
+  <data name="Description" xml:space="preserve"><value>Kirjeldus</value></data>
+  <data name="IsActive" xml:space="preserve"><value>Aktiivne</value></data>
+  <data name="Actions" xml:space="preserve"><value>Tegevused</value></data>
+  <data name="Details" xml:space="preserve"><value>Detailid</value></data>
+  <data name="Edit" xml:space="preserve"><value>Muuda</value></data>
+  <data name="Delete" xml:space="preserve"><value>Kustuta</value></data>
+  <data name="Save" xml:space="preserve"><value>Salvesta</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Tühista</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>See deaktiveerib kirje. Kas jätkata?</value></data>
+  <data name="Customer" xml:space="preserve"><value>Klient</value></data>
+  <data name="Accept" xml:space="preserve"><value>Aktsepteeri</value></data>
+  <data name="Reject" xml:space="preserve"><value>Keeldu</value></data>
+  <data name="Complete" xml:space="preserve"><value>Märgi lõpetatuks</value></data>
+  <data name="BookingDetails" xml:space="preserve"><value>Broneeringu detailid</value></data>
+  <data name="History" xml:space="preserve"><value>Ajalugu</value></data>
+  <data name="NoHistory" xml:space="preserve"><value>Ajalugu veel ei ole.</value></data>
+  <data name="Reason" xml:space="preserve"><value>Põhjus</value></data>
+  <data name="BookingStatusUpdated" xml:space="preserve"><value>Broneeringu staatus uuendati.</value></data>
+  <data name="ServiceCreated" xml:space="preserve"><value>Teenus loodi.</value></data>
+  <data name="ServiceUpdated" xml:space="preserve"><value>Teenus uuendati.</value></data>
+  <data name="ServiceDeleted" xml:space="preserve"><value>Teenus kustutati.</value></data>
+  <data name="DefaultProviderBio" xml:space="preserve"><value>Teenusepakkuja profiil loodi portaalist. Muuda profiiliandmeid teenusepakkuja halduse lehel.</value></data>
+  <data name="DefaultProviderAddress" xml:space="preserve"><value>Aadress määramata</value></data>
+  <data name="ProviderProfileCreated" xml:space="preserve"><value>Teenusepakkuja profiil loodi sinu kontole.</value></data>
+  <data name="TimeRanges" xml:space="preserve"><value>Ajavahemikud</value></data>
+  <data name="AddTimeRange" xml:space="preserve"><value>Lisa ajavahemik</value></data>
+  <data name="TimeRangesHelp" xml:space="preserve"><value>Lisa oma teenustele broneeritavad ajavahemikud. Kliendid saavad neid vabu aegu broneerida.</value></data>
+  <data name="AddTimeRangeWithService" xml:space="preserve"><value>Lisa kohe ka broneeritav ajavahemik</value></data>
+  <data name="TimeRangeOptionalHelp" xml:space="preserve"><value>See loob teenusega koos teenusepakkuja saadavuse. Rohkem aegu saad lisada hiljem Ajavahemike lehelt.</value></data>
+  <data name="ServiceAndTimeRangeCreated" xml:space="preserve"><value>Teenus ja ajavahemik loodi.</value></data>
+  <data name="MySchedule" xml:space="preserve"><value>Minu graafik</value></data>
+  <data name="MyScheduleHelp" xml:space="preserve"><value>Määra oma iganädalased tööajad ja pausid. Vabad ajad arvutatakse selle graafiku alusel.</value></data>
+  <data name="DurationMinutesHelp" xml:space="preserve"><value>Näiteks: 60 = 1 tund.</value></data>
+  <data name="Day" xml:space="preserve"><value>Päev</value></data>
+  <data name="WorkingDay" xml:space="preserve"><value>Tööpäev</value></data>
+  <data name="Breaks" xml:space="preserve"><value>Pausid</value></data>
+  <data name="NoBreaks" xml:space="preserve"><value>Pause ei ole</value></data>
+  <data name="AddBreak" xml:space="preserve"><value>Lisa paus</value></data>
+  <data name="BreakStart" xml:space="preserve"><value>Pausi algus</value></data>
+  <data name="BreakEnd" xml:space="preserve"><value>Pausi lõpp</value></data>
+  <data name="ScheduleSaved" xml:space="preserve"><value>Graafik salvestati.</value></data>
+  <data name="BreakAdded" xml:space="preserve"><value>Paus lisati.</value></data>
+  <data name="BreakRemoved" xml:space="preserve"><value>Paus eemaldati.</value></data>
+  <data name="BookThisService" xml:space="preserve"><value>Broneeri see teenus</value></data>
+  <data name="ClientOverlappingBooking" xml:space="preserve"><value>Sul on selle teenusepakkujaga samal päeval juba kattuv broneering.</value></data>
+  <data name="InvalidStatusTransition" xml:space="preserve"><value>Vigane broneeringu staatuse muudatus.</value></data>
+  <data name="Manage" xml:space="preserve"><value>Halda</value></data>
+  <data name="HelloUser" xml:space="preserve"><value>Tere {0}!</value></data>
+  <data name="TotalCount" xml:space="preserve"><value>Kokku {0}</value></data>
+  <data name="Email" xml:space="preserve"><value>E-post</value></data>
+  <data name="Username" xml:space="preserve"><value>Kasutajanimi</value></data>
+  <data name="Roles" xml:space="preserve"><value>Rollid</value></data>
+  <data name="AssignedRoles" xml:space="preserve"><value>Määratud rollid</value></data>
+  <data name="AddRole" xml:space="preserve"><value>Lisa roll</value></data>
+  <data name="NoRolesAssigned" xml:space="preserve"><value>Rolle pole määratud.</value></data>
+  <data name="Confirmed" xml:space="preserve"><value>Kinnitatud</value></data>
+  <data name="Pending" xml:space="preserve"><value>Ootel</value></data>
+  <data name="Completed" xml:space="preserve"><value>Lõpetatud</value></data>
+  <data name="Paid" xml:space="preserve"><value>Makstud</value></data>
+  <data name="Address" xml:space="preserve"><value>Aadress</value></data>
+  <data name="Name" xml:space="preserve"><value>Nimi</value></data>
+  <data name="Profile" xml:space="preserve"><value>Profiil</value></data>
+  <data name="Bio" xml:space="preserve"><value>Bio</value></data>
+  <data name="Coordinates" xml:space="preserve"><value>Koordinaadid</value></data>
+  <data name="From" xml:space="preserve"><value>Alates</value></data>
+  <data name="To" xml:space="preserve"><value>Kuni</value></data>
+  <data name="Created" xml:space="preserve"><value>Loodud</value></data>
+  <data name="Yes" xml:space="preserve"><value>Jah</value></data>
+  <data name="No" xml:space="preserve"><value>Ei</value></data>
+  <data name="ConfirmedLabel" xml:space="preserve"><value>Kinnitatud</value></data>
+  <data name="Update" xml:space="preserve"><value>Uuenda</value></data>
+  <data name="Filter" xml:space="preserve"><value>Filtreeri</value></data>
+  <data name="SaveChanges" xml:space="preserve"><value>Salvesta muudatused</value></data>
+  <data name="Activate" xml:space="preserve"><value>Aktiveeri</value></data>
+  <data name="Summary" xml:space="preserve"><value>Kokkuvõte</value></data>
+  <data name="Content" xml:space="preserve"><value>Sisu</value></data>
+  <data name="Booking" xml:space="preserve"><value>Broneering</value></data>
+  <data name="Service" xml:space="preserve"><value>Teenus</value></data>
+  <data name="ChangeStatus" xml:space="preserve"><value>Muuda staatust</value></data>
+  <data name="DateFrom" xml:space="preserve"><value>Kuupäev alates</value></data>
+  <data name="DateTo" xml:space="preserve"><value>Kuupäev kuni</value></data>
+  <data name="UsersAdminHelp" xml:space="preserve"><value>Halda rakenduse kasutajaid ja nende rolle.</value></data>
+  <data name="BeautyProvidersAdminHelp" xml:space="preserve"><value>Vaata teenusepakkujaid ja halda aktiivsust.</value></data>
+  <data name="BookingsAdminHelp" xml:space="preserve"><value>Vaata broneeringuid ja filtreeri staatuse või kuupäeva järgi.</value></data>
+  <data name="ReviewsAdminHelp" xml:space="preserve"><value>Modereeri saadetud arvustusi.</value></data>
+  <data name="SalonsAdminHelp" xml:space="preserve"><value>Loo ja halda salongide kirjeid.</value></data>
+  <data name="ServiceCategoriesAdminHelp" xml:space="preserve"><value>Halda tõlgitud teenusekategooriaid.</value></data>
+  <data name="ProviderDetails" xml:space="preserve"><value>Teenusepakkuja detailid</value></data>
+  <data name="UserDetails" xml:space="preserve"><value>Kasutaja detailid</value></data>
+  <data name="ReviewDetails" xml:space="preserve"><value>Arvustuse detailid</value></data>
+  <data name="ReviewNumber" xml:space="preserve"><value>Arvustus #{0}</value></data>
+  <data name="DeleteReview" xml:space="preserve"><value>Kustuta arvustus</value></data>
+  <data name="DeleteReviewHelp" xml:space="preserve"><value>See eemaldab arvustuse modereerimiseks jäädavalt.</value></data>
+  <data name="CreateSalon" xml:space="preserve"><value>Loo salong</value></data>
+  <data name="EditSalon" xml:space="preserve"><value>Muuda salongi</value></data>
+  <data name="DeleteSalon" xml:space="preserve"><value>Kustuta salong</value></data>
+  <data name="DeleteSalonHelp" xml:space="preserve"><value>See eemaldab salongi kirje jäädavalt.</value></data>
+  <data name="SalonDetails" xml:space="preserve"><value>Salongi detailid</value></data>
+  <data name="NoStaffMembersLinked" xml:space="preserve"><value>Ühtegi töötajat pole seotud.</value></data>
+  <data name="CreateServiceCategory" xml:space="preserve"><value>Loo teenusekategooria</value></data>
+  <data name="EditServiceCategory" xml:space="preserve"><value>Muuda teenusekategooriat</value></data>
+  <data name="DeleteServiceCategory" xml:space="preserve"><value>Kustuta teenusekategooria</value></data>
+  <data name="DeleteServiceCategoryHelp" xml:space="preserve"><value>See eemaldab kategooria jäädavalt.</value></data>
+  <data name="ServiceCategoryDetails" xml:space="preserve"><value>Teenusekategooria detailid</value></data>
+  <data name="CreateCategory" xml:space="preserve"><value>Loo kategooria</value></data>
+  <data name="AvailabilitySlots" xml:space="preserve"><value>Saadavuse ajad</value></data>
+  <data name="SalonMemberships" xml:space="preserve"><value>Salongi liikmelisused</value></data>
+  <data name="Error" xml:space="preserve"><value>Viga</value></data>
+  <data name="ErrorMessage" xml:space="preserve"><value>Päringu töötlemisel tekkis viga.</value></data>
+  <data name="RequestId" xml:space="preserve"><value>Päringu ID</value></data>
+  <data name="PrivacyText" xml:space="preserve"><value>BeautyBook kasutab ainult andmeid, mida on vaja broneeringute, teenusepakkujate ja konto funktsioonide jaoks.</value></data>
+  <data name="Role" xml:space="preserve"><value>Roll</value></data>
+  <data name="Id" xml:space="preserve"><value>ID</value></data>
+  <data name="RegisteredDate" xml:space="preserve"><value>Registreerimise kuupäev</value></data>
+  <data name="PhoneNumber" xml:space="preserve"><value>Telefoninumber</value></data>
+  <data name="Security" xml:space="preserve"><value>Turvalisus</value></data>
+  <data name="TwoFactorEnabled" xml:space="preserve"><value>Kaheastmeline autentimine</value></data>
+  <data name="AccessFailedCount" xml:space="preserve"><value>Ebaõnnestunud sisselogimised</value></data>
+  <data name="EditUser" xml:space="preserve"><value>Muuda kasutajat</value></data>
+  <data name="ResetPassword" xml:space="preserve"><value>Lähtesta parool</value></data>
+  <data name="TemporaryPassword" xml:space="preserve"><value>Ajutine parool</value></data>
+  <data name="ForceLogout" xml:space="preserve"><value>Sundväljalogimine</value></data>
+  <data name="ResetPasswordConfirmation" xml:space="preserve"><value>Määra kasutajale uus ajutine parool.</value></data>
+  <data name="ForceLogoutConfirmation" xml:space="preserve"><value>See muudab kasutaja värskendustokenid kehtetuks.</value></data>
+  <data name="CannotDeactivateSelf" xml:space="preserve"><value>Sa ei saa enda adminikontot deaktiveerida.</value></data>
+  <data name="RoleNotFound" xml:space="preserve"><value>Rolli ei leitud.</value></data>
+  <data name="UserUpdated" xml:space="preserve"><value>Kasutaja uuendati.</value></data>
+  <data name="PasswordReset" xml:space="preserve"><value>Parool lähtestati.</value></data>
+  <data name="RefreshTokensInvalidated" xml:space="preserve"><value>Värskendustokenid muudeti kehtetuks.</value></data>
+  <data name="AdminDashboardHelp" xml:space="preserve"><value>Jälgi kasutajaid, teenusepakkujaid, broneeringuid ja viimast tegevust.</value></data>
+  <data name="TotalRegisteredUsers" xml:space="preserve"><value>Registreeritud kasutajaid kokku</value></data>
+  <data name="TotalRegisteredServiceProviders" xml:space="preserve"><value>Registreeritud teenusepakkujaid kokku</value></data>
+  <data name="TotalBookingsToday" xml:space="preserve"><value>Tänased broneeringud kokku</value></data>
+  <data name="RecentActivity" xml:space="preserve"><value>Viimane tegevus</value></data>
+  <data name="NoRecentActivity" xml:space="preserve"><value>Viimast tegevust ei ole.</value></data>
+  <data name="UserRegistration" xml:space="preserve"><value>Uus kasutaja registreerus</value></data>
+  <data name="BookingCreated" xml:space="preserve"><value>Uus broneering</value></data>
+  <data name="BookingCancelled" xml:space="preserve"><value>Broneering tühistati.</value></data>
+  <data name="ServiceProviders" xml:space="preserve"><value>Teenusepakkujad</value></data>
+  <data name="ServiceCatalog" xml:space="preserve"><value>Teenusekataloog</value></data>
+  <data name="Categories" xml:space="preserve"><value>Kategooriad</value></data>
+  <data name="Suspended" xml:space="preserve"><value>Peatatud</value></data>
+  <data name="ProviderSuspendedBadge" xml:space="preserve"><value>Peatatud</value></data>
+  <data name="AverageRatingLabel" xml:space="preserve"><value>Keskmine hinnang</value></data>
+  <data name="Reactivate" xml:space="preserve"><value>Aktiveeri uuesti</value></data>
+  <data name="SuspendProvider" xml:space="preserve"><value>Peata teenusepakkuja</value></data>
+  <data name="ServiceType" xml:space="preserve"><value>Teenusetüüp</value></data>
+  <data name="ServiceTypes" xml:space="preserve"><value>Teenusetüübid</value></data>
+  <data name="WeeklySchedule" xml:space="preserve"><value>Nädalagraafik</value></data>
+  <data name="RecentBookings" xml:space="preserve"><value>Viimased broneeringud</value></data>
+  <data name="ProviderActivated" xml:space="preserve"><value>Teenusepakkuja aktiveeriti uuesti.</value></data>
+  <data name="ProviderSuspended" xml:space="preserve"><value>Teenusepakkuja peatati.</value></data>
+  <data name="ServiceCategoryCreated" xml:space="preserve"><value>Kategooria loodi.</value></data>
+  <data name="ServiceCategoryUpdated" xml:space="preserve"><value>Kategooria uuendati.</value></data>
+  <data name="ServiceCategoryActivated" xml:space="preserve"><value>Kategooria aktiveeriti.</value></data>
+  <data name="ServiceCategoryDeactivated" xml:space="preserve"><value>Kategooria deaktiveeriti.</value></data>
+  <data name="CannotDeactivateCategoryWithActiveTypes" xml:space="preserve"><value>Deaktiveeri esmalt selle kategooria aktiivsed teenusetüübid.</value></data>
+  <data name="RequiredField" xml:space="preserve"><value>See väli on kohustuslik.</value></data>
+  <data name="ServiceCatalogAdminHelp" xml:space="preserve"><value>Halda tõlgitud teenusetüüpe, mida teenusepakkujad kasutavad.</value></data>
+  <data name="CreateServiceType" xml:space="preserve"><value>Loo teenusetüüp</value></data>
+  <data name="EditServiceType" xml:space="preserve"><value>Muuda teenusetüüpi</value></data>
+  <data name="ServiceTypeCreated" xml:space="preserve"><value>Teenusetüüp loodi.</value></data>
+  <data name="ServiceTypeUpdated" xml:space="preserve"><value>Teenusetüüp uuendati.</value></data>
+  <data name="ServiceTypeActivated" xml:space="preserve"><value>Teenusetüüp aktiveeriti.</value></data>
+  <data name="ServiceTypeDeactivated" xml:space="preserve"><value>Teenusetüüp deaktiveeriti.</value></data>
+  <data name="ProviderSearch" xml:space="preserve"><value>Teenusepakkuja otsing</value></data>
+  <data name="CancellationReason" xml:space="preserve"><value>Tühistamise põhjus</value></data>
+  <data name="CancelledByAdmin" xml:space="preserve"><value>Tühistas administraator</value></data>
+  <data name="BookingCannotBeCancelled" xml:space="preserve"><value>Seda broneeringut ei saa tühistada.</value></data>
+  <data name="AdminStatusUpdate" xml:space="preserve"><value>Administraatori staatuse muutus</value></data>
+  <data name="SalonCreated" xml:space="preserve"><value>Salong loodi.</value></data>
+  <data name="SalonUpdated" xml:space="preserve"><value>Salong uuendati.</value></data>
+  <data name="SalonDeleted" xml:space="preserve"><value>Salong kustutati.</value></data>
+  <data name="ReviewDeleted" xml:space="preserve"><value>Arvustus kustutati.</value></data>
+</root>

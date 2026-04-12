@@ -1,0 +1,55 @@
+@model MyBookingsIndexViewModel
+@{
+    ViewData["Title"] = L["MyBookings"];
+}
+
+<h1 class="h3 mb-4">@L["MyBookings"]</h1>
+
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link @(Model.Tab == "Upcoming" ? "active" : "")" asp-action="Index" asp-route-tab="Upcoming">@L["Upcoming"]</a></li>
+    <li class="nav-item"><a class="nav-link @(Model.Tab == "Past" ? "active" : "")" asp-action="Index" asp-route-tab="Past">@L["Past"]</a></li>
+    <li class="nav-item"><a class="nav-link @(Model.Tab == "Cancelled" ? "active" : "")" asp-action="Index" asp-route-tab="Cancelled">@L["Cancelled"]</a></li>
+</ul>
+
+@if (Model.Bookings.Any())
+{
+    <div class="d-flex flex-column gap-3">
+        @foreach (var booking in Model.Bookings)
+        {
+            <div class="card shadow-sm">
+                <div class="card-body d-flex flex-column flex-lg-row justify-content-between gap-3">
+                    <div class="d-flex gap-3">
+                        <img src="@(booking.ProfilePictureUrl ?? "https://placehold.co/96x96?text=Booking")" alt="@booking.ProviderName" class="rounded object-fit-cover" style="width: 96px; height: 96px;"/>
+                        <div>
+                            <h2 class="h5 mb-1">@booking.ProviderName</h2>
+                            <div class="text-muted">@booking.ServiceName</div>
+                            <div class="small text-muted">@booking.SalonName</div>
+                            <div>@booking.AppointmentDateTime.ToLocalTime().ToString("dd.MM.yyyy") @booking.StartTime.ToString(@"hh\:mm") - @booking.EndTime.ToString(@"hh\:mm")</div>
+                            <div><strong>@booking.Price.ToString("0.00") EUR</strong></div>
+                            <span class="badge text-bg-light border mt-2">@booking.Status</span>
+                        </div>
+                    </div>
+                    <div class="d-flex flex-wrap align-items-start gap-2">
+                        @if (Model.Tab == "Upcoming")
+                        {
+                            <a class="btn btn-outline-primary" asp-controller="ProviderProfile" asp-action="Details" asp-route-id="@booking.ProviderId" asp-route-selectedServiceId="@booking.ServiceId" asp-route-bookingId="@booking.BookingId">@L["Reschedule"]</a>
+                            <form asp-action="Cancel" method="post" onsubmit="return confirm('Cancel this booking?');">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@booking.BookingId"/>
+                                <button type="submit" class="btn btn-outline-danger">@L["CancelBooking"]</button>
+                            </form>
+                        }
+                        @if (Model.Tab == "Past" && !booking.HasReview)
+                        {
+                            <a class="btn btn-dark" asp-controller="Review" asp-action="Create" asp-route-bookingId="@booking.BookingId">@L["LeaveAReview"]</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-light border">@L["NoBookingsSection"]</div>
+}

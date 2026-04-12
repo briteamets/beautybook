@@ -22,6 +22,246 @@ namespace App.DAL.EF.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("App.Domain.Availability", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BeautyProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsBooked")
+                        .HasColumnType("boolean");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeautyProviderId");
+
+                    b.ToTable("Availabilities");
+                });
+
+            modelBuilder.Entity("App.Domain.BeautyProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Bio")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("ProfileName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BeautyProviders");
+                });
+
+            modelBuilder.Entity("App.Domain.Booking", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("AppointmentDateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("AvailabilityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("BookedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateOnly>("BookingDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("CancelledByAdminId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("SalonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ServiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AvailabilityId");
+
+                    b.HasIndex("CancelledByAdminId");
+
+                    b.HasIndex("SalonId");
+
+                    b.HasIndex("UserId", "BookingDate");
+
+                    b.HasIndex("ServiceId", "BookingDate", "StartTime");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("App.Domain.BookingHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("OldStatus")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BookingHistories");
+                });
+
+            modelBuilder.Entity("App.Domain.BookingPayment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("PaymentId");
+
+                    b.ToTable("BookingPayments");
+                });
+
+            modelBuilder.Entity("App.Domain.FavoriteProvider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BeautyProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeautyProviderId");
+
+                    b.HasIndex("UserId", "BeautyProviderId")
+                        .IsUnique();
+
+                    b.ToTable("FavoriteProviders");
+                });
+
             modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -93,11 +333,17 @@ namespace App.DAL.EF.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("LockoutEnabled")
@@ -166,6 +412,383 @@ namespace App.DAL.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ListItems");
+                });
+
+            modelBuilder.Entity("App.Domain.Notification", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<Guid?>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
+                });
+
+            modelBuilder.Entity("App.Domain.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TransactionId")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderBreak", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("BreakEnd")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("BreakStart")
+                        .HasColumnType("interval");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId", "DayOfWeek");
+
+                    b.ToTable("ProviderBreaks");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderPortfolio", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BeautyProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<Guid?>("ServiceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeautyProviderId");
+
+                    b.HasIndex("ServiceId");
+
+                    b.ToTable("ProviderPortfolios");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderSchedule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("integer");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<bool>("IsWorkingDay")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("ProviderSchedules");
+                });
+
+            modelBuilder.Entity("App.Domain.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_Reviews_Rating", "\"Rating\" >= 1 AND \"Rating\" <= 5");
+                        });
+                });
+
+            modelBuilder.Entity("App.Domain.Salon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Salons");
+                });
+
+            modelBuilder.Entity("App.Domain.SalonStaff", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BeautyProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<Guid>("SalonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeautyProviderId");
+
+                    b.HasIndex("SalonId");
+
+                    b.ToTable("SalonStaff");
+                });
+
+            modelBuilder.Entity("App.Domain.Service", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BeautyProviderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("jsonb");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric(18,2)");
+
+                    b.Property<Guid>("ServiceCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ServiceTypeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeautyProviderId");
+
+                    b.HasIndex("ServiceCategoryId");
+
+                    b.HasIndex("ServiceTypeId");
+
+                    b.ToTable("Services");
+                });
+
+            modelBuilder.Entity("App.Domain.ServiceCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("jsonb");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ServiceCategories");
+                });
+
+            modelBuilder.Entity("App.Domain.ServiceType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("jsonb");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<Guid>("ServiceCategoryId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ServiceCategoryId");
+
+                    b.ToTable("ServiceTypes");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
@@ -290,15 +913,278 @@ namespace App.DAL.EF.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("App.Domain.Availability", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
+                        .WithMany("Availabilities")
+                        .HasForeignKey("BeautyProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BeautyProvider");
+                });
+
+            modelBuilder.Entity("App.Domain.BeautyProvider", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("BeautyProviders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.Booking", b =>
+                {
+                    b.HasOne("App.Domain.Availability", "Availability")
+                        .WithMany("Bookings")
+                        .HasForeignKey("AvailabilityId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("App.Domain.Identity.AppUser", "CancelledByAdmin")
+                        .WithMany("AdminCancelledBookings")
+                        .HasForeignKey("CancelledByAdminId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("App.Domain.Salon", "Salon")
+                        .WithMany("Bookings")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("App.Domain.Service", "Service")
+                        .WithMany("Bookings")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("Bookings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Availability");
+
+                    b.Navigation("CancelledByAdmin");
+
+                    b.Navigation("Salon");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.BookingHistory", b =>
+                {
+                    b.HasOne("App.Domain.Booking", "Booking")
+                        .WithMany("BookingHistory")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("BookingHistoryEntries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.BookingPayment", b =>
+                {
+                    b.HasOne("App.Domain.Booking", "Booking")
+                        .WithMany("BookingPayments")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Payment", "Payment")
+                        .WithMany("BookingPayments")
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Payment");
+                });
+
+            modelBuilder.Entity("App.Domain.FavoriteProvider", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
+                        .WithMany("FavoritedBy")
+                        .HasForeignKey("BeautyProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("FavoriteProviders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BeautyProvider");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("App.Domain.Identity.AppRefreshToken", b =>
                 {
                     b.HasOne("App.Domain.Identity.AppUser", "AppUser")
                         .WithMany("RefreshTokens")
                         .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
+                });
+
+            modelBuilder.Entity("App.Domain.Notification", b =>
+                {
+                    b.HasOne("App.Domain.Booking", "Booking")
+                        .WithOne("Notification")
+                        .HasForeignKey("App.Domain.Notification", "BookingId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.Payment", b =>
+                {
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderBreak", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "Provider")
+                        .WithMany("Breaks")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderPortfolio", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
+                        .WithMany("Portfolio")
+                        .HasForeignKey("BeautyProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BeautyProvider");
+
+                    b.Navigation("Service");
+                });
+
+            modelBuilder.Entity("App.Domain.ProviderSchedule", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "Provider")
+                        .WithMany("Schedules")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+                });
+
+            modelBuilder.Entity("App.Domain.Review", b =>
+                {
+                    b.HasOne("App.Domain.Booking", "Booking")
+                        .WithOne("Review")
+                        .HasForeignKey("App.Domain.Review", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Domain.SalonStaff", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
+                        .WithMany("SalonStaff")
+                        .HasForeignKey("BeautyProviderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Salon", "Salon")
+                        .WithMany("Staff")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BeautyProvider");
+
+                    b.Navigation("Salon");
+                });
+
+            modelBuilder.Entity("App.Domain.Service", b =>
+                {
+                    b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
+                        .WithMany("Services")
+                        .HasForeignKey("BeautyProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.ServiceCategory", "ServiceCategory")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.ServiceType", "ServiceType")
+                        .WithMany("Services")
+                        .HasForeignKey("ServiceTypeId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("BeautyProvider");
+
+                    b.Navigation("ServiceCategory");
+
+                    b.Navigation("ServiceType");
+                });
+
+            modelBuilder.Entity("App.Domain.ServiceType", b =>
+                {
+                    b.HasOne("App.Domain.ServiceCategory", "ServiceCategory")
+                        .WithMany("ServiceTypes")
+                        .HasForeignKey("ServiceCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ServiceCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -306,7 +1192,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -315,7 +1201,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -324,7 +1210,7 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -333,13 +1219,13 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
@@ -348,13 +1234,91 @@ namespace App.DAL.EF.Migrations
                     b.HasOne("App.Domain.Identity.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("App.Domain.Availability", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("App.Domain.BeautyProvider", b =>
+                {
+                    b.Navigation("Availabilities");
+
+                    b.Navigation("Breaks");
+
+                    b.Navigation("FavoritedBy");
+
+                    b.Navigation("Portfolio");
+
+                    b.Navigation("SalonStaff");
+
+                    b.Navigation("Schedules");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("App.Domain.Booking", b =>
+                {
+                    b.Navigation("BookingHistory");
+
+                    b.Navigation("BookingPayments");
+
+                    b.Navigation("Notification");
+
+                    b.Navigation("Review");
                 });
 
             modelBuilder.Entity("App.Domain.Identity.AppUser", b =>
                 {
+                    b.Navigation("AdminCancelledBookings");
+
+                    b.Navigation("BeautyProviders");
+
+                    b.Navigation("BookingHistoryEntries");
+
+                    b.Navigation("Bookings");
+
+                    b.Navigation("FavoriteProviders");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("Payments");
+
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("App.Domain.Payment", b =>
+                {
+                    b.Navigation("BookingPayments");
+                });
+
+            modelBuilder.Entity("App.Domain.Salon", b =>
+                {
+                    b.Navigation("Bookings");
+
+                    b.Navigation("Staff");
+                });
+
+            modelBuilder.Entity("App.Domain.Service", b =>
+                {
+                    b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("App.Domain.ServiceCategory", b =>
+                {
+                    b.Navigation("ServiceTypes");
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("App.Domain.ServiceType", b =>
+                {
+                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }

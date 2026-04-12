@@ -1,0 +1,39 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@L["AppName"] @L["Admin"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row min-vh-100">
+        <aside class="col-md-3 col-lg-2 bg-light border-end py-4">
+            <h5 class="px-3">@L["AppName"] @L["Admin"]</h5>
+            <nav class="nav flex-column">
+                <a class="nav-link @(controller == "Dashboard" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">@L["Dashboard"]</a>
+                <a class="nav-link @(controller == "Users" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">@L["Users"]</a>
+                <a class="nav-link @(controller == "BeautyProviders" ? "fw-bold" : "")" asp-area="Admin" asp-controller="BeautyProviders" asp-action="Index">@L["ServiceProviders"]</a>
+                <a class="nav-link @(controller == "ServiceTypes" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceTypes" asp-action="Index">@L["ServiceCatalog"]</a>
+                <a class="nav-link @(controller == "ServiceCategories" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceCategories" asp-action="Index">@L["Categories"]</a>
+                <a class="nav-link @(controller == "Bookings" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a>
+                <a class="nav-link @(controller == "Salons" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
+                <a class="nav-link @(controller == "Reviews" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Reviews" asp-action="Index">@L["Reviews"]</a>
+                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">@L["BackToSite"]</a>
+            </nav>
+        </aside>
+        <main class="col-md-9 col-lg-10 py-4 px-4">
+            <partial name="_FlashMessages"/>
+            @RenderBody()
+        </main>
+    </div>
+</div>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

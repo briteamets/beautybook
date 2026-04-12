@@ -1,0 +1,29 @@
+@model Review
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["ReviewDetails"]</h1>
+        <p class="text-muted mb-0">@L["ReviewNumber", Model.Id]</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@L["User"]</dt>
+            <dd class="col-sm-9">@Model.User?.Email</dd>
+            <dt class="col-sm-3">@L["ServiceName"]</dt>
+            <dd class="col-sm-9">@Model.Booking?.Service?.Name.Translate(culture)</dd>
+            <dt class="col-sm-3">@L["Rating"]</dt>
+            <dd class="col-sm-9">@Model.Rating / 5</dd>
+            <dt class="col-sm-3">@L["Comment"]</dt>
+            <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Model.Comment) ? Model.Comment : "-")</dd>
+            <dt class="col-sm-3">@L["Created"]</dt>
+            <dd class="col-sm-9">@Model.From.ToLocalTime()</dd>
+        </dl>
+    </div>
+</div>

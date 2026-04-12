@@ -15,6 +15,10 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>Person.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="SharedUiResource.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>SharedUiResource.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
@@ -27,6 +31,11 @@
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
         <DependentUpon>Person.resx</DependentUpon>
+      </Compile>
+      <Compile Update="SharedUiResource.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>SharedUiResource.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 

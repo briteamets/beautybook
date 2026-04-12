@@ -1,0 +1,171 @@
+@model ProviderProfileViewModel
+@{
+    ViewData["Title"] = Model.ProfileName;
+}
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        @if (Model.BookingId.HasValue)
+        {
+            <div class="alert alert-info shadow-sm">
+                @L["RescheduleModeActive"]
+            </div>
+        }
+        <div class="card shadow-sm mb-4">
+            <div class="card-body d-flex gap-4 flex-column flex-md-row">
+                <img src="@(Model.ProfilePictureUrl ?? "https://placehold.co/180x180?text=Provider")" alt="@Model.ProfileName" class="rounded object-fit-cover" style="width: 180px; height: 180px;"/>
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div>
+                            <h1 class="h2 mb-1">@Model.ProfileName</h1>
+                            <p class="text-muted mb-2">@Model.Address</p>
+                            <p class="mb-2">@(string.IsNullOrWhiteSpace(Model.Bio) ? L["BrowseHeroSubtitle"] : Model.Bio)</p>
+                            <div class="small text-muted">@(new string('★', (int)Math.Round(Model.AverageRating))) <span class="ms-2">@Model.AverageRating / 5 (@Model.ReviewCount reviews)</span></div>
+                        </div>
+                        @if (User.Identity?.IsAuthenticated == true && !Model.IsFavorite)
+                        {
+                            <form asp-controller="Favorites" asp-action="Add" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="providerId" value="@Model.Id"/>
+                                <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString"/>
+                                <button type="submit" class="btn btn-outline-dark">@L["AddToFavourite"]</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mb-3" id="providerTabs" role="tablist">
+            <li class="nav-item" role="presentation"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#services" type="button">@L["Services"]</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#portfolio" type="button">@L["Portfolio"]</button></li>
+            <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews" type="button">@L["Reviews"]</button></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="services">
+                <div class="row g-3">
+                    @foreach (var service in Model.Services)
+                    {
+                        <div class="col-12">
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div>
+                                            <h2 class="h5 mb-1">@service.Name</h2>
+                                            <p class="text-muted mb-2">@service.Description</p>
+                                            <div><strong>@service.Price.ToString("0.00") EUR</strong> · @service.DurationMinutes min</div>
+                                        </div>
+                                        @if (Model.SelectedServiceId == service.Id)
+                                        {
+                                            <button type="button" class="btn btn-dark" onclick="document.getElementById('selected-service-slots')?.scrollIntoView({ behavior: 'smooth', block: 'center' });">
+                                                @L["ChooseTimeBelow"]
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-outline-primary" asp-controller="Booking" asp-action="Book" asp-route-serviceId="@service.Id" asp-route-date="@Model.SelectedDate.ToString("yyyy-MM-dd")">@L["Book"]</a>
+                                        }
+                                    </div>
+                                    @if (Model.SelectedServiceId == service.Id && Model.TimeSlots.Any())
+                                    {
+                                        <div class="mt-3 d-flex flex-wrap gap-2" id="selected-service-slots">
+                                            @foreach (var slot in Model.TimeSlots)
+                                            {
+                                                <a class="btn btn-sm btn-dark" asp-controller="Booking" asp-action="Summary" asp-route-serviceId="@service.Id" asp-route-availabilityId="@slot.Id" asp-route-bookingId="@Model.BookingId">
+                                                    @(Model.BookingId.HasValue ? $"{L["Reschedule"]} {slot.StartTime}" : slot.StartTime)
+                                                </a>
+                                            }
+                                        </div>
+                                    }
+                                    else if (Model.SelectedServiceId == service.Id)
+                                    {
+                                        <div class="alert alert-light border mt-3 mb-0">
+                                            @L["NoFutureSlotsSelectedDate"]
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="portfolio">
+                @if (Model.Portfolio.Any())
+                {
+                    <div class="row g-3">
+                        @foreach (var image in Model.Portfolio)
+                        {
+                            <div class="col-md-4">
+                                <div class="card shadow-sm h-100">
+                                    <img src="@image.ImageUrl" class="card-img-top" alt="Portfolio image"/>
+                                    <div class="card-body small text-muted">@image.ServiceName</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-light border">@L["NoPortfolioImages"]</div>
+                }
+            </div>
+            <div class="tab-pane fade" id="reviews">
+                @if (Model.Reviews.Any())
+                {
+                    <div class="d-flex flex-column gap-3">
+                        @foreach (var review in Model.Reviews)
+                        {
+                            <div class="card shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>@review.UserName</strong>
+                                        <span>@(new string('★', review.Rating))</span>
+                                    </div>
+                                    <div class="small text-muted mb-2">@review.CreatedAt.ToLocalTime()</div>
+                                    <p class="mb-0">@review.Comment</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-light border">@L["NoReviewsYet"]</div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm sticky-top" style="top: 1rem;">
+            <div class="card-body">
+                <h2 class="h5">@L["Availability"]</h2>
+                <form method="get" asp-action="Details" class="mb-3">
+                    <input type="hidden" name="id" value="@Model.Id"/>
+                    <input type="hidden" name="selectedServiceId" value="@Model.SelectedServiceId"/>
+                    <input type="hidden" name="bookingId" value="@Model.BookingId"/>
+                    <label class="form-label" for="selectedDate">@L["Date"]</label>
+                    <select class="form-select" id="selectedDate" name="selectedDate" onchange="this.form.submit()">
+                        @foreach (var date in Model.AvailableDates.DefaultIfEmpty(Model.SelectedDate))
+                        {
+                            <option value="@date.ToString("yyyy-MM-dd")" selected="@(date == Model.SelectedDate ? "selected" : null)">@date.ToString("dd.MM.yyyy")</option>
+                        }
+                    </select>
+                </form>
+                <div class="small text-muted mb-2">
+                    @(Model.BookingId.HasValue
+                        ? L["UseDarkButtonToConfirm"]
+                        : L["SelectServiceFirst"])
+                </div>
+                @if (!Model.BookingId.HasValue)
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var slot in Model.TimeSlots)
+                        {
+                            <span class="btn btn-sm btn-outline-secondary disabled">@slot.StartTime</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

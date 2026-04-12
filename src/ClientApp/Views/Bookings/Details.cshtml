@@ -1,0 +1,17 @@
+@model BookingListItemViewModel
+
+<h1>@L["Details"] @L["Bookings"]</h1>
+<dl class="row">
+    <dt class="col-sm-3">@L["Service"]</dt>
+    <dd class="col-sm-9">@Model.ServiceName</dd>
+    <dt class="col-sm-3">@L["Provider"]</dt>
+    <dd class="col-sm-9">@Model.ProviderName</dd>
+    <dt class="col-sm-3">@L["Appointment"]</dt>
+    <dd class="col-sm-9">@Model.AppointmentDateTime.ToString("f")</dd>
+    <dt class="col-sm-3">@L["Status"]</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+    <dt class="col-sm-3">@L["Total"]</dt>
+    <dd class="col-sm-9">@Model.TotalPrice.ToString("0.00") EUR</dd>
+</dl>
+<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+<a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>

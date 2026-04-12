@@ -1,0 +1,9 @@
+@model ServiceListItemViewModel
+
+<h1>@L["Delete"] @L["Service"]</h1>
+<p class="alert alert-warning">@L["ConfirmDelete"]</p>
+<p>@Model.Name</p>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button type="submit" class="btn btn-danger">@L["Delete"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+</form>

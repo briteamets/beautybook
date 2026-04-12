@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppName" xml:space="preserve"><value>BeautyBook Client</value></data>
+  <data name="Login" xml:space="preserve"><value>Login</value></data>
+  <data name="Logout" xml:space="preserve"><value>Logout</value></data>
+  <data name="Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Password" xml:space="preserve"><value>Password</value></data>
+  <data name="Providers" xml:space="preserve"><value>Providers</value></data>
+  <data name="Services" xml:space="preserve"><value>Services</value></data>
+  <data name="Bookings" xml:space="preserve"><value>Bookings</value></data>
+  <data name="Create" xml:space="preserve"><value>Create</value></data>
+  <data name="Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Description" xml:space="preserve"><value>Description</value></data>
+  <data name="Address" xml:space="preserve"><value>Address</value></data>
+  <data name="Latitude" xml:space="preserve"><value>Latitude</value></data>
+  <data name="Longitude" xml:space="preserve"><value>Longitude</value></data>
+  <data name="Bio" xml:space="preserve"><value>Bio</value></data>
+  <data name="PictureUrl" xml:space="preserve"><value>Picture URL</value></data>
+  <data name="Category" xml:space="preserve"><value>Category</value></data>
+  <data name="Provider" xml:space="preserve"><value>Provider</value></data>
+  <data name="Price" xml:space="preserve"><value>Price</value></data>
+  <data name="DurationMinutes" xml:space="preserve"><value>Duration minutes</value></data>
+  <data name="Active" xml:space="preserve"><value>Active</value></data>
+  <data name="Service" xml:space="preserve"><value>Service</value></data>
+  <data name="AvailabilityId" xml:space="preserve"><value>Availability ID</value></data>
+  <data name="Notes" xml:space="preserve"><value>Notes</value></data>
+  <data name="Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Appointment" xml:space="preserve"><value>Appointment</value></data>
+  <data name="Total" xml:space="preserve"><value>Total</value></data>
+  <data name="ConfirmDelete" xml:space="preserve"><value>Continue with delete/cancel?</value></data>
+  <data name="NoRows" xml:space="preserve"><value>No records found.</value></data>
+  <data name="ApiError" xml:space="preserve"><value>API request failed.</value></data>
+  <data name="Error" xml:space="preserve"><value>Error</value></data>
+  <data name="RequestId" xml:space="preserve"><value>Request ID</value></data>
+  <data name="BackendCancelEditNote" xml:space="preserve"><value>This backend exposes booking cancel as the supported update operation.</value></data>
+</root>

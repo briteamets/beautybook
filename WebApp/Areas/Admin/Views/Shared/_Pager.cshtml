@@ -1,0 +1,23 @@
+@model dynamic
+@{
+    var routeValues = new Dictionary<string, string?>();
+    foreach (var key in Context.Request.Query.Keys)
+    {
+        routeValues[key] = Context.Request.Query[key].ToString();
+    }
+}
+
+@if (Model.TotalPages > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (var i = 1; i <= Model.TotalPages; i++)
+            {
+                routeValues["page"] = i.ToString();
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(null, routeValues)">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

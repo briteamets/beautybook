@@ -1,0 +1,15 @@
+@model BookingEditViewModel
+
+<h1>@L["Edit"] @L["Bookings"]</h1>
+<p>@Model.ServiceName - @Model.AppointmentDateTime.ToString("f")</p>
+<p class="text-muted">@L["BackendCancelEditNote"]</p>
+
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    <input type="hidden" asp-for="Id"/>
+    <div class="mb-3">
+        <label asp-for="Reason" class="form-label">@L["Notes"]</label>
+        <textarea asp-for="Reason" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">@L["Save"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+</form>

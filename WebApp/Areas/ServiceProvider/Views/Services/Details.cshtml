@@ -1,0 +1,21 @@
+@model ProviderServiceDetailsViewModel
+
+<h1>@L["ServiceDetails"]</h1>
+
+<dl class="row mt-3">
+    <dt class="col-sm-3">@L["ServiceName"]</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+    <dt class="col-sm-3">@L["Description"]</dt>
+    <dd class="col-sm-9">@Model.Description</dd>
+    <dt class="col-sm-3">@L["Category"]</dt>
+    <dd class="col-sm-9">@Model.CategoryName</dd>
+    <dt class="col-sm-3">@L["Price"]</dt>
+    <dd class="col-sm-9">@Model.Price.ToString("0.00") EUR</dd>
+    <dt class="col-sm-3">@L["DurationMinutes"]</dt>
+    <dd class="col-sm-9">@Model.DurationMinutes</dd>
+    <dt class="col-sm-3">@L["Status"]</dt>
+    <dd class="col-sm-9">@(Model.IsActive ? L["Active"] : L["Inactive"])</dd>
+</dl>
+
+<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+<a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>

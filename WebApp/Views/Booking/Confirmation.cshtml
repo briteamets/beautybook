@@ -1,0 +1,24 @@
+@model BookingConfirmationViewModel
+@{
+    ViewData["Title"] = L["StepConfirmation"];
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h3 mb-3">@L["StepConfirmation"]</h1>
+        <p class="lead">@L["BookingReference"]<strong>@Model.BookingId</strong></p>
+        <table class="table">
+            <tr><th>@L["Services"]</th><td>@Model.ServiceName</td></tr>
+            <tr><th>@L["Staff"]</th><td>@Model.ProviderName</td></tr>
+            <tr><th>@L["Salon"]</th><td>@(Model.SalonName ?? "-")</td></tr>
+            <tr><th>@L["Date"] &amp; @L["Time"]</th><td>@Model.AppointmentDateTime.ToLocalTime()</td></tr>
+            <tr><th>@L["Total"]</th><td>@Model.TotalPrice.ToString("0.00") EUR</td></tr>
+            <tr><th>@L["Status"]</th><td>@Model.Status</td></tr>
+        </table>
+        <div class="d-flex flex-wrap gap-2">
+            <a class="btn btn-outline-dark" asp-action="AddToCalendar" asp-route-bookingId="@Model.BookingId">@L["AddToCalendar"]</a>
+            <a class="btn btn-primary" asp-controller="MyBookings" asp-action="Index">@L["ViewMyBookings"]</a>
+            <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Browse">@L["ContinueBrowsing"]</a>
+        </div>
+    </div>
+</div>

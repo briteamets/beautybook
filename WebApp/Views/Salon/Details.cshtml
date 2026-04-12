@@ -1,0 +1,106 @@
+@model SalonDetailsViewModel
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body d-flex gap-4 flex-column flex-md-row">
+        <img src="@(Model.ProfilePictureUrl ?? "https://placehold.co/220x180?text=Salon")" alt="@Model.Name" class="rounded object-fit-cover" style="width: 220px; height: 180px;"/>
+        <div>
+            <h1 class="h2 mb-1">@Model.Name</h1>
+            <p class="text-muted mb-2">@Model.Address</p>
+            <p class="mb-2">@Model.Description</p>
+            <div class="small text-muted">@L["AverageRating", Model.AverageRating]</div>
+        </div>
+    </div>
+</div>
+
+<form method="get" asp-action="Details" class="card card-body shadow-sm mb-4">
+    <input type="hidden" name="id" value="@Model.Id"/>
+    <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label class="form-label" for="staffId">@L["Staff"]</label>
+            <select class="form-select" id="staffId" name="staffId">
+                <option value="">@L["Choose"]</option>
+                @foreach (var staff in Model.StaffMembers)
+                {
+                    <option value="@staff.ProviderId" selected="@(staff.ProviderId == Model.SelectedStaffId ? "selected" : null)">@staff.ProviderName (@staff.Role)</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label" for="selectedDate">@L["Date"]</label>
+            <select class="form-select" id="selectedDate" name="selectedDate">
+                @foreach (var date in Model.AvailableDates.DefaultIfEmpty(Model.SelectedDate))
+                {
+                    <option value="@date.ToString("yyyy-MM-dd")" selected="@(date == Model.SelectedDate ? "selected" : null)">@date.ToString("dd.MM.yyyy")</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">@L["Show"]</button>
+        </div>
+    </div>
+</form>
+
+<div class="row g-4">
+    @foreach (var staff in Model.StaffMembers)
+    {
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100 @(staff.ProviderId == Model.SelectedStaffId ? "border-dark" : "")">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <img src="@(staff.ProfilePictureUrl ?? "https://placehold.co/72x72?text=Staff")" alt="@staff.ProviderName" class="rounded-circle object-fit-cover" style="width: 72px; height: 72px;"/>
+                        <div>
+                            <h2 class="h5 mb-0">@staff.ProviderName</h2>
+                            <div class="text-muted small">@staff.Role · @staff.AverageRating / 5</div>
+                        </div>
+                    </div>
+                    @if (staff.ProviderId == Model.SelectedStaffId)
+                    {
+                        <div class="mb-3">
+                            <h3 class="h6">@L["AvailableSlots"]</h3>
+                            <div class="d-flex flex-wrap gap-2">
+                                @if (staff.Slots.Any())
+                                {
+                                    @foreach (var slot in staff.Slots)
+                                    {
+                                        <span class="badge text-bg-light border">@slot.StartTime</span>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">@L["NoSlotsThisDate"]</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var service in staff.Services)
+                            {
+                                <div class="border rounded p-3">
+                                    <div class="d-flex justify-content-between gap-3 mb-2">
+                                        <div>
+                                            <div class="fw-semibold">@service.Name</div>
+                                            <div class="small text-muted">@service.DurationMinutes min</div>
+                                        </div>
+                                        <div class="fw-semibold">@service.Price.ToString("0.00") EUR</div>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        @foreach (var slot in staff.Slots)
+                                        {
+                                            <a class="btn btn-sm btn-outline-dark" asp-controller="Booking" asp-action="Summary" asp-route-serviceId="@service.Id" asp-route-availabilityId="@slot.Id" asp-route-salonId="@Model.Id">@L["Book"] @slot.StartTime</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <a class="btn btn-outline-primary" asp-action="Details" asp-route-id="@Model.Id" asp-route-staffId="@staff.ProviderId" asp-route-selectedDate="@Model.SelectedDate.ToString("yyyy-MM-dd")">@L["Select"]</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

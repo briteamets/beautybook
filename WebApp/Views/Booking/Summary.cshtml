@@ -1,0 +1,39 @@
+@model BookingSummaryViewModel
+@{
+    ViewData["Title"] = Model.BookingId.HasValue ? L["RescheduleBooking"] : L["StepSummary"];
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h3 mb-4">@(Model.BookingId.HasValue ? L["RescheduleBooking"] : L["StepSummary"])</h1>
+        <form asp-action="Summary" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input asp-for="BookingId" type="hidden"/>
+            <input asp-for="ServiceId" type="hidden"/>
+            <input asp-for="AvailabilityId" type="hidden"/>
+            <input asp-for="SalonId" type="hidden"/>
+            <table class="table">
+                <tr><th>@L["Services"]</th><td>@Model.ServiceName</td></tr>
+                <tr><th>@L["Provider"]</th><td>@Model.ProviderName</td></tr>
+                <tr><th>@L["Salon"]</th><td>@(Model.SalonName ?? "-")</td></tr>
+                <tr><th>@L["Date"] &amp; @L["Time"]</th><td>@Model.AppointmentDateTime.ToLocalTime()</td></tr>
+                <tr><th>@L["Duration"]</th><td>@Model.DurationMinutes min</td></tr>
+                <tr><th>@L["Total"]</th><td>@Model.TotalPrice.ToString("0.00") EUR</td></tr>
+            </table>
+            <div class="mb-3">
+                <label asp-for="Notes" class="form-label"></label>
+                <textarea asp-for="Notes" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Notes" class="text-danger"></span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Browse">@L["Back"]</a>
+                <button type="submit" class="btn btn-primary">@(Model.BookingId.HasValue ? L["ConfirmReschedule"] : L["ProceedToPayment"])</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

@@ -1,7 +1,10 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using App.BLL.Contracts;
+using App.BLL.Services;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
 using App.DAL.EF.Seeding;
 using App.Domain.Identity;
 using Asp.Versioning;
@@ -16,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Npgsql;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
+using WebApp.ModelBinders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,10 +106,14 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("CorsAllowAll", policy =>
+    var clientOrigins = builder.Configuration
+        .GetSection("Cors:ClientOrigins")
+        .Get<string[]>() ?? ["http://localhost:5200", "http://localhost:8081"];
+
+    options.AddPolicy("ClientAppCors", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins(clientOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .WithExposedHeaders("X-Version", "X-Version-Created-At");
@@ -135,7 +143,16 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddLocalization();
+builder.Services.AddControllersWithViews(options =>
+    {
+        options.ModelBinderProviders.Insert(0, new FlexibleDecimalModelBinderProvider());
+    })
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+builder.Services.AddScoped<ISchedulingRepository, SchedulingRepository>();
+builder.Services.AddScoped<ISlotGeneratorService, SlotGeneratorService>();
 
 // ==============================================
 var app = builder.Build();
@@ -159,10 +176,11 @@ app.UseHttpsRedirection();
 app.UseRequestLocalization(options: app.Services
     .GetService<IOptions<RequestLocalizationOptions>>()!.Value);
 
-app.UseCors("CorsAllowAll");
+app.UseCors("ClientAppCors");
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSwagger();
@@ -182,6 +200,11 @@ app.UseSwaggerUI(options =>
 
 
 app.MapStaticAssets();
+
+app.MapControllerRoute(
+        name: "areas",
+        pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}")
+    .WithStaticAssets();
 
 app.MapControllerRoute(
         name: "default",

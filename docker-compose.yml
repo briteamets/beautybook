@@ -1,0 +1,50 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: beautybook
+      POSTGRES_USER: beautybook
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beautybook"]
+      interval: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: WebApp/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=beautybook;Username=beautybook;Password=${DB_PASSWORD}
+      JWT__Key: ${JWT_KEY}
+      JWT__Issuer: beautybook-api
+      JWT__Audience: beautybook-client
+      JWT__ExpiresInSeconds: 3600
+      Cors__ClientOrigins__0: http://localhost:8081
+      Cors__ClientOrigins__1: http://client-app:8081
+      ASPNETCORE_URLS: http://+:8080
+      DataInitialization__MigrateDatabase: "true"
+      DataInitialization__SeedIdentity: "true"
+      DataInitialization__SeedData: "true"
+    ports:
+      - "8080:8080"
+
+  client-app:
+    build:
+      context: .
+      dockerfile: src/ClientApp/Dockerfile
+    depends_on:
+      - backend
+    environment:
+      Api__BaseUrl: http://backend:8080
+      ASPNETCORE_URLS: http://+:8081
+    ports:
+      - "8081:8081"
+
+volumes:
+  pgdata:

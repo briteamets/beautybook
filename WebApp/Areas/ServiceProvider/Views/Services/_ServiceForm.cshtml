@@ -1,0 +1,86 @@
+@model ProviderServiceFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<div class="mb-3">
+    <label asp-for="ServiceCategoryId" class="form-label">@L["Category"]</label>
+    <select asp-for="ServiceCategoryId" class="form-select">
+        <option value="">@L["Choose"]</option>
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id">@category.Name</option>
+        }
+    </select>
+    <span asp-validation-for="ServiceCategoryId" class="text-danger"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="NameEn" class="form-label">@L["NameEn"]</label>
+        <input asp-for="NameEn" class="form-control"/>
+        <span asp-validation-for="NameEn" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="NameEt" class="form-label">@L["NameEt"]</label>
+        <input asp-for="NameEt" class="form-control"/>
+        <span asp-validation-for="NameEt" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="border rounded p-3 mb-3">
+    <div class="form-check mb-3">
+        <input asp-for="AddTimeRange" class="form-check-input"/>
+        <label asp-for="AddTimeRange" class="form-check-label">@L["AddTimeRangeWithService"]</label>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="TimeRangeDate" class="form-label">@L["Date"]</label>
+            <input asp-for="TimeRangeDate" class="form-control" type="date"/>
+            <span asp-validation-for="TimeRangeDate" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="TimeRangeStartTime" class="form-label">@L["StartTime"]</label>
+            <input asp-for="TimeRangeStartTime" class="form-control" type="time"/>
+            <span asp-validation-for="TimeRangeStartTime" class="text-danger"></span>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label asp-for="TimeRangeEndTime" class="form-label">@L["EndTime"]</label>
+            <input asp-for="TimeRangeEndTime" class="form-control" type="time"/>
+            <span asp-validation-for="TimeRangeEndTime" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-text">@L["TimeRangeOptionalHelp"]</div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="DescriptionEn" class="form-label">@L["DescriptionEn"]</label>
+        <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="DescriptionEn" class="text-danger"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="DescriptionEt" class="form-label">@L["DescriptionEt"]</label>
+        <textarea asp-for="DescriptionEt" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="DescriptionEt" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label asp-for="Price" class="form-label">@L["Price"]</label>
+        <input asp-for="Price" class="form-control"/>
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="DurationMinutes" class="form-label">@L["DurationMinutes"]</label>
+        <input asp-for="DurationMinutes" class="form-control"/>
+        <div class="form-text">@L["DurationMinutesHelp"]</div>
+        <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+    </div>
+    <div class="col-md-4 mb-3 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="IsActive" class="form-check-input"/>
+            <label asp-for="IsActive" class="form-check-label">@L["IsActive"]</label>
+        </div>
+    </div>
+</div>

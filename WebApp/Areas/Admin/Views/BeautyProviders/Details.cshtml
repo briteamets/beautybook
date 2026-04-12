@@ -1,0 +1,133 @@
+@model ProviderDetailsViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["ProviderDetails"]</h1>
+        <p class="text-muted mb-0">@Model.ProfileName</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>
+</div>
+
+@if (Model.IsSuspended)
+{
+    <div class="alert alert-warning">@L["ProviderSuspendedBadge"]</div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">@L["Profile"]</h2>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">@L["Email"]</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+                    <dt class="col-sm-4">@L["Address"]</dt>
+                    <dd class="col-sm-8">@Model.Address</dd>
+                    <dt class="col-sm-4">@L["Coordinates"]</dt>
+                    <dd class="col-sm-8">@Model.Latitude, @Model.Longitude</dd>
+                    <dt class="col-sm-4">@L["Bio"]</dt>
+                    <dd class="col-sm-8">@(!string.IsNullOrWhiteSpace(Model.Bio) ? Model.Bio : "-")</dd>
+                    <dt class="col-sm-4">@L["AverageRatingLabel"]</dt>
+                    <dd class="col-sm-8">@(Model.AverageRating?.ToString("0.0") ?? "-")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5">@L["Status"]</h2>
+                @if (Model.IsSuspended)
+                {
+                    <form asp-action="Activate" method="post">
+                        <input type="hidden" name="id" value="@Model.Id"/>
+                        <button type="submit" class="btn btn-success">@L["Reactivate"]</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-action="Deactivate" method="post">
+                        <input type="hidden" name="id" value="@Model.Id"/>
+                        <button type="submit" class="btn btn-danger">@L["SuspendProvider"]</button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["Services"]</h2>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                        <tr>
+                            <th>@L["ServiceType"]</th>
+                            <th>@L["Price"]</th>
+                            <th>@L["Duration"]</th>
+                            <th>@L["Status"]</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var service in Model.Services)
+                        {
+                            <tr>
+                                <td>@service.ServiceType</td>
+                                <td>@service.Price</td>
+                                <td>@service.DurationMinutes</td>
+                                <td>@(service.IsActive ? L["Active"] : L["Inactive"])</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="h5">@L["WeeklySchedule"]</h2>
+                <ul class="list-group list-group-flush">
+                    @foreach (var schedule in Model.Schedules)
+                    {
+                        <li class="list-group-item px-0 d-flex justify-content-between">
+                            <span>@schedule.DayOfWeek</span>
+                            <span>@(schedule.IsWorkingDay ? $"{schedule.StartTime:hh\\:mm} - {schedule.EndTime:hh\\:mm}" : L["Inactive"])</span>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <h2 class="h5">@L["RecentBookings"]</h2>
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead>
+                <tr>
+                    <th>@L["Customer"]</th>
+                    <th>@L["Date"]</th>
+                    <th>@L["Status"]</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var booking in Model.RecentBookings)
+                {
+                    <tr>
+                        <td>@booking.ClientName</td>
+                        <td>@booking.AppointmentDateTime.ToLocalTime()</td>
+                        <td>@L[booking.Status]</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

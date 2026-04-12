@@ -1,8 +1,92 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model BrowseHomeViewModel
+@{
+    ViewData["Title"] = L["Browse"];
+    var categories = new[]
+    {
+        (Value: "All", Label: L["All"]),
+        (Value: "Nails", Label: L["Nails"]),
+        (Value: "Hair", Label: L["Hair"]),
+        (Value: "Lashes", Label: L["Lashes"]),
+        (Value: "Beauty Salon", Label: L["BeautySalon"])
+    };
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="p-4 p-md-5 mb-4 rounded-4" style="background: linear-gradient(135deg, #f3e8d8, #d8e9f3);">
+    <div class="row g-4 align-items-center">
+        <div class="col-lg-7">
+            <h1 class="display-5 fw-semibold">@L["BrowseHeroTitle"]</h1>
+            <p class="lead mb-0">@L["BrowseHeroSubtitle"]</p>
+        </div>
+        <div class="col-lg-5">
+            <form method="get" asp-action="Browse" class="bg-white rounded-4 shadow-sm p-3">
+                <div class="mb-3">
+                    <label class="form-label" for="search">@L["Search"]</label>
+                    <input class="form-control" id="search" name="search" value="@Model.Search" placeholder="@L["SearchPlaceholder"]"/>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    @foreach (var category in categories)
+                    {
+                        <label class="btn btn-sm @(Model.Category == category.Value ? "btn-dark" : "btn-outline-dark")">
+                            <input type="radio" class="btn-check" name="category" value="@category.Value" checked="@(Model.Category == category.Value ? "checked" : null)" autocomplete="off"/>@category.Label
+                        </label>
+                    }
+                </div>
+                <button type="submit" class="btn btn-primary w-100">@L["Search"]</button>
+            </form>
+        </div>
+    </div>
 </div>
+
+<div class="row g-4 mb-5">
+    <div class="col-lg-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h3 mb-0">@L["NearbyProviders"]</h2>
+            <span class="text-muted">@L["ResultsCount", Model.Providers.Count]</span>
+        </div>
+        <div class="row g-4">
+            @foreach (var provider in Model.Providers)
+            {
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <img src="@(provider.ProfilePictureUrl ?? "https://placehold.co/600x320?text=Provider")" class="card-img-top" alt="@provider.ProfileName"/>
+                        <div class="card-body">
+                            <h3 class="h5">@provider.ProfileName</h3>
+                            <div class="text-muted mb-2">@provider.Address</div>
+                            <div class="small mb-3">@L["Rating"]: @provider.AverageRating / 5 · @L["Availability"]: @provider.TodayAvailabilityCount</div>
+                            <a class="btn btn-outline-primary" asp-controller="ProviderProfile" asp-action="Details" asp-route-id="@provider.Id">@L["ViewProfile"]</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div id="map" class="rounded-4 border bg-light-subtle p-4 h-100 d-flex flex-column justify-content-center" data-lat="59.4370" data-lng="24.7536" style="min-height: 320px;">
+            <h2 class="h5">@L["MapPlaceholder"]</h2>
+            <p class="text-muted mb-0">@L["MapPlaceholderBody"]</p>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h3 mb-0">@L["Salons"]</h2>
+        <span class="text-muted">@L["LocationsCount", Model.Salons.Count]</span>
+    </div>
+    <div class="row g-4">
+        @foreach (var salon in Model.Salons)
+        {
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm h-100">
+                    <img src="@(salon.ProfilePictureUrl ?? "https://placehold.co/600x320?text=Salon")" class="card-img-top" alt="@salon.Name"/>
+                    <div class="card-body">
+                        <h3 class="h5">@salon.Name</h3>
+                        <div class="text-muted mb-2">@salon.Address</div>
+                        <div class="small mb-3">@L["StaffCount", salon.StaffCount]</div>
+                        <a class="btn btn-outline-dark" asp-controller="Salon" asp-action="Details" asp-route-id="@salon.Id">@L["ViewSalon"]</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

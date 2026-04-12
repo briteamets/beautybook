@@ -1,0 +1,39 @@
+@model ProviderIndexViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>@L["Providers"]</h1>
+    <a class="btn btn-primary" asp-action="Create">@L["Create"]</a>
+</div>
+
+@if (!Model.Providers.Any())
+{
+    <div class="alert alert-info">@L["NoRows"]</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>@L["Name"]</th>
+            <th>@L["Address"]</th>
+            <th>@L["Status"]</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var provider in Model.Providers)
+        {
+            <tr>
+                <td>@provider.ProfileName</td>
+                <td>@provider.Address</td>
+                <td>@provider.AverageRating / 5, @provider.TodayAvailabilityCount slots</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@provider.Id">@L["Details"]</a>
+                    <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@provider.Id">@L["Edit"]</a>
+                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@provider.Id">@L["Delete"]</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

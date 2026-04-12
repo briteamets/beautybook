@@ -1,0 +1,36 @@
+@model ProviderBookingIndexViewModel
+
+<h1>@L["Requests"]</h1>
+
+@if (!Model.Bookings.Any())
+{
+    <div class="alert alert-info">@L["NoBookingsSection"]</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>@L["Customer"]</th>
+            <th>@L["ServiceName"]</th>
+            <th>@L["Appointment"]</th>
+            <th>@L["Status"]</th>
+            <th class="text-end">@L["Actions"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var booking in Model.Bookings)
+        {
+            <tr>
+                <td>@booking.CustomerEmail</td>
+                <td>@booking.ServiceName</td>
+                <td>@booking.AppointmentDateTime.ToString("dd.MM.yyyy") @booking.StartTime.ToString(@"hh\:mm") - @booking.EndTime.ToString(@"hh\:mm")</td>
+                <td><span class="badge text-bg-secondary">@booking.Status</span></td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@booking.Id">@L["Details"]</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

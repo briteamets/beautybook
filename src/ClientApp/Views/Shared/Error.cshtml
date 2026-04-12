@@ -1,0 +1,11 @@
+@model ErrorViewModel
+
+<h1 class="text-danger">@L["Error"]</h1>
+<h2 class="text-danger">@L["ApiError"]</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>@L["RequestId"]:</strong> <code>@Model.RequestId</code>
+    </p>
+}

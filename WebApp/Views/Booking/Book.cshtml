@@ -1,0 +1,86 @@
+@model DynamicBookingViewModel
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="h3">@L["BookThisService"]</h1>
+                <dl class="row mt-3">
+                    <dt class="col-sm-4">@L["Service"]</dt>
+                    <dd class="col-sm-8">@Model.ServiceName</dd>
+                    <dt class="col-sm-4">@L["Provider"]</dt>
+                    <dd class="col-sm-8">@Model.ProviderName, @Model.ProviderAddress</dd>
+                    <dt class="col-sm-4">@L["Price"]</dt>
+                    <dd class="col-sm-8">@Model.Price.ToString("0.00") EUR</dd>
+                    <dt class="col-sm-4">@L["DurationMinutes"]</dt>
+                    <dd class="col-sm-8">@Model.DurationMinutes</dd>
+                </dl>
+
+                <div class="mb-3">
+                    <label class="form-label" for="bookingDate">@L["Date"]</label>
+                    <input class="form-control" id="bookingDate" type="date" min="@DateOnly.FromDateTime(DateTime.UtcNow).ToString("yyyy-MM-dd")" value="@Model.SelectedDate.ToString("yyyy-MM-dd")"/>
+                </div>
+
+                <div class="mb-3">
+                    <div class="fw-semibold mb-2">@L["AvailableSlots"]</div>
+                    <div id="slotList" class="d-flex flex-wrap gap-2"></div>
+                    <div id="noSlots" class="alert alert-light border d-none">@L["NoSlotsThisDate"]</div>
+                </div>
+
+                <form asp-action="ConfirmDynamic" method="post">
+                    <input type="hidden" name="serviceId" value="@Model.ServiceId"/>
+                    <input type="hidden" id="selectedDate" name="bookingDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")"/>
+                    <input type="hidden" id="selectedStartTime" name="startTime"/>
+                    <div class="mb-3">
+                        <label class="form-label" for="notes">@L["Notes"]</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3">@Model.Notes</textarea>
+                    </div>
+                    <button type="submit" id="confirmButton" class="btn btn-primary" disabled>@L["Book"]</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const dateInput = document.getElementById('bookingDate');
+        const selectedDate = document.getElementById('selectedDate');
+        const selectedStartTime = document.getElementById('selectedStartTime');
+        const slotList = document.getElementById('slotList');
+        const noSlots = document.getElementById('noSlots');
+        const confirmButton = document.getElementById('confirmButton');
+
+        async function loadSlots() {
+            selectedDate.value = dateInput.value;
+            selectedStartTime.value = '';
+            confirmButton.disabled = true;
+            slotList.innerHTML = '';
+            noSlots.classList.add('d-none');
+
+            const response = await fetch(`@Url.Action("Slots", "Booking")?serviceId=@Model.ServiceId&date=${dateInput.value}`);
+            const slots = await response.json();
+            if (!slots.length) {
+                noSlots.classList.remove('d-none');
+                return;
+            }
+
+            for (const slot of slots) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn btn-outline-dark';
+                button.textContent = `${slot.startTime} - ${slot.endTime}`;
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('#slotList button').forEach(x => x.classList.remove('active'));
+                    button.classList.add('active');
+                    selectedStartTime.value = slot.startTime;
+                    confirmButton.disabled = false;
+                });
+                slotList.appendChild(button);
+            }
+        }
+
+        dateInput.addEventListener('change', loadSlots);
+        loadSlots();
+    </script>
+}

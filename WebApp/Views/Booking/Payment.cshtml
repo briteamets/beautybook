@@ -1,0 +1,26 @@
+@model BookingPaymentViewModel
+@{
+    ViewData["Title"] = L["StepPayment"];
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h3 mb-4">@L["StepPayment"]</h1>
+        <table class="table">
+            <tr><th>@L["Services"]</th><td>@Model.ServiceName</td></tr>
+            <tr><th>@L["Provider"]</th><td>@Model.ProviderName</td></tr>
+            <tr><th>@L["Salon"]</th><td>@(Model.SalonName ?? "-")</td></tr>
+            <tr><th>@L["Appointment"]</th><td>@Model.AppointmentDateTime.ToLocalTime()</td></tr>
+            <tr><th>@L["Total"]</th><td>@Model.TotalPrice.ToString("0.00") EUR</td></tr>
+        </table>
+        <div class="mb-4">
+            <label class="form-label">@L["CardNumber"]</label>
+            <input class="form-control" value="4242 4242 4242 4242" disabled/>
+        </div>
+        <form asp-action="PayNow" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="bookingId" value="@Model.BookingId"/>
+            <button type="submit" class="btn btn-dark">@L["PayNow"]</button>
+        </form>
+    </div>
+</div>

@@ -1,2 +1,7 @@
-﻿@using WebApp
+﻿@using App.Domain
+@using App.Resources
+@using WebApp
+@using WebApp.ViewModels
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedUiResource> L
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

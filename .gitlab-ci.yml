@@ -10,6 +10,8 @@ deploy:
   script:
     - docker --version
     - docker compose version
+    - test -n "$DB_PASSWORD"
+    - test -n "$JWT_KEY"
     - test -f docker-compose.yml
     - test -f WebApp/Dockerfile
     - test -f src/ClientApp/Dockerfile

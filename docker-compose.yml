@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: beautybook
       POSTGRES_USER: beautybook
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -20,8 +20,8 @@ services:
       db:
         condition: service_healthy
     environment:
-      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=beautybook;Username=beautybook;Password=${DB_PASSWORD}
-      JWT__Key: ${JWT_KEY}
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=beautybook;Username=beautybook;Password=${DB_PASSWORD:?DB_PASSWORD is required}
+      JWT__Key: ${JWT_KEY:?JWT_KEY is required}
       JWT__Issuer: beautybook-api
       JWT__Audience: beautybook-client
       JWT__ExpiresInSeconds: 3600

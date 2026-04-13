@@ -1,0 +1,19 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  tags:
+    - shared
+  script:
+    - docker --version
+    - docker compose version
+    - test -f docker-compose.yml
+    - test -f WebApp/Dockerfile
+    - test -f src/ClientApp/Dockerfile
+    - docker compose -f docker-compose.yml config
+    - docker compose -f docker-compose.yml -p beautybook pull db
+    - docker compose -f docker-compose.yml -p beautybook build --no-cache --progress=plain 2>&1
+    - docker compose -f docker-compose.yml -p beautybook up --remove-orphans --detach || (docker compose -f docker-compose.yml -p beautybook logs --tail=200 db backend client-app && false)

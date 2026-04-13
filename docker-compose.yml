@@ -32,7 +32,7 @@ services:
       DataInitialization__SeedIdentity: "true"
       DataInitialization__SeedData: "true"
     ports:
-      - "8080:8080"
+      - "82:8080"
 
   client-app:
     build:

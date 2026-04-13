@@ -20,6 +20,7 @@ using Npgsql;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using WebApp;
 using WebApp.ModelBinders;
+using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -153,6 +154,7 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<ISchedulingRepository, SchedulingRepository>();
 builder.Services.AddScoped<ISlotGeneratorService, SlotGeneratorService>();
+builder.Services.AddHostedService<BookingCompletionHostedService>();
 
 // ==============================================
 var app = builder.Build();

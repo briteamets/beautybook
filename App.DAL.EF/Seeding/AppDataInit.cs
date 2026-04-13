@@ -112,6 +112,9 @@ public static class AppDataInit
             throw new ApplicationException("BeautyBook client user was not found for seed data.");
         }
 
+        var clientTwoUser = context.Users.FirstOrDefault(u => u.Email == "client2@beautybook.com");
+        var providerTwoUser = context.Users.FirstOrDefault(u => u.Email == "provider2@beautybook.com");
+        var providerThreeUser = context.Users.FirstOrDefault(u => u.Email == "provider3@beautybook.com");
         var suspendedProviderUser = context.Users.AsTracking().FirstOrDefault(u => u.Email == "suspended.provider@beautybook.com");
 
         var nailsCategory = context.ServiceCategories
@@ -182,7 +185,7 @@ public static class AppDataInit
         var manicureType = EnsureServiceType(nailsCategory!, "Classic Manicure", "Klassikaline maniküür", "Cuticle care, shaping, and polish.", "Küünenaha hooldus, vormimine ja lakk.");
         var gelType = EnsureServiceType(nailsCategory!, "Gel Nails", "Geelküüned", "Gel nail service.", "Geelküünte teenus.");
         var stylingType = EnsureServiceType(hairCategory!, "Hair Styling", "Juuste stiliseerimine", "Wash, blow-dry, and styling finish.", "Pesu, föönisoeng ja viimistlus.");
-        _ = EnsureServiceType(hairCategory!, "Haircut", "Juukselõikus", "Haircut and finish.", "Juukselõikus ja viimistlus.");
+        var haircutType = EnsureServiceType(hairCategory!, "Haircut", "Juukselõikus", "Haircut and finish.", "Juukselõikus ja viimistlus.");
 
         var provider = context.BeautyProviders.AsTracking()
             .FirstOrDefault(p => p.UserId == providerUser.Id || p.ProfileName == "BeautyBook Studio");
@@ -490,6 +493,306 @@ public static class AppDataInit
                 });
                 context.SaveChanges();
             }
+        }
+
+        SeedMoreDemoData();
+
+        void SeedMoreDemoData()
+        {
+            if (clientTwoUser == null || providerTwoUser == null || providerThreeUser == null)
+            {
+                return;
+            }
+
+            var lashCategory = EnsureCategory(
+                "Lashes",
+                "Ripsmed",
+                "Lash extensions and lifts",
+                "Ripsmepikendused ja ripsmete koolutamine");
+
+            var skinCategory = EnsureCategory(
+                "Skin Care",
+                "Nahahooldus",
+                "Facials and skin treatments",
+                "Näohooldused ja nahahooldus");
+
+            var lashLiftType = EnsureServiceType(lashCategory, "Lash Lift", "Ripsmete koolutamine", "Lift and tint for natural lashes.", "Loomulike ripsmete koolutus ja värvimine.");
+            var volumeLashesType = EnsureServiceType(lashCategory, "Volume Lashes", "Volüümripsmed", "Volume lash extension set.", "Volüümripsmete paigaldus.");
+            var facialType = EnsureServiceType(skinCategory, "Hydrating Facial", "Niisutav näohooldus", "Hydrating facial treatment.", "Niisutav näohooldus.");
+
+            var lashProvider = EnsureProvider(
+                providerTwoUser,
+                "Lash & Glow Studio",
+                "Lash specialist offering lifts, tinting, and volume sets.",
+                "Rävala pst 8, Tallinn",
+                "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=900&q=80",
+                59.4358,
+                24.7543);
+
+            var skinProvider = EnsureProvider(
+                providerThreeUser,
+                "Fresh Face Atelier",
+                "Facials and skin care for sensitive and dry skin.",
+                "Telliskivi 60a, Tallinn",
+                "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=900&q=80",
+                59.4390,
+                24.7286);
+
+            var lashLift = EnsureService(lashProvider, lashCategory, lashLiftType, "Lash Lift", "Ripsmete koolutamine", "Lift, tint, and nourishing finish.", "Koolutus, värvimine ja hooldav viimistlus.", 42m, 60);
+            var volumeLashes = EnsureService(lashProvider, lashCategory, volumeLashesType, "Volume Lashes", "Volüümripsmed", "Soft volume lash extensions.", "Pehmed volüümripsmete pikendused.", 68m, 120);
+            var facial = EnsureService(skinProvider, skinCategory, facialType, "Hydrating Facial", "Niisutav näohooldus", "Cleanse, mask, massage, and serum.", "Puhastus, mask, massaaž ja seerum.", 55m, 75);
+            var haircut = EnsureService(skinProvider, hairCategory!, haircutType, "Express Haircut", "Kiirlõikus", "Simple trim and finish.", "Lihtne lõikus ja viimistlus.", 32m, 45);
+
+            var glowSalon = EnsureSalon(
+                "Glow House",
+                "Glow House",
+                "Lashes and beauty studio in the city center.",
+                "Ripsmete ja iluteenuste stuudio kesklinnas.",
+                "Rävala pst 8, Tallinn",
+                "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=900&q=80",
+                59.4358,
+                24.7543);
+
+            var freshSalon = EnsureSalon(
+                "Fresh Face Salon",
+                "Fresh Face Salong",
+                "Skin care and calm beauty treatments.",
+                "Nahahooldus ja rahulikud iluteenused.",
+                "Telliskivi 60a, Tallinn",
+                "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&w=900&q=80",
+                59.4390,
+                24.7286);
+
+            EnsureSalonStaff(glowSalon, lashProvider, SalonStaff.RoleOwner);
+            EnsureSalonStaff(freshSalon, skinProvider, SalonStaff.RoleOwner);
+            EnsureSalonStaff(salon, skinProvider, SalonStaff.RoleEmployee);
+
+            EnsureAvailability(lashProvider, today, new TimeOnly(9, 0), new TimeOnly(10, 0));
+            EnsureAvailability(lashProvider, today, new TimeOnly(11, 30), new TimeOnly(12, 30));
+            EnsureAvailability(lashProvider, tomorrow, new TimeOnly(14, 0), new TimeOnly(15, 0));
+            EnsureAvailability(lashProvider, today.AddDays(3), new TimeOnly(10, 0), new TimeOnly(12, 0));
+            EnsureAvailability(skinProvider, today, new TimeOnly(10, 30), new TimeOnly(11, 45));
+            EnsureAvailability(skinProvider, tomorrow, new TimeOnly(9, 0), new TimeOnly(10, 15));
+            EnsureAvailability(skinProvider, today.AddDays(2), new TimeOnly(16, 0), new TimeOnly(17, 15));
+
+            EnsurePortfolio(lashProvider, lashLift, "https://images.unsplash.com/photo-1560750588-73207b1ef5b8?auto=format&fit=crop&w=900&q=80");
+            EnsurePortfolio(lashProvider, volumeLashes, "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=900&q=80");
+            EnsurePortfolio(skinProvider, facial, "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=900&q=80");
+            EnsurePortfolio(skinProvider, haircut, "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&w=900&q=80");
+
+            var reviewedLashBooking = EnsureBooking(clientTwoUser, lashLift, glowSalon, today.AddDays(-3), new TimeOnly(12, 0), new TimeOnly(13, 0), Booking.StatusCompleted, "Loved the natural result.");
+            EnsureReview(reviewedLashBooking, clientTwoUser, 5, "Very clean studio and the lift looks great.");
+
+            var reviewedFacialBooking = EnsureBooking(clientUser, facial, freshSalon, today.AddDays(-5), new TimeOnly(15, 0), new TimeOnly(16, 15), Booking.StatusCompleted, "Sensitive skin facial.");
+            EnsureReview(reviewedFacialBooking, clientUser, 4, "Calm appointment and my skin felt better after.");
+
+            EnsureBooking(clientTwoUser, volumeLashes, glowSalon, tomorrow, new TimeOnly(14, 0), new TimeOnly(16, 0), Booking.StatusConfirmed, "Prefer a soft volume look.");
+            EnsureBooking(clientUser, haircut, freshSalon, today.AddDays(2), new TimeOnly(16, 0), new TimeOnly(16, 45), Booking.StatusPending, null);
+        }
+
+        ServiceCategory EnsureCategory(string en, string et, string descriptionEn, string descriptionEt)
+        {
+            var category = context.ServiceCategories
+                .AsEnumerable()
+                .FirstOrDefault(c => c.Name.Translate("en") == en);
+
+            if (category != null) return category;
+
+            category = new ServiceCategory
+            {
+                Name = new LangStr(en, "en")
+                {
+                    ["et"] = et
+                },
+                Description = new LangStr(descriptionEn, "en")
+                {
+                    ["et"] = descriptionEt
+                },
+                IsActive = true
+            };
+            context.ServiceCategories.Add(category);
+            context.SaveChanges();
+            return category;
+        }
+
+        BeautyProvider EnsureProvider(AppUser user, string profileName, string bio, string address, string imageUrl, double latitude, double longitude)
+        {
+            var seededProvider = context.BeautyProviders.AsTracking()
+                .FirstOrDefault(p => p.UserId == user.Id || p.ProfileName == profileName);
+
+            if (seededProvider != null) return seededProvider;
+
+            seededProvider = new BeautyProvider
+            {
+                UserId = user.Id,
+                ProfileName = profileName,
+                ProfilePictureUrl = imageUrl,
+                Bio = bio,
+                Latitude = latitude,
+                Longitude = longitude,
+                Address = address,
+                From = now.AddDays(-20)
+            };
+            context.BeautyProviders.Add(seededProvider);
+            context.SaveChanges();
+            return seededProvider;
+        }
+
+        Service EnsureService(BeautyProvider beautyProvider, ServiceCategory category, ServiceType serviceType, string en, string et, string descriptionEn, string descriptionEt, decimal price, int durationMinutes)
+        {
+            var seededService = context.Services
+                .AsEnumerable()
+                .FirstOrDefault(s => s.BeautyProviderId == beautyProvider.Id && s.Name.Translate("en") == en);
+
+            if (seededService != null) return seededService;
+
+            seededService = new Service
+            {
+                BeautyProviderId = beautyProvider.Id,
+                ServiceCategoryId = category.Id,
+                ServiceTypeId = serviceType.Id,
+                Name = new LangStr(en, "en")
+                {
+                    ["et"] = et
+                },
+                Description = new LangStr(descriptionEn, "en")
+                {
+                    ["et"] = descriptionEt
+                },
+                Price = price,
+                DurationMinutes = durationMinutes,
+                IsActive = true,
+                From = now.AddDays(-20)
+            };
+            context.Services.Add(seededService);
+            context.SaveChanges();
+            return seededService;
+        }
+
+        Salon EnsureSalon(string en, string et, string descriptionEn, string descriptionEt, string address, string imageUrl, double latitude, double longitude)
+        {
+            var seededSalon = context.Salons
+                .AsEnumerable()
+                .FirstOrDefault(s => s.Name.Translate("en") == en);
+
+            if (seededSalon != null) return seededSalon;
+
+            seededSalon = new Salon
+            {
+                Name = new LangStr(en, "en")
+                {
+                    ["et"] = et
+                },
+                Description = new LangStr(descriptionEn, "en")
+                {
+                    ["et"] = descriptionEt
+                },
+                Address = address,
+                Latitude = latitude,
+                Longitude = longitude,
+                ProfilePictureUrl = imageUrl,
+                From = now.AddDays(-20)
+            };
+            context.Salons.Add(seededSalon);
+            context.SaveChanges();
+            return seededSalon;
+        }
+
+        void EnsureSalonStaff(Salon seededSalon, BeautyProvider beautyProvider, string role)
+        {
+            if (context.SalonStaff.Any(ss => ss.SalonId == seededSalon.Id && ss.BeautyProviderId == beautyProvider.Id)) return;
+
+            context.SalonStaff.Add(new SalonStaff
+            {
+                SalonId = seededSalon.Id,
+                BeautyProviderId = beautyProvider.Id,
+                Role = role,
+                From = now.AddDays(-20)
+            });
+            context.SaveChanges();
+        }
+
+        void EnsureAvailability(BeautyProvider beautyProvider, DateOnly date, TimeOnly start, TimeOnly end)
+        {
+            if (context.Availabilities.Any(a =>
+                    a.BeautyProviderId == beautyProvider.Id &&
+                    a.Date == date &&
+                    a.StartTime == start &&
+                    a.EndTime == end))
+            {
+                return;
+            }
+
+            context.Availabilities.Add(new Availability
+            {
+                BeautyProviderId = beautyProvider.Id,
+                Date = date,
+                StartTime = start,
+                EndTime = end,
+                IsBooked = false,
+                From = now.AddDays(-20)
+            });
+            context.SaveChanges();
+        }
+
+        void EnsurePortfolio(BeautyProvider beautyProvider, Service seededService, string imageUrl)
+        {
+            if (context.ProviderPortfolios.Any(p => p.BeautyProviderId == beautyProvider.Id && p.ImageUrl == imageUrl)) return;
+
+            context.ProviderPortfolios.Add(new ProviderPortfolio
+            {
+                BeautyProviderId = beautyProvider.Id,
+                ServiceId = seededService.Id,
+                ImageUrl = imageUrl,
+                From = now.AddDays(-10)
+            });
+            context.SaveChanges();
+        }
+
+        Booking EnsureBooking(AppUser user, Service seededService, Salon seededSalon, DateOnly date, TimeOnly start, TimeOnly end, string status, string? notes)
+        {
+            var seededBooking = context.Bookings
+                .AsEnumerable()
+                .FirstOrDefault(b =>
+                    b.UserId == user.Id &&
+                    b.ServiceId == seededService.Id &&
+                    b.BookingDate == date &&
+                    b.StartTime == start.ToTimeSpan());
+
+            if (seededBooking != null) return seededBooking;
+
+            seededBooking = new Booking
+            {
+                UserId = user.Id,
+                ServiceId = seededService.Id,
+                SalonId = seededSalon.Id,
+                BookedAt = now.AddDays(-8),
+                AppointmentDateTime = date.ToDateTime(start, DateTimeKind.Utc),
+                BookingDate = date,
+                StartTime = start.ToTimeSpan(),
+                EndTime = end.ToTimeSpan(),
+                Status = status,
+                Notes = notes,
+                From = now.AddDays(-8)
+            };
+            context.Bookings.Add(seededBooking);
+            context.SaveChanges();
+            return seededBooking;
+        }
+
+        void EnsureReview(Booking seededBooking, AppUser user, int rating, string comment)
+        {
+            if (context.Reviews.Any(r => r.BookingId == seededBooking.Id)) return;
+
+            context.Reviews.Add(new Review
+            {
+                BookingId = seededBooking.Id,
+                UserId = user.Id,
+                Rating = rating,
+                Comment = comment,
+                From = seededBooking.AppointmentDateTime.AddHours(3)
+            });
+            context.SaveChanges();
         }
     }
     

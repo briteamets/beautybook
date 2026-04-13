@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-COPY HWDemo.sln ./
+COPY beautybook.sln ./
 COPY WebApp/WebApp.csproj WebApp/
 COPY App.DAL.EF/App.DAL.EF.csproj App.DAL.EF/
 COPY App.DTO/App.DTO.csproj App.DTO/

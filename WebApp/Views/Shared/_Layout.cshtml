@@ -53,6 +53,12 @@
                             <a class="nav-link text-dark" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">@L["Admin"]</a>
                         </li>
                     }
+                    @if (User.IsInRole("SalonOwner"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="SalonOwner" asp-controller="Dashboard" asp-action="Index">@L["ManageSalon"]</a>
+                        </li>
+                    }
                     
                     <partial name="_LanguageSelection"/>
                 </ul>

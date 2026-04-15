@@ -21,6 +21,7 @@ public class AdminUserIndexItem
     public string Role { get; set; } = default!;
     public DateTime RegisteredAt { get; set; }
     public bool IsActive { get; set; }
+    public bool IsProviderApplicant { get; set; }
 }
 
 public class AdminUserIndexViewModel
@@ -45,6 +46,7 @@ public class AdminUserDetailsViewModel
     public int AccessFailedCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public bool IsActive { get; set; }
+    public bool IsProviderApplicant { get; set; }
     public List<string> Roles { get; set; } = new();
 }
 
@@ -54,6 +56,7 @@ public class AdminUserEditViewModel
     public string Email { get; set; } = default!;
     [Required]
     public string Role { get; set; } = default!;
+    public string CurrentRole { get; set; } = string.Empty;
     public bool IsActive { get; set; }
     public bool IsSelf { get; set; }
     public List<string> AvailableRoles { get; set; } = new();
@@ -111,6 +114,43 @@ public class SalonFormViewModel
     public double Longitude { get; set; }
     [Url]
     public string? ProfilePictureUrl { get; set; }
+}
+
+public class SalonDetailsViewModel
+{
+    public Guid Id { get; set; }
+    public string NameEn { get; set; } = string.Empty;
+    public string NameEt { get; set; } = string.Empty;
+    public string? DescriptionEn { get; set; }
+    public string? DescriptionEt { get; set; }
+    public string Address { get; set; } = string.Empty;
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
+    public List<SalonStaffDetailsViewModel> Staff { get; set; } = new();
+    public List<SalonOwnerDetailsViewModel> Owners { get; set; } = new();
+    public AssignSalonOwnerViewModel AssignOwner { get; set; } = new();
+}
+
+public class SalonStaffDetailsViewModel
+{
+    public string ProviderName { get; set; } = string.Empty;
+    public string Role { get; set; } = string.Empty;
+}
+
+public class SalonOwnerDetailsViewModel
+{
+    public Guid SalonOwnerId { get; set; }
+    public string Email { get; set; } = string.Empty;
+    public string UserName { get; set; } = string.Empty;
+    public DateTime From { get; set; }
+}
+
+public class AssignSalonOwnerViewModel
+{
+    public Guid SalonId { get; set; }
+    [Required]
+    public Guid UserId { get; set; }
+    public List<SelectListItem> UserOptions { get; set; } = new();
 }
 
 public class ServiceCategoryFormViewModel

@@ -19,7 +19,7 @@ public class DashboardController : AdminControllerBase
     public async Task<IActionResult> Index()
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var clientCount = await CountUsersInRoles("Client", "User");
+        var clientCount = await CountUsersInRoles("Client");
         var providerCount = await CountUsersInRoles("ServiceProvider");
         var bookingsToday = await Context.Bookings.CountAsync(b => b.BookingDate == today);
 

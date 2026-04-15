@@ -326,4 +326,42 @@
   <data name="SalonUpdated" xml:space="preserve"><value>Salong uuendati.</value></data>
   <data name="SalonDeleted" xml:space="preserve"><value>Salong kustutati.</value></data>
   <data name="ReviewDeleted" xml:space="preserve"><value>Arvustus kustutati.</value></data>
+  <data name="SalonOwner" xml:space="preserve"><value>Salongi omanik</value></data>
+  <data name="SalonOwnerPortal" xml:space="preserve"><value>Salongi omanik</value></data>
+  <data name="SalonOwnerDashboard" xml:space="preserve"><value>Salongi omaniku töölaud</value></data>
+  <data name="ManageSalon" xml:space="preserve"><value>Halda salongi</value></data>
+  <data name="NoOwnedSalons" xml:space="preserve"><value>Sinu omanikukontoga ei ole salonge seotud.</value></data>
+  <data name="SalonServices" xml:space="preserve"><value>Salongi teenused</value></data>
+  <data name="SalonBookings" xml:space="preserve"><value>Salongi broneeringud</value></data>
+  <data name="UpcomingBookings" xml:space="preserve"><value>Tulevased broneeringud</value></data>
+  <data name="AllSalons" xml:space="preserve"><value>Kõik salongid</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>Kõik staatused</value></data>
+  <data name="AddProvider" xml:space="preserve"><value>Lisa teenusepakkuja</value></data>
+  <data name="RemoveProvider" xml:space="preserve"><value>Eemalda teenusepakkuja</value></data>
+  <data name="ConfirmRemoveProvider" xml:space="preserve"><value>Kas eemaldada see teenusepakkuja salongist?</value></data>
+  <data name="StaffProviderAdded" xml:space="preserve"><value>Teenusepakkuja lisati salongi töötajaks.</value></data>
+  <data name="StaffProviderRemoved" xml:space="preserve"><value>Teenusepakkuja eemaldati salongi töötajate seast.</value></data>
+  <data name="ServiceProvider" xml:space="preserve"><value>Teenusepakkuja</value></data>
+  <data name="NoServicesFound" xml:space="preserve"><value>Teenuseid ei leitud.</value></data>
+  <data name="MinutesShort" xml:space="preserve"><value>min</value></data>
+  <data name="Latitude" xml:space="preserve"><value>Laiuskraad</value></data>
+  <data name="Longitude" xml:space="preserve"><value>Pikkuskraad</value></data>
+  <data name="ProfilePictureUrl" xml:space="preserve"><value>Profiilipildi URL</value></data>
+  <data name="SalonOwners" xml:space="preserve"><value>Salongi omanikud</value></data>
+  <data name="AssignSalonOwner" xml:space="preserve"><value>Määra salongi omanik</value></data>
+  <data name="NoSalonOwnersLinked" xml:space="preserve"><value>Salongiga pole omanikke seotud.</value></data>
+  <data name="NoAssignableSalonOwners" xml:space="preserve"><value>Määramata salongiomaniku kasutajaid ei leitud.</value></data>
+  <data name="ConfirmRemoveSalonOwner" xml:space="preserve"><value>Kas eemaldada see salongi omanik?</value></data>
+  <data name="SalonOwnerAssigned" xml:space="preserve"><value>Salongi omanik määrati.</value></data>
+  <data name="SalonOwnerRemoved" xml:space="preserve"><value>Salongi omanik eemaldati.</value></data>
+  <data name="UserMustHaveSalonOwnerRole" xml:space="preserve"><value>Kasutajal peab olema SalonOwner roll.</value></data>
+  <data name="ChooseSalonBeforeAddingProvider" xml:space="preserve"><value>Vali enne teenusepakkuja lisamist filtrist salong.</value></data>
+  <data name="NoAvailableProvidersForSalon" xml:space="preserve"><value>Sellesse salongi ei saa praegu teenusepakkujaid lisada.</value></data>
+  <data name="Password" xml:space="preserve"><value>Parool</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>Kinnita parool</value></data>
+  <data name="ApplyAsServiceProvider" xml:space="preserve"><value>Kandideeri teenusepakkujaks</value></data>
+  <data name="ApplyAsServiceProviderHelp" xml:space="preserve"><value>Admin vaatab selle üle ja saab sinu konto pärast registreerimist ülendada.</value></data>
+  <data name="WantsToBeProvider" xml:space="preserve"><value>Soovib teenusepakkujaks</value></data>
+  <data name="ProviderApplication" xml:space="preserve"><value>Teenusepakkuja avaldus</value></data>
+  <data name="CannotChangeOwnRole" xml:space="preserve"><value>Sa ei saa enda adminirolli muuta.</value></data>
 </root>

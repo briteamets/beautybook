@@ -14,5 +14,6 @@ public class Salon : BaseEntity
     public DateTime? To { get; set; }
 
     public ICollection<SalonStaff>? Staff { get; set; }
+    public ICollection<SalonOwner>? Owners { get; set; }
     public ICollection<Booking>? Bookings { get; set; }
 }

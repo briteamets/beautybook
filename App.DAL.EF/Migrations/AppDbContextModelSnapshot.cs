@@ -346,6 +346,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsProviderApplicant")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -662,6 +665,34 @@ namespace App.DAL.EF.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Salons");
+                });
+
+            modelBuilder.Entity("App.Domain.SalonOwner", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("SalonId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("SalonId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("SalonOwners");
                 });
 
             modelBuilder.Entity("App.Domain.SalonStaff", b =>
@@ -1131,6 +1162,25 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("App.Domain.SalonOwner", b =>
+                {
+                    b.HasOne("App.Domain.Salon", "Salon")
+                        .WithMany("Owners")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Domain.Identity.AppUser", "User")
+                        .WithMany("SalonOwners")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("App.Domain.SalonStaff", b =>
                 {
                     b.HasOne("App.Domain.BeautyProvider", "BeautyProvider")
@@ -1290,6 +1340,8 @@ namespace App.DAL.EF.Migrations
                     b.Navigation("RefreshTokens");
 
                     b.Navigation("Reviews");
+
+                    b.Navigation("SalonOwners");
                 });
 
             modelBuilder.Entity("App.Domain.Payment", b =>
@@ -1300,6 +1352,8 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.Salon", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Owners");
 
                     b.Navigation("Staff");
                 });

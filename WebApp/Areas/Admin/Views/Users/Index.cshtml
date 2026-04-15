@@ -47,7 +47,13 @@
             @foreach (var item in Model.Page.Items)
             {
                 <tr>
-                    <td>@item.Name</td>
+                    <td>
+                        <div>@item.Name</div>
+                        @if (item.IsProviderApplicant)
+                        {
+                            <span class="badge bg-info text-dark">@L["WantsToBeProvider"]</span>
+                        }
+                    </td>
                     <td>@item.Email</td>
                     <td>@item.Role</td>
                     <td>@item.RegisteredAt.ToLocalTime()</td>

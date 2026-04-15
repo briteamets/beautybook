@@ -81,6 +81,7 @@ public class AccountController : ControllerBase
         {
             Email = registrationData.Email,
             UserName = registrationData.Email,
+            IsProviderApplicant = registrationData.IsProviderApplicant,
             RefreshTokens = new List<AppRefreshToken>() {refreshToken}
         };
         refreshToken.AppUser = appUser;
@@ -97,7 +98,7 @@ public class AccountController : ControllerBase
             );
         }
 
-        await _userManager.AddToRoleAsync(appUser, "User");
+        await _userManager.AddToRoleAsync(appUser, "Client");
 
         // save into claims also the user full name
         /*

@@ -22,6 +22,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
     public DbSet<ProviderSchedule> ProviderSchedules { get; set; } = default!;
     public DbSet<ProviderBreak> ProviderBreaks { get; set; } = default!;
     public DbSet<Salon> Salons { get; set; } = default!;
+    public DbSet<SalonOwner> SalonOwners { get; set; } = default!;
     public DbSet<SalonStaff> SalonStaff { get; set; } = default!;
     public DbSet<Booking> Bookings { get; set; } = default!;
     public DbSet<BookingHistory> BookingHistories { get; set; } = default!;

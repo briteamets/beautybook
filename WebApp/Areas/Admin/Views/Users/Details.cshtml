@@ -29,6 +29,17 @@
                     <dd class="col-sm-8">@Model.CreatedAt.ToLocalTime()</dd>
                     <dt class="col-sm-4">@L["Status"]</dt>
                     <dd class="col-sm-8">@(Model.IsActive ? L["Active"] : L["Inactive"])</dd>
+                    <dt class="col-sm-4">@L["ProviderApplication"]</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsProviderApplicant)
+                        {
+                            <span class="badge bg-info text-dark">@L["WantsToBeProvider"]</span>
+                        }
+                        else
+                        {
+                            <span>@L["No"]</span>
+                        }
+                    </dd>
                 </dl>
             </div>
         </div>

@@ -326,4 +326,42 @@
   <data name="SalonUpdated" xml:space="preserve"><value>Salon updated.</value></data>
   <data name="SalonDeleted" xml:space="preserve"><value>Salon deleted.</value></data>
   <data name="ReviewDeleted" xml:space="preserve"><value>Review deleted.</value></data>
+  <data name="SalonOwner" xml:space="preserve"><value>Salon owner</value></data>
+  <data name="SalonOwnerPortal" xml:space="preserve"><value>Salon Owner</value></data>
+  <data name="SalonOwnerDashboard" xml:space="preserve"><value>Salon owner dashboard</value></data>
+  <data name="ManageSalon" xml:space="preserve"><value>Manage salon</value></data>
+  <data name="NoOwnedSalons" xml:space="preserve"><value>No salons are linked to your owner account.</value></data>
+  <data name="SalonServices" xml:space="preserve"><value>Salon services</value></data>
+  <data name="SalonBookings" xml:space="preserve"><value>Salon bookings</value></data>
+  <data name="UpcomingBookings" xml:space="preserve"><value>Upcoming bookings</value></data>
+  <data name="AllSalons" xml:space="preserve"><value>All salons</value></data>
+  <data name="AllStatuses" xml:space="preserve"><value>All statuses</value></data>
+  <data name="AddProvider" xml:space="preserve"><value>Add provider</value></data>
+  <data name="RemoveProvider" xml:space="preserve"><value>Remove provider</value></data>
+  <data name="ConfirmRemoveProvider" xml:space="preserve"><value>Remove this provider from the salon?</value></data>
+  <data name="StaffProviderAdded" xml:space="preserve"><value>Provider added to salon staff.</value></data>
+  <data name="StaffProviderRemoved" xml:space="preserve"><value>Provider removed from salon staff.</value></data>
+  <data name="ServiceProvider" xml:space="preserve"><value>Service provider</value></data>
+  <data name="NoServicesFound" xml:space="preserve"><value>No services found.</value></data>
+  <data name="MinutesShort" xml:space="preserve"><value>min</value></data>
+  <data name="Latitude" xml:space="preserve"><value>Latitude</value></data>
+  <data name="Longitude" xml:space="preserve"><value>Longitude</value></data>
+  <data name="ProfilePictureUrl" xml:space="preserve"><value>Profile picture URL</value></data>
+  <data name="SalonOwners" xml:space="preserve"><value>Salon owners</value></data>
+  <data name="AssignSalonOwner" xml:space="preserve"><value>Assign salon owner</value></data>
+  <data name="NoSalonOwnersLinked" xml:space="preserve"><value>No salon owners linked.</value></data>
+  <data name="NoAssignableSalonOwners" xml:space="preserve"><value>No unassigned salon owner users found.</value></data>
+  <data name="ConfirmRemoveSalonOwner" xml:space="preserve"><value>Remove this salon owner?</value></data>
+  <data name="SalonOwnerAssigned" xml:space="preserve"><value>Salon owner assigned.</value></data>
+  <data name="SalonOwnerRemoved" xml:space="preserve"><value>Salon owner removed.</value></data>
+  <data name="UserMustHaveSalonOwnerRole" xml:space="preserve"><value>User must have the SalonOwner role.</value></data>
+  <data name="ChooseSalonBeforeAddingProvider" xml:space="preserve"><value>Choose a salon with the filter before adding a provider.</value></data>
+  <data name="NoAvailableProvidersForSalon" xml:space="preserve"><value>No available providers can be added to this salon.</value></data>
+  <data name="Password" xml:space="preserve"><value>Password</value></data>
+  <data name="ConfirmPassword" xml:space="preserve"><value>Confirm password</value></data>
+  <data name="ApplyAsServiceProvider" xml:space="preserve"><value>Apply as service provider</value></data>
+  <data name="ApplyAsServiceProviderHelp" xml:space="preserve"><value>Admin will review this and can promote your account after registration.</value></data>
+  <data name="WantsToBeProvider" xml:space="preserve"><value>Wants to be provider</value></data>
+  <data name="ProviderApplication" xml:space="preserve"><value>Provider application</value></data>
+  <data name="CannotChangeOwnRole" xml:space="preserve"><value>You cannot change your own admin role.</value></data>
 </root>

@@ -28,6 +28,9 @@ public static class AppDataInit
             ALTER TABLE "AspNetUsers"
                 ADD COLUMN IF NOT EXISTS "IsActive" boolean NOT NULL DEFAULT TRUE;
 
+            ALTER TABLE "AspNetUsers"
+                ADD COLUMN IF NOT EXISTS "IsProviderApplicant" boolean NOT NULL DEFAULT FALSE;
+
             ALTER TABLE "ServiceCategories"
                 ADD COLUMN IF NOT EXISTS "IsActive" boolean NOT NULL DEFAULT TRUE;
 
@@ -49,8 +52,23 @@ public static class AppDataInit
             ALTER TABLE "Bookings"
                 ADD COLUMN IF NOT EXISTS "CancellationReason" character varying(2000) NULL;
 
+            CREATE TABLE IF NOT EXISTS "SalonOwners" (
+                "Id" uuid NOT NULL,
+                "SalonId" uuid NOT NULL,
+                "UserId" uuid NOT NULL,
+                "From" timestamp with time zone NOT NULL,
+                "To" timestamp with time zone NULL,
+                CONSTRAINT "PK_SalonOwners" PRIMARY KEY ("Id")
+            );
+
             CREATE INDEX IF NOT EXISTS "IX_ServiceTypes_ServiceCategoryId"
                 ON "ServiceTypes" ("ServiceCategoryId");
+
+            CREATE UNIQUE INDEX IF NOT EXISTS "IX_SalonOwners_SalonId_UserId"
+                ON "SalonOwners" ("SalonId", "UserId");
+
+            CREATE INDEX IF NOT EXISTS "IX_SalonOwners_UserId"
+                ON "SalonOwners" ("UserId");
 
             CREATE INDEX IF NOT EXISTS "IX_Services_ServiceTypeId"
                 ON "Services" ("ServiceTypeId");
@@ -60,6 +78,26 @@ public static class AppDataInit
 
             DO $$
             BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint WHERE conname = 'FK_SalonOwners_Salons_SalonId'
+                ) THEN
+                    ALTER TABLE "SalonOwners"
+                        ADD CONSTRAINT "FK_SalonOwners_Salons_SalonId"
+                        FOREIGN KEY ("SalonId")
+                        REFERENCES "Salons" ("Id")
+                        ON DELETE CASCADE;
+                END IF;
+
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint WHERE conname = 'FK_SalonOwners_AspNetUsers_UserId'
+                ) THEN
+                    ALTER TABLE "SalonOwners"
+                        ADD CONSTRAINT "FK_SalonOwners_AspNetUsers_UserId"
+                        FOREIGN KEY ("UserId")
+                        REFERENCES "AspNetUsers" ("Id")
+                        ON DELETE RESTRICT;
+                END IF;
+
                 IF NOT EXISTS (
                     SELECT 1 FROM pg_constraint WHERE conname = 'FK_ServiceTypes_ServiceCategories_ServiceCategoryId'
                 ) THEN
@@ -116,6 +154,7 @@ public static class AppDataInit
         var providerTwoUser = context.Users.FirstOrDefault(u => u.Email == "provider2@beautybook.com");
         var providerThreeUser = context.Users.FirstOrDefault(u => u.Email == "provider3@beautybook.com");
         var suspendedProviderUser = context.Users.AsTracking().FirstOrDefault(u => u.Email == "suspended.provider@beautybook.com");
+        var salonOwnerUser = context.Users.FirstOrDefault(u => u.Email == "salon.owner@beautybook.com");
 
         var nailsCategory = context.ServiceCategories
             .AsEnumerable()
@@ -443,6 +482,8 @@ public static class AppDataInit
             context.SaveChanges();
         }
 
+        EnsureSalonOwner(salon);
+
         var bookingSeed = new[]
         {
             new { Service = manicureService, Date = today, Start = new TimeOnly(10, 0), End = new TimeOnly(11, 0), Status = Booking.StatusPending },
@@ -566,6 +607,7 @@ public static class AppDataInit
             EnsureSalonStaff(glowSalon, lashProvider, SalonStaff.RoleOwner);
             EnsureSalonStaff(freshSalon, skinProvider, SalonStaff.RoleOwner);
             EnsureSalonStaff(salon, skinProvider, SalonStaff.RoleEmployee);
+            EnsureSalonOwner(glowSalon);
 
             EnsureAvailability(lashProvider, today, new TimeOnly(9, 0), new TimeOnly(10, 0));
             EnsureAvailability(lashProvider, today, new TimeOnly(11, 30), new TimeOnly(12, 30));
@@ -707,6 +749,20 @@ public static class AppDataInit
                 SalonId = seededSalon.Id,
                 BeautyProviderId = beautyProvider.Id,
                 Role = role,
+                From = now.AddDays(-20)
+            });
+            context.SaveChanges();
+        }
+
+        void EnsureSalonOwner(Salon seededSalon)
+        {
+            if (salonOwnerUser == null) return;
+            if (context.SalonOwners.Any(o => o.SalonId == seededSalon.Id && o.UserId == salonOwnerUser.Id)) return;
+
+            context.SalonOwners.Add(new App.Domain.SalonOwner
+            {
+                SalonId = seededSalon.Id,
+                UserId = salonOwnerUser.Id,
                 From = now.AddDays(-20)
             });
             context.SaveChanges();

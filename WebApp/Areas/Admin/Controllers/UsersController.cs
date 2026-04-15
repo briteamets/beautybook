@@ -54,9 +54,10 @@ public class UsersController : AdminControllerBase
                 Id = user.Id,
                 Name = user.UserName ?? user.Email ?? string.Empty,
                 Email = user.Email ?? string.Empty,
-                Role = roles.Contains("Client") ? "Client" : roles.FirstOrDefault() ?? string.Empty,
+                Role = roles.Count == 0 ? string.Empty : string.Join(", ", roles.OrderBy(roleName => roleName)),
                 RegisteredAt = user.CreatedAt,
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                IsProviderApplicant = user.IsProviderApplicant
             });
         }
 
@@ -96,6 +97,7 @@ public class UsersController : AdminControllerBase
             AccessFailedCount = user.AccessFailedCount,
             CreatedAt = user.CreatedAt,
             IsActive = user.IsActive,
+            IsProviderApplicant = user.IsProviderApplicant,
             Roles = userRoles
         });
     }
@@ -106,11 +108,13 @@ public class UsersController : AdminControllerBase
         if (user == null) return NotFound();
 
         var roles = await _userManager.GetRolesAsync(user);
+        var currentRole = GetPrimaryRole(roles);
         return View(new AdminUserEditViewModel
         {
             Id = user.Id,
             Email = user.Email ?? string.Empty,
-            Role = roles.FirstOrDefault() ?? string.Empty,
+            Role = currentRole,
+            CurrentRole = currentRole,
             IsActive = user.IsActive,
             IsSelf = IsCurrentUser(user.Id),
             AvailableRoles = await _roleManager.Roles.Select(r => r.Name!).OrderBy(r => r).ToListAsync()
@@ -128,6 +132,13 @@ public class UsersController : AdminControllerBase
         vm.Email = user.Email ?? string.Empty;
         vm.AvailableRoles = await _roleManager.Roles.Select(r => r.Name!).OrderBy(r => r).ToListAsync();
         vm.IsSelf = IsCurrentUser(user.Id);
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        vm.CurrentRole = GetPrimaryRole(currentRoles);
+
+        if (vm.IsSelf)
+        {
+            vm.Role = vm.CurrentRole;
+        }
 
         if (vm.IsSelf && !vm.IsActive)
         {
@@ -141,25 +152,46 @@ public class UsersController : AdminControllerBase
 
         if (!ModelState.IsValid) return View(vm);
 
-        var roles = await _userManager.GetRolesAsync(user);
-        var removeResult = await _userManager.RemoveFromRolesAsync(user, roles);
-        if (!removeResult.Succeeded)
-        {
-            ModelState.AddModelError(string.Empty, string.Join(" ", removeResult.Errors.Select(e => e.Description)));
-            return View(vm);
-        }
-
-        var addResult = await _userManager.AddToRoleAsync(user, vm.Role);
-        if (!addResult.Succeeded)
-        {
-            ModelState.AddModelError(string.Empty, string.Join(" ", addResult.Errors.Select(e => e.Description)));
-            return View(vm);
-        }
-
         user.IsActive = vm.IsActive;
-        await _userManager.UpdateAsync(user);
+        if (vm.Role == "ServiceProvider")
+        {
+            user.IsProviderApplicant = false;
+        }
+
+        var updateResult = await _userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            ModelState.AddModelError(string.Empty, string.Join(" ", updateResult.Errors.Select(e => e.Description)));
+            return View(vm);
+        }
+
+        currentRoles = await _userManager.GetRolesAsync(user);
+        if (!currentRoles.SequenceEqual(new[] { vm.Role }))
+        {
+            var rolesToRemove = currentRoles.Where(role => role != vm.Role).ToList();
+            if (rolesToRemove.Count > 0)
+            {
+                var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+                if (!removeResult.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, string.Join(" ", removeResult.Errors.Select(e => e.Description)));
+                    return View(vm);
+                }
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, vm.Role))
+            {
+                var addResult = await _userManager.AddToRoleAsync(user, vm.Role);
+                if (!addResult.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, string.Join(" ", addResult.Errors.Select(e => e.Description)));
+                    return View(vm);
+                }
+            }
+        }
+
         SetSuccessMessage(T("UserUpdated"));
-        return RedirectToAction(nameof(Details), new { id });
+        return RedirectToAction(nameof(Details), "Users", new { area = "Admin", id });
     }
 
     public async Task<IActionResult> ResetPassword(Guid id)
@@ -228,5 +260,15 @@ public class UsersController : AdminControllerBase
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         return Guid.TryParse(currentUserId, out var id) && id == userId;
+    }
+
+    private static string GetPrimaryRole(IEnumerable<string> roles)
+    {
+        var roleList = roles.ToList();
+        if (roleList.Contains("Admin")) return "Admin";
+        if (roleList.Contains("SalonOwner")) return "SalonOwner";
+        if (roleList.Contains("ServiceProvider")) return "ServiceProvider";
+        if (roleList.Contains("Client")) return "Client";
+        return roleList.FirstOrDefault() ?? string.Empty;
     }
 }

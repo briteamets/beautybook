@@ -1,0 +1,61 @@
+@model SalonOwnerServiceIndexViewModel
+
+<h1 class="h3 mb-4">@L["SalonServices"]</h1>
+
+<form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-md-4">
+        <label asp-for="SalonId" class="form-label">@L["Salon"]</label>
+        <select asp-for="SalonId" asp-items="Model.SalonOptions" class="form-select">
+            <option value="">@L["AllSalons"]</option>
+        </select>
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+    </div>
+</form>
+
+@if (!Model.Services.Any())
+{
+    <div class="alert alert-info">@L["NoServicesFound"]</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>@L["Salon"]</th>
+            <th>@L["ServiceProvider"]</th>
+            <th>@L["ServiceName"]</th>
+            <th>@L["Category"]</th>
+            <th>@L["ServiceType"]</th>
+            <th>@L["Price"]</th>
+            <th>@L["Duration"]</th>
+            <th>@L["Status"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var service in Model.Services)
+        {
+            <tr>
+                <td>@service.SalonName</td>
+                <td>@service.ProviderName</td>
+                <td>@service.Name</td>
+                <td>@service.CategoryName</td>
+                <td>@service.ServiceTypeName</td>
+                <td>@service.Price.ToString("0.00")</td>
+                <td>@service.DurationMinutes @L["MinutesShort"]</td>
+                <td>
+                    @if (service.IsActive)
+                    {
+                        <span class="badge text-bg-success">@L["Active"]</span>
+                    }
+                    else
+                    {
+                        <span class="badge text-bg-secondary">@L["Inactive"]</span>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

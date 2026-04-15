@@ -1,0 +1,64 @@
+@model SalonOwnerBookingIndexViewModel
+
+<h1 class="h3 mb-4">@L["SalonBookings"]</h1>
+
+<form asp-action="Index" method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-md-3">
+        <label asp-for="SalonId" class="form-label">@L["Salon"]</label>
+        <select asp-for="SalonId" asp-items="Model.SalonOptions" class="form-select">
+            <option value="">@L["AllSalons"]</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="DateFrom" class="form-label">@L["DateFrom"]</label>
+        <input asp-for="DateFrom" type="date" class="form-control"/>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="DateTo" class="form-label">@L["DateTo"]</label>
+        <input asp-for="DateTo" type="date" class="form-control"/>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Status" class="form-label">@L["Status"]</label>
+        <select asp-for="Status" asp-items="Model.StatusOptions" class="form-select">
+            <option value="">@L["AllStatuses"]</option>
+        </select>
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+    </div>
+</form>
+
+@if (!Model.Bookings.Any())
+{
+    <div class="alert alert-info">@L["NoBookingsSection"]</div>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+        <tr>
+            <th>@L["Salon"]</th>
+            <th>@L["Customer"]</th>
+            <th>@L["ServiceProvider"]</th>
+            <th>@L["ServiceName"]</th>
+            <th>@L["Appointment"]</th>
+            <th>@L["Status"]</th>
+            <th>@L["Created"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var booking in Model.Bookings)
+        {
+            <tr>
+                <td>@booking.SalonName</td>
+                <td>@booking.ClientName</td>
+                <td>@booking.ProviderName</td>
+                <td>@booking.ServiceName</td>
+                <td>@booking.BookingDate.ToString("dd.MM.yyyy") @booking.StartTime.ToString(@"hh\:mm") - @booking.EndTime.ToString(@"hh\:mm")</td>
+                <td><span class="badge text-bg-secondary">@booking.Status</span></td>
+                <td>@booking.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

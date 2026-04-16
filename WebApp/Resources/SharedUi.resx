@@ -60,6 +60,7 @@
   <data name="Provider" xml:space="preserve"><value>Provider</value></data>
   <data name="Salon" xml:space="preserve"><value>Salon</value></data>
   <data name="Duration" xml:space="preserve"><value>Duration</value></data>
+  <data name="Min" xml:space="preserve"><value>min</value></data>
   <data name="Total" xml:space="preserve"><value>Total</value></data>
   <data name="Notes" xml:space="preserve"><value>Notes</value></data>
   <data name="Back" xml:space="preserve"><value>Back</value></data>
@@ -236,6 +237,8 @@
   <data name="DateTo" xml:space="preserve"><value>Date to</value></data>
   <data name="UsersAdminHelp" xml:space="preserve"><value>Manage application users and their roles.</value></data>
   <data name="BeautyProvidersAdminHelp" xml:space="preserve"><value>View providers and control active state.</value></data>
+  <data name="ProviderServices" xml:space="preserve"><value>Provider services</value></data>
+  <data name="ProviderServicesAdminHelp" xml:space="preserve"><value>Review the services created by providers.</value></data>
   <data name="BookingsAdminHelp" xml:space="preserve"><value>Review bookings and filter by status or date.</value></data>
   <data name="ReviewsAdminHelp" xml:space="preserve"><value>Moderate submitted reviews.</value></data>
   <data name="SalonsAdminHelp" xml:space="preserve"><value>Create and manage salon records.</value></data>
@@ -257,7 +260,20 @@
   <data name="DeleteServiceCategory" xml:space="preserve"><value>Delete service category</value></data>
   <data name="DeleteServiceCategoryHelp" xml:space="preserve"><value>This permanently removes the category.</value></data>
   <data name="ServiceCategoryDetails" xml:space="preserve"><value>Service category details</value></data>
+  <data name="ServiceTypeDetails" xml:space="preserve"><value>Service type details</value></data>
   <data name="CreateCategory" xml:space="preserve"><value>Create category</value></data>
+  <data name="DeleteServiceType" xml:space="preserve"><value>Delete service type</value></data>
+  <data name="DeleteServiceTypeHelp" xml:space="preserve"><value>This permanently removes the service type.</value></data>
+  <data name="ServiceCategoryDeleted" xml:space="preserve"><value>Service category deleted.</value></data>
+  <data name="ServiceTypeDeleted" xml:space="preserve"><value>Service type deleted.</value></data>
+  <data name="CannotDeleteCategoryWithServices" xml:space="preserve"><value>Cannot delete a category that has service types or services.</value></data>
+  <data name="CannotDeleteServiceTypeWithServices" xml:space="preserve"><value>Cannot delete a service type that has services.</value></data>
+  <data name="CannotDeleteSalonWithRelations" xml:space="preserve"><value>Cannot delete a salon that has active staff, active owners, or bookings.</value></data>
+  <data name="NoResults" xml:space="preserve"><value>No results found.</value></data>
+  <data name="NoResultsFound" xml:space="preserve"><value>No results found.</value></data>
+  <data name="Latitude" xml:space="preserve"><value>Latitude</value></data>
+  <data name="Longitude" xml:space="preserve"><value>Longitude</value></data>
+  <data name="ProfilePictureUrl" xml:space="preserve"><value>Profile picture URL</value></data>
   <data name="AvailabilitySlots" xml:space="preserve"><value>Availability slots</value></data>
   <data name="SalonMemberships" xml:space="preserve"><value>Salon memberships</value></data>
   <data name="Error" xml:space="preserve"><value>Error</value></data>

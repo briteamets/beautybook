@@ -92,6 +92,19 @@ public class SalonDetailsViewModel
     public decimal AverageRating { get; set; }
     public List<DateOnly> AvailableDates { get; set; } = new();
     public List<SalonStaffBookingViewModel> StaffMembers { get; set; } = new();
+    public List<SalonAllServicesItemViewModel> AllServices { get; set; } = new();
+}
+
+public class SalonAllServicesItemViewModel
+{
+    public Guid ServiceId { get; set; }
+    public string ServiceName { get; set; } = default!;
+    public string? Description { get; set; }
+    public Guid ProviderId { get; set; }
+    public string ProviderName { get; set; } = default!;
+    public string? ProviderPictureUrl { get; set; }
+    public decimal Price { get; set; }
+    public int DurationMinutes { get; set; }
 }
 
 public class SalonStaffBookingViewModel
@@ -133,11 +146,22 @@ public class DynamicBookingViewModel
     public string ServiceName { get; set; } = default!;
     public string ProviderName { get; set; } = default!;
     public string ProviderAddress { get; set; } = default!;
+    public string? ProviderPictureUrl { get; set; }
     public decimal Price { get; set; }
     public int DurationMinutes { get; set; }
     public DateOnly SelectedDate { get; set; } = DateOnly.FromDateTime(DateTime.UtcNow);
     [StringLength(2000)]
     public string? Notes { get; set; }
+    public Guid? SalonId { get; set; }
+    public List<SiblingProviderViewModel> SiblingProviders { get; set; } = new();
+}
+
+public class SiblingProviderViewModel
+{
+    public string ProviderName { get; set; } = default!;
+    public string? ProfilePictureUrl { get; set; }
+    public Guid ServiceId { get; set; }
+    public decimal ServicePrice { get; set; }
 }
 
 public class BookingPaymentViewModel

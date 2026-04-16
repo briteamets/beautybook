@@ -148,6 +148,18 @@ public class ProviderBookingHistoryItemViewModel
     public string? Reason { get; set; }
 }
 
+public class ProviderProfileEditViewModel
+{
+    [Required]
+    [StringLength(100)]
+    public string ProfileName { get; set; } = default!;
+    public string? Bio { get; set; }
+    [Url]
+    public string? ProfilePictureUrl { get; set; }
+    [Required]
+    public string Address { get; set; } = default!;
+}
+
 public class ProviderScheduleIndexViewModel
 {
     public ICollection<ProviderScheduleDayViewModel> Days { get; set; } = [];

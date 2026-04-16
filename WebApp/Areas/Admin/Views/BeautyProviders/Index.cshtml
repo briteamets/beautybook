@@ -22,22 +22,31 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Items)
+            @if (Model.Items.Count == 0)
             {
                 <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Email</td>
-                    <td>
-                        <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
-                            @(item.IsActive ? L["Active"] : L["Suspended"])
-                        </span>
-                    </td>
-                    <td>@item.ServiceCount</td>
-                    <td>@item.BookingCount</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
-                    </td>
+                    <td colspan="6" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Email</td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "bg-success" : "bg-danger")">
+                                @(item.IsActive ? L["Active"] : L["Suspended"])
+                            </span>
+                        </td>
+                        <td>@item.ServiceCount</td>
+                        <td>@item.BookingCount</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>

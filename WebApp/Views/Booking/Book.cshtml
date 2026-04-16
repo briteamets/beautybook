@@ -2,6 +2,36 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
+        @if (Model.SiblingProviders.Any())
+        {
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="h5 mb-3">@L["ChooseProvider"]</h2>
+                    <div class="d-flex flex-wrap gap-3">
+                        <div class="d-flex flex-column align-items-center gap-1 text-center" style="min-width:100px;">
+                            <img src="@(Model.ProviderPictureUrl ?? "https://placehold.co/56x56?text=P")" class="rounded-circle border border-dark border-2" style="width:56px;height:56px;object-fit:cover;"/>
+                            <div class="fw-semibold small">@Model.ProviderName</div>
+                            <div class="small text-muted">@Model.Price.ToString("0.00") EUR</div>
+                            <span class="badge bg-dark">@L["Selected"]</span>
+                        </div>
+                        @foreach (var sibling in Model.SiblingProviders)
+                        {
+                            <a class="d-flex flex-column align-items-center gap-1 text-center text-decoration-none text-dark"
+                               style="min-width:100px;"
+                               asp-controller="Booking" asp-action="Book"
+                               asp-route-serviceId="@sibling.ServiceId"
+                               asp-route-salonId="@Model.SalonId"
+                               asp-route-date="@Model.SelectedDate.ToString("yyyy-MM-dd")">
+                                <img src="@(sibling.ProfilePictureUrl ?? "https://placehold.co/56x56?text=P")" class="rounded-circle border" style="width:56px;height:56px;object-fit:cover;"/>
+                                <div class="fw-semibold small">@sibling.ProviderName</div>
+                                <div class="small text-muted">@sibling.ServicePrice.ToString("0.00") EUR</div>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <h1 class="h3">@L["BookThisService"]</h1>
@@ -31,6 +61,10 @@
                     <input type="hidden" name="serviceId" value="@Model.ServiceId"/>
                     <input type="hidden" id="selectedDate" name="bookingDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")"/>
                     <input type="hidden" id="selectedStartTime" name="startTime"/>
+                    @if (Model.SalonId.HasValue)
+                    {
+                        <input type="hidden" name="salonId" value="@Model.SalonId"/>
+                    }
                     <div class="mb-3">
                         <label class="form-label" for="notes">@L["Notes"]</label>
                         <textarea class="form-control" id="notes" name="notes" rows="3">@Model.Notes</textarea>

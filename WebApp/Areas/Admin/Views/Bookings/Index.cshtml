@@ -75,21 +75,38 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Page.Items)
+            @if (Model.Page.Items.Count == 0)
             {
                 <tr>
-                    <td>@item.ClientName</td>
-                    <td>@item.ProviderName</td>
-                    <td>@item.ServiceName</td>
-                    <td>@item.BookingDate</td>
-                    <td>@item.StartTime</td>
-                    <td>@item.EndTime</td>
-                    <td><span class="badge bg-info text-dark">@L[item.Status]</span></td>
-                    <td>@item.CreatedAt.ToLocalTime()</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
-                    </td>
+                    <td colspan="9" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Page.Items)
+                {
+                    var statusClass = item.Status switch
+                    {
+                        Booking.StatusPending => "bg-warning text-dark",
+                        Booking.StatusConfirmed => "bg-primary",
+                        Booking.StatusCompleted => "bg-success",
+                        Booking.StatusCancelled => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+                    <tr>
+                        <td>@item.ClientName</td>
+                        <td>@item.ProviderName</td>
+                        <td>@item.ServiceName</td>
+                        <td>@item.BookingDate</td>
+                        <td>@item.StartTime</td>
+                        <td>@item.EndTime</td>
+                        <td><span class="badge @statusClass">@L[item.Status]</span></td>
+                        <td>@item.CreatedAt.ToLocalTime()</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>

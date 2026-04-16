@@ -60,6 +60,7 @@
   <data name="Provider" xml:space="preserve"><value>Teenusepakkuja</value></data>
   <data name="Salon" xml:space="preserve"><value>Salong</value></data>
   <data name="Duration" xml:space="preserve"><value>Kestus</value></data>
+  <data name="Min" xml:space="preserve"><value>min</value></data>
   <data name="Total" xml:space="preserve"><value>Kokku</value></data>
   <data name="Notes" xml:space="preserve"><value>Märkused</value></data>
   <data name="Back" xml:space="preserve"><value>Tagasi</value></data>
@@ -236,6 +237,8 @@
   <data name="DateTo" xml:space="preserve"><value>Kuupäev kuni</value></data>
   <data name="UsersAdminHelp" xml:space="preserve"><value>Halda rakenduse kasutajaid ja nende rolle.</value></data>
   <data name="BeautyProvidersAdminHelp" xml:space="preserve"><value>Vaata teenusepakkujaid ja halda aktiivsust.</value></data>
+  <data name="ProviderServices" xml:space="preserve"><value>Teenusepakkujate teenused</value></data>
+  <data name="ProviderServicesAdminHelp" xml:space="preserve"><value>Vaata teenuseid, mille teenusepakkujad on loonud.</value></data>
   <data name="BookingsAdminHelp" xml:space="preserve"><value>Vaata broneeringuid ja filtreeri staatuse või kuupäeva järgi.</value></data>
   <data name="ReviewsAdminHelp" xml:space="preserve"><value>Modereeri saadetud arvustusi.</value></data>
   <data name="SalonsAdminHelp" xml:space="preserve"><value>Loo ja halda salongide kirjeid.</value></data>
@@ -257,7 +260,20 @@
   <data name="DeleteServiceCategory" xml:space="preserve"><value>Kustuta teenusekategooria</value></data>
   <data name="DeleteServiceCategoryHelp" xml:space="preserve"><value>See eemaldab kategooria jäädavalt.</value></data>
   <data name="ServiceCategoryDetails" xml:space="preserve"><value>Teenusekategooria detailid</value></data>
+  <data name="ServiceTypeDetails" xml:space="preserve"><value>Teenusetüübi detailid</value></data>
   <data name="CreateCategory" xml:space="preserve"><value>Loo kategooria</value></data>
+  <data name="DeleteServiceType" xml:space="preserve"><value>Kustuta teenusetüüp</value></data>
+  <data name="DeleteServiceTypeHelp" xml:space="preserve"><value>See eemaldab teenusetüübi jäädavalt.</value></data>
+  <data name="ServiceCategoryDeleted" xml:space="preserve"><value>Teenusekategooria kustutati.</value></data>
+  <data name="ServiceTypeDeleted" xml:space="preserve"><value>Teenusetüüp kustutati.</value></data>
+  <data name="CannotDeleteCategoryWithServices" xml:space="preserve"><value>Teenusekategooriat, millel on teenusetüüpe või teenuseid, ei saa kustutada.</value></data>
+  <data name="CannotDeleteServiceTypeWithServices" xml:space="preserve"><value>Teenusetüüpi, millel on teenuseid, ei saa kustutada.</value></data>
+  <data name="CannotDeleteSalonWithRelations" xml:space="preserve"><value>Salongi, millel on aktiivseid töötajaid, aktiivseid omanikke või broneeringuid, ei saa kustutada.</value></data>
+  <data name="NoResults" xml:space="preserve"><value>Tulemusi ei leitud.</value></data>
+  <data name="NoResultsFound" xml:space="preserve"><value>Tulemusi ei leitud.</value></data>
+  <data name="Latitude" xml:space="preserve"><value>Laiuskraad</value></data>
+  <data name="Longitude" xml:space="preserve"><value>Pikkuskraad</value></data>
+  <data name="ProfilePictureUrl" xml:space="preserve"><value>Profiilipildi URL</value></data>
   <data name="AvailabilitySlots" xml:space="preserve"><value>Saadavuse ajad</value></data>
   <data name="SalonMemberships" xml:space="preserve"><value>Salongi liikmelisused</value></data>
   <data name="Error" xml:space="preserve"><value>Viga</value></data>

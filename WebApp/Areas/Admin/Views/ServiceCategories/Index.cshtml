@@ -20,26 +20,37 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Page.Items)
+            @if (Model.Page.Items.Count == 0)
             {
                 <tr>
-                    <td>@item.Name</td>
-                    <td>
-                        <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
-                            @(item.IsActive ? L["Active"] : L["Inactive"])
-                        </span>
-                    </td>
-                    <td>@item.ServiceTypeCount</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
-                        <form asp-action="ToggleActive" method="post" class="d-inline">
-                            <input type="hidden" name="id" value="@item.Id"/>
-                            <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")">
-                                @(item.IsActive ? L["Deactivate"] : L["Activate"])
-                            </button>
-                        </form>
-                    </td>
+                    <td colspan="4" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Page.Items)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                @(item.IsActive ? L["Active"] : L["Inactive"])
+                            </span>
+                        </td>
+                        <td>@item.ServiceTypeCount</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
+                            <form asp-action="ToggleActive" method="post" class="d-inline">
+                                <input type="hidden" name="id" value="@item.Id"/>
+                                <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                    @(item.IsActive ? L["Deactivate"] : L["Activate"])
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>

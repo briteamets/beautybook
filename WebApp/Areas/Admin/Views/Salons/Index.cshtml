@@ -23,18 +23,27 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Items)
+            @if (Model.Items.Count == 0)
             {
                 <tr>
-                    <td>@item.Name.Translate(culture)</td>
-                    <td>@item.Address</td>
-                    <td>@(item.Staff?.Count ?? 0)</td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
-                        <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
-                    </td>
+                    <td colspan="4" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Items)
+                {
+                    <tr>
+                        <td>@item.Name.Translate(culture)</td>
+                        <td>@item.Address</td>
+                        <td>@(item.Staff?.Count(st => st.To == null) ?? 0)</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>

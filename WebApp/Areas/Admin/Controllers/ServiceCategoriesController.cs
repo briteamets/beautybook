@@ -40,9 +40,22 @@ public class ServiceCategoriesController : AdminControllerBase
 
     public async Task<IActionResult> Details(Guid id)
     {
-        var category = await Context.ServiceCategories.Include(c => c.Services!).FirstOrDefaultAsync(c => c.Id == id);
+        var category = await Context.ServiceCategories
+            .Include(c => c.Services!)
+            .Include(c => c.ServiceTypes!)
+            .FirstOrDefaultAsync(c => c.Id == id);
         if (category == null) return NotFound();
-        return View(category);
+        return View(new ServiceCategoryDetailsViewModel
+        {
+            Id = category.Id,
+            NameEn = category.Name.Translate("en") ?? string.Empty,
+            NameEt = category.Name.Translate("et") ?? string.Empty,
+            DescriptionEn = category.Description?.Translate("en"),
+            DescriptionEt = category.Description?.Translate("et"),
+            IsActive = category.IsActive,
+            ServiceTypeCount = category.ServiceTypes?.Count ?? 0,
+            ServiceCount = category.Services?.Count ?? 0
+        });
     }
 
     public IActionResult Create()
@@ -126,6 +139,34 @@ public class ServiceCategoriesController : AdminControllerBase
         category.IsActive = !category.IsActive;
         await Context.SaveChangesAsync();
         SetSuccessMessage(category.IsActive ? T("ServiceCategoryActivated") : T("ServiceCategoryDeactivated"));
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var category = await Context.ServiceCategories.FirstOrDefaultAsync(c => c.Id == id);
+        if (category == null) return NotFound();
+        return View(category);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        var category = await Context.ServiceCategories.FirstOrDefaultAsync(c => c.Id == id);
+        if (category == null) return NotFound();
+
+        var hasServiceTypes = await Context.ServiceTypes.AnyAsync(t => t.ServiceCategoryId == id);
+        var hasServices = await Context.Services.AnyAsync(s => s.ServiceCategoryId == id);
+        if (hasServiceTypes || hasServices)
+        {
+            SetErrorMessage(T("CannotDeleteCategoryWithServices"));
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
+        Context.ServiceCategories.Remove(category);
+        await Context.SaveChangesAsync();
+        SetSuccessMessage(T("ServiceCategoryDeleted"));
         return RedirectToAction(nameof(Index));
     }
 

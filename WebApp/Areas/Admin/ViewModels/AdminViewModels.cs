@@ -81,7 +81,7 @@ public class AdminUserConfirmActionViewModel
 
 public class AdminDashboardViewModel
 {
-    public int TotalClientUsers { get; set; }
+    public int TotalRegisteredUsers { get; set; }
     public int TotalServiceProviders { get; set; }
     public int TotalBookingsToday { get; set; }
     public List<AdminActivityFeedItem> RecentActivity { get; set; } = new();
@@ -174,6 +174,18 @@ public class ServiceCategoryIndexViewModel
     public PagedViewModel<ServiceCategoryIndexItem> Page { get; set; } = new();
 }
 
+public class ServiceCategoryDetailsViewModel
+{
+    public Guid Id { get; set; }
+    public string NameEn { get; set; } = string.Empty;
+    public string NameEt { get; set; } = string.Empty;
+    public string? DescriptionEn { get; set; }
+    public string? DescriptionEt { get; set; }
+    public bool IsActive { get; set; }
+    public int ServiceTypeCount { get; set; }
+    public int ServiceCount { get; set; }
+}
+
 public class ServiceTypeIndexFilterViewModel
 {
     public Guid? CategoryId { get; set; }
@@ -204,6 +216,18 @@ public class ServiceTypeFormViewModel
     public TranslationFormViewModel Description { get; set; } = new();
     public bool IsActive { get; set; } = true;
     public List<SelectListItem> Categories { get; set; } = new();
+}
+
+public class ServiceTypeDetailsViewModel
+{
+    public Guid Id { get; set; }
+    public string NameEn { get; set; } = string.Empty;
+    public string NameEt { get; set; } = string.Empty;
+    public string? DescriptionEn { get; set; }
+    public string? DescriptionEt { get; set; }
+    public string CategoryName { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public int ServiceCount { get; set; }
 }
 
 public class ProviderIndexItem
@@ -305,4 +329,46 @@ public class BookingCancelViewModel
     [Required]
     [StringLength(2000)]
     public string Reason { get; set; } = string.Empty;
+}
+
+public class AdminServiceIndexFilterViewModel
+{
+    public Guid? ProviderId { get; set; }
+    public Guid? CategoryId { get; set; }
+    public bool? IsActive { get; set; }
+}
+
+public class AdminServiceIndexItem
+{
+    public Guid Id { get; set; }
+    public string ServiceName { get; set; } = default!;
+    public string CategoryName { get; set; } = default!;
+    public string ProviderName { get; set; } = default!;
+    public decimal Price { get; set; }
+    public int DurationMinutes { get; set; }
+    public bool IsActive { get; set; }
+}
+
+public class AdminServiceIndexViewModel
+{
+    public AdminServiceIndexFilterViewModel Filter { get; set; } = new();
+    public List<SelectListItem> Providers { get; set; } = new();
+    public List<SelectListItem> Categories { get; set; } = new();
+    public PagedViewModel<AdminServiceIndexItem> Page { get; set; } = new();
+}
+
+public class AdminServiceDetailsViewModel
+{
+    public Guid Id { get; set; }
+    public string ServiceName { get; set; } = default!;
+    public string CategoryName { get; set; } = default!;
+    public string ProviderName { get; set; } = default!;
+    public Guid ProviderId { get; set; }
+    public string? ProviderEmail { get; set; }
+    public string? Description { get; set; }
+    public decimal Price { get; set; }
+    public int DurationMinutes { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime From { get; set; }
+    public DateTime? To { get; set; }
 }

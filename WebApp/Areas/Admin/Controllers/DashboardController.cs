@@ -19,7 +19,7 @@ public class DashboardController : AdminControllerBase
     public async Task<IActionResult> Index()
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var clientCount = await CountUsersInRoles("Client");
+        var userCount = await Context.Users.CountAsync();
         var providerCount = await CountUsersInRoles("ServiceProvider");
         var bookingsToday = await Context.Bookings.CountAsync(b => b.BookingDate == today);
 
@@ -30,14 +30,26 @@ public class DashboardController : AdminControllerBase
             .Take(20)
             .ToListAsync();
 
+        var recentUserIds = recentUsers.Select(u => u.Id).ToList();
+        var roleRows = await Context.UserRoles
+            .Where(ur => recentUserIds.Contains(ur.UserId))
+            .Join(Context.Roles,
+                ur => ur.RoleId,
+                role => role.Id,
+                (ur, role) => new { ur.UserId, role.Name })
+            .ToListAsync();
+        var rolesByUserId = roleRows
+            .GroupBy(r => r.UserId)
+            .ToDictionary(g => g.Key, g => g.Select(r => r.Name ?? string.Empty).Where(r => r.Length > 0).ToList());
+
         foreach (var user in recentUsers)
         {
-            var roles = await _userManager.GetRolesAsync(user);
+            rolesByUserId.TryGetValue(user.Id, out var roles);
             activity.Add(new AdminActivityFeedItem
             {
                 ActivityType = "UserRegistration",
                 PrimaryText = user.UserName ?? user.Email ?? string.Empty,
-                SecondaryText = string.Join(", ", roles),
+                SecondaryText = roles == null ? string.Empty : string.Join(", ", roles),
                 Timestamp = user.CreatedAt
             });
         }
@@ -77,7 +89,7 @@ public class DashboardController : AdminControllerBase
 
         return View(new AdminDashboardViewModel
         {
-            TotalClientUsers = clientCount,
+            TotalRegisteredUsers = userCount,
             TotalServiceProviders = providerCount,
             TotalBookingsToday = bookingsToday,
             RecentActivity = activity.OrderByDescending(a => a.Timestamp).Take(20).ToList()

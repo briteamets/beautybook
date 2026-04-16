@@ -44,29 +44,38 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var item in Model.Page.Items)
+            @if (Model.Page.Items.Count == 0)
             {
                 <tr>
-                    <td>
-                        <div>@item.Name</div>
-                        @if (item.IsProviderApplicant)
-                        {
-                            <span class="badge bg-info text-dark">@L["WantsToBeProvider"]</span>
-                        }
-                    </td>
-                    <td>@item.Email</td>
-                    <td>@item.Role</td>
-                    <td>@item.RegisteredAt.ToLocalTime()</td>
-                    <td>
-                        <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
-                            @(item.IsActive ? L["Active"] : L["Inactive"])
-                        </span>
-                    </td>
-                    <td class="text-end">
-                        <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
-                        <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
-                    </td>
+                    <td colspan="6" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
+            }
+            else
+            {
+                foreach (var item in Model.Page.Items)
+                {
+                    <tr>
+                        <td>
+                            <div>@item.Name</div>
+                            @if (item.IsProviderApplicant)
+                            {
+                                <span class="badge bg-info text-dark">@L["WantsToBeProvider"]</span>
+                            }
+                        </td>
+                        <td>@item.Email</td>
+                        <td>@item.Role</td>
+                        <td>@item.RegisteredAt.ToLocalTime()</td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                @(item.IsActive ? L["Active"] : L["Inactive"])
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                        </td>
+                    </tr>
+                }
             }
             </tbody>
         </table>

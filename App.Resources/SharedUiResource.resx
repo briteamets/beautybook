@@ -291,6 +291,7 @@
   <data name="BookingCreated" xml:space="preserve"><value>New booking</value></data>
   <data name="BookingCancelled" xml:space="preserve"><value>Booking cancelled.</value></data>
   <data name="ServiceProviders" xml:space="preserve"><value>Service Providers</value></data>
+  <data name="ProviderServices" xml:space="preserve"><value>Provider services</value></data>
   <data name="ServiceCatalog" xml:space="preserve"><value>Service Catalog</value></data>
   <data name="Categories" xml:space="preserve"><value>Categories</value></data>
   <data name="Suspended" xml:space="preserve"><value>Suspended</value></data>
@@ -311,6 +312,7 @@
   <data name="CannotDeactivateCategoryWithActiveTypes" xml:space="preserve"><value>Deactivate active service types in this category first.</value></data>
   <data name="RequiredField" xml:space="preserve"><value>This field is required.</value></data>
   <data name="ServiceCatalogAdminHelp" xml:space="preserve"><value>Maintain translated service types used by providers.</value></data>
+  <data name="ProviderServicesAdminHelp" xml:space="preserve"><value>Review the services created by providers.</value></data>
   <data name="CreateServiceType" xml:space="preserve"><value>Create service type</value></data>
   <data name="EditServiceType" xml:space="preserve"><value>Edit service type</value></data>
   <data name="ServiceTypeCreated" xml:space="preserve"><value>Service type created.</value></data>
@@ -343,6 +345,8 @@
   <data name="StaffProviderRemoved" xml:space="preserve"><value>Provider removed from salon staff.</value></data>
   <data name="ServiceProvider" xml:space="preserve"><value>Service provider</value></data>
   <data name="NoServicesFound" xml:space="preserve"><value>No services found.</value></data>
+  <data name="NoResults" xml:space="preserve"><value>No results found.</value></data>
+  <data name="Min" xml:space="preserve"><value>min</value></data>
   <data name="MinutesShort" xml:space="preserve"><value>min</value></data>
   <data name="Latitude" xml:space="preserve"><value>Latitude</value></data>
   <data name="Longitude" xml:space="preserve"><value>Longitude</value></data>
@@ -364,4 +368,13 @@
   <data name="WantsToBeProvider" xml:space="preserve"><value>Wants to be provider</value></data>
   <data name="ProviderApplication" xml:space="preserve"><value>Provider application</value></data>
   <data name="CannotChangeOwnRole" xml:space="preserve"><value>You cannot change your own admin role.</value></data>
+  <data name="EditProfile" xml:space="preserve"><value>Edit Profile</value></data>
+  <data name="ChooseProvider" xml:space="preserve"><value>Choose your provider</value></data>
+  <data name="Selected" xml:space="preserve"><value>Selected</value></data>
+  <data name="OurTeam" xml:space="preserve"><value>Our Team</value></data>
+  <data name="ViewServices" xml:space="preserve"><value>View services</value></data>
+  <data name="Close" xml:space="preserve"><value>Close</value></data>
+  <data name="ProfileUpdated" xml:space="preserve"><value>Profile updated.</value></data>
+  <data name="DisplayName" xml:space="preserve"><value>Display name (shown to customers)</value></data>
+  <data name="ProfilePicturePreview" xml:space="preserve"><value>Profile picture preview</value></data>
 </root>

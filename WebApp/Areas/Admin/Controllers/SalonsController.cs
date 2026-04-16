@@ -225,6 +225,16 @@ public class SalonsController : AdminControllerBase
     {
         var salon = await Context.Salons.FirstOrDefaultAsync(s => s.Id == id);
         if (salon == null) return NotFound();
+
+        var hasActiveStaff = await Context.SalonStaff.AnyAsync(st => st.SalonId == id && st.To == null);
+        var hasActiveOwners = await Context.SalonOwners.AnyAsync(o => o.SalonId == id && o.To == null);
+        var hasBookings = await Context.Bookings.AnyAsync(b => b.SalonId == id);
+        if (hasActiveStaff || hasActiveOwners || hasBookings)
+        {
+            SetErrorMessage(T("CannotDeleteSalonWithRelations"));
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
         Context.Salons.Remove(salon);
         await Context.SaveChangesAsync();
         SetSuccessMessage(T("SalonDeleted"));

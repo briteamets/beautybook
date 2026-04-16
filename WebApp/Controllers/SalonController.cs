@@ -49,6 +49,64 @@ public class SalonController : ClientControllerBase
         var effectiveDate = selectedDate ?? allDates.FirstOrDefault();
         if (effectiveDate == default) effectiveDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
+        var staffMembers = salon.Staff?
+            .Select(st =>
+            {
+                var reviews = st.BeautyProvider?.Services?
+                    .SelectMany(service => service.Bookings ?? [])
+                    .Where(b => b.Review != null)
+                    .Select(b => b.Review!)
+                    .ToList() ?? [];
+
+                return new SalonStaffBookingViewModel
+                {
+                    ProviderId = st.BeautyProviderId,
+                    ProviderName = st.BeautyProvider?.ProfileName ?? string.Empty,
+                    Role = st.Role,
+                    ProfilePictureUrl = st.BeautyProvider?.ProfilePictureUrl,
+                    AverageRating = reviews.Count == 0 ? 0 : Math.Round((decimal)reviews.Average(r => r.Rating), 2),
+                    Services = st.BeautyProvider?.Services?
+                        .OrderBy(s => s.Name.Translate())
+                        .Select(s => new ServiceCardViewModel
+                        {
+                            Id = s.Id,
+                            Name = s.Name.Translate() ?? string.Empty,
+                            Description = s.Description?.Translate(),
+                            Price = s.Price,
+                            DurationMinutes = s.DurationMinutes
+                        }).ToList() ?? [],
+                    Slots = st.BeautyProvider?.Availabilities?
+                        .Where(a => a.Date == effectiveDate && !a.IsBooked)
+                        .OrderBy(a => a.StartTime)
+                        .Select(a => new AvailabilitySlotViewModel
+                        {
+                            Id = a.Id,
+                            StartTime = a.StartTime.ToString("HH:mm"),
+                            EndTime = a.EndTime.ToString("HH:mm")
+                        }).ToList() ?? []
+                };
+            }).ToList() ?? [];
+
+        var allServices = (salon.Staff ?? [])
+            .Where(st => st.To == null)
+            .SelectMany(st => (st.BeautyProvider?.Services ?? [])
+                .Select(s => new SalonAllServicesItemViewModel
+                {
+                    ServiceId = s.Id,
+                    ServiceName = s.Name.Translate() ?? string.Empty,
+                    Description = s.Description?.Translate(),
+                    ProviderId = st.BeautyProviderId,
+                    ProviderName = st.BeautyProvider?.ProfileName ?? string.Empty,
+                    ProviderPictureUrl = st.BeautyProvider?.ProfilePictureUrl,
+                    Price = s.Price,
+                    DurationMinutes = s.DurationMinutes
+                }))
+            .OrderBy(s => s.ServiceName)
+            .ThenBy(s => s.Price)
+            .ToList();
+
+        var salonReviews = staffMembers.Select(s => s.AverageRating).Where(r => r > 0).ToList();
+
         var vm = new SalonDetailsViewModel
         {
             Id = salon.Id,
@@ -59,47 +117,10 @@ public class SalonController : ClientControllerBase
             SelectedDate = effectiveDate,
             SelectedStaffId = staffId,
             AvailableDates = allDates,
-            StaffMembers = salon.Staff?
-                .Select(st =>
-                {
-                    var reviews = st.BeautyProvider?.Services?
-                        .SelectMany(service => service.Bookings ?? [])
-                        .Where(b => b.Review != null)
-                        .Select(b => b.Review!)
-                        .ToList() ?? [];
-
-                    return new SalonStaffBookingViewModel
-                    {
-                        ProviderId = st.BeautyProviderId,
-                        ProviderName = st.BeautyProvider?.ProfileName ?? string.Empty,
-                        Role = st.Role,
-                        ProfilePictureUrl = st.BeautyProvider?.ProfilePictureUrl,
-                        AverageRating = reviews.Count == 0 ? 0 : Math.Round((decimal)reviews.Average(r => r.Rating), 2),
-                        Services = st.BeautyProvider?.Services?
-                            .OrderBy(s => s.Name.Translate())
-                            .Select(s => new ServiceCardViewModel
-                            {
-                                Id = s.Id,
-                                Name = s.Name.Translate() ?? string.Empty,
-                                Description = s.Description?.Translate(),
-                                Price = s.Price,
-                                DurationMinutes = s.DurationMinutes
-                            }).ToList() ?? [],
-                        Slots = st.BeautyProvider?.Availabilities?
-                            .Where(a => a.Date == effectiveDate && !a.IsBooked)
-                            .OrderBy(a => a.StartTime)
-                            .Select(a => new AvailabilitySlotViewModel
-                            {
-                                Id = a.Id,
-                                StartTime = a.StartTime.ToString("HH:mm"),
-                                EndTime = a.EndTime.ToString("HH:mm")
-                            }).ToList() ?? []
-                    };
-                }).ToList() ?? []
+            AverageRating = salonReviews.Count == 0 ? 0 : Math.Round(salonReviews.Average(), 2),
+            StaffMembers = staffMembers,
+            AllServices = allServices
         };
-
-        var salonReviews = vm.StaffMembers.Select(s => s.AverageRating).Where(r => r > 0).ToList();
-        vm.AverageRating = salonReviews.Count == 0 ? 0 : Math.Round(salonReviews.Average(), 2);
 
         return View(vm);
     }

@@ -21,23 +21,49 @@ public class BookingController : ClientControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Book(Guid serviceId, DateOnly? date = null)
+    public async Task<IActionResult> Book(Guid serviceId, DateOnly? date = null, Guid? salonId = null)
     {
         var service = await Context.Services
             .Include(s => s.BeautyProvider)
+            .Include(s => s.ServiceCategory)
             .FirstOrDefaultAsync(s => s.Id == serviceId && s.To == null && s.IsActive);
         if (service == null) return NotFound();
 
-        return View(new DynamicBookingViewModel
+        var vm = new DynamicBookingViewModel
         {
             ServiceId = service.Id,
             ServiceName = service.Name.Translate() ?? string.Empty,
             ProviderName = service.BeautyProvider?.ProfileName ?? string.Empty,
             ProviderAddress = service.BeautyProvider?.Address ?? string.Empty,
+            ProviderPictureUrl = service.BeautyProvider?.ProfilePictureUrl,
             Price = service.Price,
             DurationMinutes = service.DurationMinutes,
-            SelectedDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow)
-        });
+            SelectedDate = date ?? DateOnly.FromDateTime(DateTime.UtcNow),
+            SalonId = salonId
+        };
+
+        if (salonId.HasValue)
+        {
+            var categoryId = service.ServiceCategoryId;
+            var currentProviderId = service.BeautyProviderId;
+            var siblings = await Context.SalonStaff
+                .Where(st => st.SalonId == salonId.Value && st.To == null && st.BeautyProviderId != currentProviderId)
+                .Include(st => st.BeautyProvider)
+                    .ThenInclude(p => p!.Services!.Where(s => s.To == null && s.IsActive && s.ServiceCategoryId == categoryId))
+                .ToListAsync();
+
+            vm.SiblingProviders = siblings
+                .Where(st => st.BeautyProvider?.Services?.Any() == true)
+                .Select(st => new SiblingProviderViewModel
+                {
+                    ProviderName = st.BeautyProvider!.ProfileName,
+                    ProfilePictureUrl = st.BeautyProvider.ProfilePictureUrl,
+                    ServiceId = st.BeautyProvider.Services!.First().Id,
+                    ServicePrice = st.BeautyProvider.Services!.First().Price
+                }).ToList();
+        }
+
+        return View(vm);
     }
 
     [HttpGet]
@@ -61,12 +87,12 @@ public class BookingController : ClientControllerBase
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ConfirmDynamic(Guid serviceId, DateOnly bookingDate, TimeSpan startTime, string? notes)
+    public async Task<IActionResult> ConfirmDynamic(Guid serviceId, DateOnly bookingDate, TimeSpan startTime, string? notes, Guid? salonId = null)
     {
         if (bookingDate < DateOnly.FromDateTime(DateTime.UtcNow))
         {
             SetErrorMessage(T("ChooseFutureTimeSlot"));
-            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd") });
+            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd"), salonId });
         }
 
         var service = await Context.Services
@@ -79,7 +105,7 @@ public class BookingController : ClientControllerBase
         if (slot == null)
         {
             SetErrorMessage(T("SelectedTimeSlotUnavailable"));
-            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd") });
+            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd"), salonId });
         }
 
         var userId = GetCurrentUserId();
@@ -95,13 +121,14 @@ public class BookingController : ClientControllerBase
         if (hasClientOverlap)
         {
             SetErrorMessage(T("ClientOverlappingBooking"));
-            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd") });
+            return RedirectToAction(nameof(Book), new { serviceId, date = bookingDate.ToString("yyyy-MM-dd"), salonId });
         }
 
         var booking = new Booking
         {
             UserId = userId,
             ServiceId = service.Id,
+            SalonId = salonId,
             BookedAt = DateTime.UtcNow,
             BookingDate = bookingDate,
             StartTime = slot.StartTime,

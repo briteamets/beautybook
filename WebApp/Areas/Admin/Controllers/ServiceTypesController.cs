@@ -59,6 +59,27 @@ public class ServiceTypesController : AdminControllerBase
         });
     }
 
+    public async Task<IActionResult> Details(Guid id)
+    {
+        var serviceType = await Context.ServiceTypes
+            .Include(t => t.ServiceCategory)
+            .Include(t => t.Services!)
+            .FirstOrDefaultAsync(t => t.Id == id);
+        if (serviceType == null) return NotFound();
+
+        return View(new ServiceTypeDetailsViewModel
+        {
+            Id = serviceType.Id,
+            NameEn = serviceType.Name.Translate("en") ?? string.Empty,
+            NameEt = serviceType.Name.Translate("et") ?? string.Empty,
+            DescriptionEn = serviceType.Description?.Translate("en"),
+            DescriptionEt = serviceType.Description?.Translate("et"),
+            CategoryName = serviceType.ServiceCategory?.Name.Translate() ?? string.Empty,
+            IsActive = serviceType.IsActive,
+            ServiceCount = serviceType.Services?.Count ?? 0
+        });
+    }
+
     public async Task<IActionResult> Create()
     {
         return View(new ServiceTypeFormViewModel
@@ -154,6 +175,34 @@ public class ServiceTypesController : AdminControllerBase
         serviceType.IsActive = !serviceType.IsActive;
         await Context.SaveChangesAsync();
         SetSuccessMessage(serviceType.IsActive ? T("ServiceTypeActivated") : T("ServiceTypeDeactivated"));
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var serviceType = await Context.ServiceTypes
+            .Include(t => t.ServiceCategory)
+            .FirstOrDefaultAsync(t => t.Id == id);
+        if (serviceType == null) return NotFound();
+        return View(serviceType);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        var serviceType = await Context.ServiceTypes.FirstOrDefaultAsync(t => t.Id == id);
+        if (serviceType == null) return NotFound();
+
+        if (await Context.Services.AnyAsync(s => s.ServiceTypeId == id))
+        {
+            SetErrorMessage(T("CannotDeleteServiceTypeWithServices"));
+            return RedirectToAction(nameof(Delete), new { id });
+        }
+
+        Context.ServiceTypes.Remove(serviceType);
+        await Context.SaveChangesAsync();
+        SetSuccessMessage(T("ServiceTypeDeleted"));
         return RedirectToAction(nameof(Index));
     }
 

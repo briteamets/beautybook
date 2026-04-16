@@ -291,6 +291,7 @@
   <data name="BookingCreated" xml:space="preserve"><value>Uus broneering</value></data>
   <data name="BookingCancelled" xml:space="preserve"><value>Broneering tühistati.</value></data>
   <data name="ServiceProviders" xml:space="preserve"><value>Teenusepakkujad</value></data>
+  <data name="ProviderServices" xml:space="preserve"><value>Teenusepakkujate teenused</value></data>
   <data name="ServiceCatalog" xml:space="preserve"><value>Teenusekataloog</value></data>
   <data name="Categories" xml:space="preserve"><value>Kategooriad</value></data>
   <data name="Suspended" xml:space="preserve"><value>Peatatud</value></data>
@@ -311,6 +312,7 @@
   <data name="CannotDeactivateCategoryWithActiveTypes" xml:space="preserve"><value>Deaktiveeri esmalt selle kategooria aktiivsed teenusetüübid.</value></data>
   <data name="RequiredField" xml:space="preserve"><value>See väli on kohustuslik.</value></data>
   <data name="ServiceCatalogAdminHelp" xml:space="preserve"><value>Halda tõlgitud teenusetüüpe, mida teenusepakkujad kasutavad.</value></data>
+  <data name="ProviderServicesAdminHelp" xml:space="preserve"><value>Vaata teenuseid, mille teenusepakkujad on loonud.</value></data>
   <data name="CreateServiceType" xml:space="preserve"><value>Loo teenusetüüp</value></data>
   <data name="EditServiceType" xml:space="preserve"><value>Muuda teenusetüüpi</value></data>
   <data name="ServiceTypeCreated" xml:space="preserve"><value>Teenusetüüp loodi.</value></data>
@@ -343,6 +345,8 @@
   <data name="StaffProviderRemoved" xml:space="preserve"><value>Teenusepakkuja eemaldati salongi töötajate seast.</value></data>
   <data name="ServiceProvider" xml:space="preserve"><value>Teenusepakkuja</value></data>
   <data name="NoServicesFound" xml:space="preserve"><value>Teenuseid ei leitud.</value></data>
+  <data name="NoResults" xml:space="preserve"><value>Tulemusi ei leitud.</value></data>
+  <data name="Min" xml:space="preserve"><value>min</value></data>
   <data name="MinutesShort" xml:space="preserve"><value>min</value></data>
   <data name="Latitude" xml:space="preserve"><value>Laiuskraad</value></data>
   <data name="Longitude" xml:space="preserve"><value>Pikkuskraad</value></data>
@@ -364,4 +368,13 @@
   <data name="WantsToBeProvider" xml:space="preserve"><value>Soovib teenusepakkujaks</value></data>
   <data name="ProviderApplication" xml:space="preserve"><value>Teenusepakkuja avaldus</value></data>
   <data name="CannotChangeOwnRole" xml:space="preserve"><value>Sa ei saa enda adminirolli muuta.</value></data>
+  <data name="EditProfile" xml:space="preserve"><value>Muuda profiili</value></data>
+  <data name="ChooseProvider" xml:space="preserve"><value>Vali teenusepakkuja</value></data>
+  <data name="Selected" xml:space="preserve"><value>Valitud</value></data>
+  <data name="OurTeam" xml:space="preserve"><value>Meie meeskond</value></data>
+  <data name="ViewServices" xml:space="preserve"><value>Vaata teenuseid</value></data>
+  <data name="Close" xml:space="preserve"><value>Sulge</value></data>
+  <data name="ProfileUpdated" xml:space="preserve"><value>Profiil uuendatud.</value></data>
+  <data name="DisplayName" xml:space="preserve"><value>Kuvatav nimi (nähtav klientidele)</value></data>
+  <data name="ProfilePicturePreview" xml:space="preserve"><value>Profiilipildi eelvaade</value></data>
 </root>

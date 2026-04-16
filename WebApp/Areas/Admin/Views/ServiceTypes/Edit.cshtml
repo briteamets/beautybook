@@ -1,4 +1,8 @@
 @model ServiceTypeFormViewModel
+@{
+    ViewData["FormAction"] = "Edit";
+    ViewData["SubmitLabel"] = L["SaveChanges"];
+}
 
 <h1 class="h3 mb-4">@L["EditServiceType"]</h1>
 

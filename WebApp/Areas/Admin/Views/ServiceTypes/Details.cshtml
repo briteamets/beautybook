@@ -1,0 +1,34 @@
+@model ServiceTypeDetailsViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["ServiceTypeDetails"]</h1>
+        <p class="text-muted mb-0">@Model.NameEn</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+        <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">@L["Delete"]</a>
+        <a class="btn btn-outline-dark" asp-action="Index">@L["Back"]</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@L["NameEn"]</dt>
+            <dd class="col-sm-9">@Model.NameEn</dd>
+            <dt class="col-sm-3">@L["NameEt"]</dt>
+            <dd class="col-sm-9">@Model.NameEt</dd>
+            <dt class="col-sm-3">@L["DescriptionEn"]</dt>
+            <dd class="col-sm-9">@Model.DescriptionEn</dd>
+            <dt class="col-sm-3">@L["DescriptionEt"]</dt>
+            <dd class="col-sm-9">@Model.DescriptionEt</dd>
+            <dt class="col-sm-3">@L["Category"]</dt>
+            <dd class="col-sm-9">@Model.CategoryName</dd>
+            <dt class="col-sm-3">@L["Status"]</dt>
+            <dd class="col-sm-9">@(Model.IsActive ? L["Active"] : L["Inactive"])</dd>
+            <dt class="col-sm-3">@L["Services"]</dt>
+            <dd class="col-sm-9">@Model.ServiceCount</dd>
+        </dl>
+    </div>
+</div>

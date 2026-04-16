@@ -1,0 +1,25 @@
+@model ServiceType
+@{
+    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h1 class="h3">@L["DeleteServiceType"]</h1>
+        <p class="text-muted">@L["DeleteServiceTypeHelp"]</p>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">@L["Name"]</dt>
+            <dd class="col-sm-9">@Model.Name.Translate(culture)</dd>
+            <dt class="col-sm-3">@L["Category"]</dt>
+            <dd class="col-sm-9">@Model.ServiceCategory?.Name.Translate(culture)</dd>
+        </dl>
+    </div>
+    <div class="card-footer d-flex justify-content-between">
+        <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+        <form asp-action="Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id"/>
+            <button type="submit" class="btn btn-danger">@L["Delete"]</button>
+        </form>
+    </div>
+</div>

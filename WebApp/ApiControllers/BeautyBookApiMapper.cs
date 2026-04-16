@@ -86,7 +86,8 @@ public static class BeautyBookApiMapper
             AppointmentDateTime = entity.AppointmentDateTime,
             Status = entity.Status,
             TotalPrice = entity.Service?.Price ?? 0,
-            IsPaid = entity.BookingPayments?.Any(bp => bp.Payment?.Status == Payment.StatusPaid) ?? false
+            IsPaid = entity.BookingPayments?.Any(bp => bp.Payment?.Status == Payment.StatusPaid) ?? false,
+            Notes = entity.Notes
         };
     }
 

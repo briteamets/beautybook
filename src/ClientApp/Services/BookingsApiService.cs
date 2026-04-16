@@ -20,6 +20,9 @@ public class BookingsApiService
     public Task<BookingResponse?> CreateAsync(BookingCreateRequest request)
         => _api.PostAsync<BookingResponse>("/api/v1/bookings", request);
 
+    public Task<BookingResponse?> UpdateAsync(Guid id, string? notes)
+        => _api.PatchAsync<BookingResponse>($"/api/v1/bookings/{id}", new BookingUpdateRequest { Notes = notes });
+
     public Task<BookingResponse?> CancelAsync(Guid id, string? reason)
         => _api.PutAsync<BookingResponse>($"/api/v1/bookings/{id}/cancel", new BookingCancelRequest { Reason = reason });
 }

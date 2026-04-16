@@ -126,6 +126,23 @@ public class BookingsController : BaseApiController
         return CreatedAtAction(nameof(GetBooking), new { id = booking.Id, version = "1.0" }, createdBooking.ToResponse());
     }
 
+    [HttpPatch("{id:guid}")]
+    public async Task<ActionResult<BookingResponse>> UpdateBooking(Guid id, [FromBody] BookingUpdateRequest request)
+    {
+        var booking = await _context.Bookings
+            .AsTracking()
+            .Include(b => b.Service).ThenInclude(s => s!.BeautyProvider)
+            .Include(b => b.Salon)
+            .FirstOrDefaultAsync(b => b.Id == id && b.To == null);
+        if (booking == null) return NotFound();
+        if (!IsCurrentUser(booking.UserId)) return Forbid();
+
+        booking.Notes = request.Notes;
+        await _context.SaveChangesAsync();
+
+        return Ok(booking.ToResponse());
+    }
+
     [HttpPut("{id:guid}/cancel")]
     public async Task<ActionResult<BookingResponse>> CancelBooking(Guid id, [FromBody] BookingCancelRequest? request)
     {

@@ -84,7 +84,9 @@ public class ServiceTypesController : AdminControllerBase
     {
         return View(new ServiceTypeFormViewModel
         {
-            Categories = await GetCategoryOptions(null)
+            Categories = await GetCategoryOptions(null),
+            FormAction = "Create",
+            SubmitLabel = T("Save")
         });
     }
 
@@ -96,6 +98,8 @@ public class ServiceTypesController : AdminControllerBase
         if (!ModelState.IsValid)
         {
             vm.Categories = await GetCategoryOptions(vm.ServiceCategoryId);
+            vm.FormAction = "Create";
+            vm.SubmitLabel = T("Save");
             return View(vm);
         }
 
@@ -134,7 +138,9 @@ public class ServiceTypesController : AdminControllerBase
                 Et = serviceType.Description?.Translate("et") ?? string.Empty
             },
             IsActive = serviceType.IsActive,
-            Categories = await GetCategoryOptions(serviceType.ServiceCategoryId)
+            Categories = await GetCategoryOptions(serviceType.ServiceCategoryId),
+            FormAction = "Edit",
+            SubmitLabel = T("SaveChanges")
         });
     }
 
@@ -147,6 +153,8 @@ public class ServiceTypesController : AdminControllerBase
         if (!ModelState.IsValid)
         {
             vm.Categories = await GetCategoryOptions(vm.ServiceCategoryId);
+            vm.FormAction = "Edit";
+            vm.SubmitLabel = T("SaveChanges");
             return View(vm);
         }
 

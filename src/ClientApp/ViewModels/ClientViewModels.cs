@@ -127,7 +127,7 @@ public class BookingEditViewModel
     public string ProviderName { get; set; } = default!;
     public DateTime AppointmentDateTime { get; set; }
     public string Status { get; set; } = default!;
-    public string? Reason { get; set; }
+    public string? Notes { get; set; }
 }
 
 public class SelectOptionViewModel

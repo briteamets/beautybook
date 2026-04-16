@@ -1,15 +1,24 @@
 @model BookingEditViewModel
 
-<h1>@L["Edit"] @L["Bookings"]</h1>
-<p>@Model.ServiceName - @Model.AppointmentDateTime.ToString("f")</p>
-<p class="text-muted">@L["BackendCancelEditNote"]</p>
+<h1>@L["Edit"] @L["Booking"]</h1>
+
+<dl class="row mb-4">
+    <dt class="col-sm-3">@L["Service"]</dt>
+    <dd class="col-sm-9">@Model.ServiceName</dd>
+    <dt class="col-sm-3">@L["Provider"]</dt>
+    <dd class="col-sm-9">@Model.ProviderName</dd>
+    <dt class="col-sm-3">@L["Appointment"]</dt>
+    <dd class="col-sm-9">@Model.AppointmentDateTime.ToString("f")</dd>
+    <dt class="col-sm-3">@L["Status"]</dt>
+    <dd class="col-sm-9">@Model.Status</dd>
+</dl>
 
 <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
     <input type="hidden" asp-for="Id"/>
     <div class="mb-3">
-        <label asp-for="Reason" class="form-label">@L["Notes"]</label>
-        <textarea asp-for="Reason" class="form-control"></textarea>
+        <label asp-for="Notes" class="form-label">@L["Notes"]</label>
+        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">@L["Save"]</button>
-    <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
+    <button type="submit" class="btn btn-primary">@L["SaveChanges"]</button>
+    <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.Id">@L["Cancel"]</a>
 </form>

@@ -19,6 +19,7 @@ public class BackendApiClient
     public async Task<T?> GetAsync<T>(string url) => await SendAsync<T>(HttpMethod.Get, url);
     public async Task<T?> PostAsync<T>(string url, object body) => await SendAsync<T>(HttpMethod.Post, url, body);
     public async Task<T?> PutAsync<T>(string url, object body) => await SendAsync<T>(HttpMethod.Put, url, body);
+    public async Task<T?> PatchAsync<T>(string url, object body) => await SendAsync<T>(HttpMethod.Patch, url, body);
     public async Task DeleteAsync(string url) => await SendAsync<object>(HttpMethod.Delete, url);
 
     public async Task<T?> AnonymousPostAsync<T>(string url, object body)

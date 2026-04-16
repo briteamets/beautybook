@@ -216,6 +216,8 @@ public class ServiceTypeFormViewModel
     public TranslationFormViewModel Description { get; set; } = new();
     public bool IsActive { get; set; } = true;
     public List<SelectListItem> Categories { get; set; } = new();
+    public string FormAction { get; set; } = "Create";
+    public string SubmitLabel { get; set; } = "Save";
 }
 
 public class ServiceTypeDetailsViewModel

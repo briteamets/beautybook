@@ -1,10 +1,6 @@
 @model ServiceTypeFormViewModel
-@{
-    var formAction = ViewData["FormAction"]?.ToString();
-    var submitLabel = ViewData["SubmitLabel"]?.ToString() ?? L["Save"].Value;
-}
 
-<form asp-action="@formAction" method="post" class="card shadow-sm">
+<form asp-action="@Model.FormAction" method="post" class="card shadow-sm">
     <div class="card-body">
         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input asp-for="Id" type="hidden"/>
@@ -42,6 +38,6 @@
     </div>
     <div class="card-footer d-flex justify-content-between">
         <a class="btn btn-outline-secondary" asp-action="Index">@L["Cancel"]</a>
-        <button type="submit" class="btn btn-primary">@submitLabel</button>
+        <button type="submit" class="btn btn-primary">@Model.SubmitLabel</button>
     </div>
 </form>

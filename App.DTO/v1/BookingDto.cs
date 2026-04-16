@@ -10,6 +10,7 @@ public class BookingResponse
     public string Status { get; set; } = default!;
     public decimal TotalPrice { get; set; }
     public bool IsPaid { get; set; }
+    public string? Notes { get; set; }
 }
 
 public class BookingCreateRequest
@@ -38,4 +39,9 @@ public class BookingStatusUpdateRequest
 {
     public string Status { get; set; } = default!;
     public string? Reason { get; set; }
+}
+
+public class BookingUpdateRequest
+{
+    public string? Notes { get; set; }
 }

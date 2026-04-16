@@ -75,7 +75,8 @@ public class BookingsController : Controller
             ServiceName = booking.ServiceName,
             ProviderName = booking.ProviderName,
             AppointmentDateTime = booking.AppointmentDateTime,
-            Status = booking.Status
+            Status = booking.Status,
+            Notes = booking.Notes
         });
     }
 
@@ -84,7 +85,7 @@ public class BookingsController : Controller
     public async Task<IActionResult> Edit(Guid id, BookingEditViewModel model)
     {
         if (id != model.Id) return NotFound();
-        await _bookingsApiService.CancelAsync(id, model.Reason);
+        await _bookingsApiService.UpdateAsync(id, model.Notes);
         return RedirectToAction(nameof(Details), new { id });
     }
 

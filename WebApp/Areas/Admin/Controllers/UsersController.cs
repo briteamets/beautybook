@@ -129,31 +129,71 @@ public class UsersController : AdminControllerBase
         var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null) return NotFound();
 
-        vm.Email = user.Email ?? string.Empty;
-        vm.AvailableRoles = await _roleManager.Roles.Select(r => r.Name!).OrderBy(r => r).ToListAsync();
-        vm.IsSelf = IsCurrentUser(user.Id);
-        var currentRoles = await _userManager.GetRolesAsync(user);
-        vm.CurrentRole = GetPrimaryRole(currentRoles);
+        // Capture the posted role immediately so nothing below can accidentally
+        // clobber it before the role-change logic runs.
+        var requestedRole = vm.Role;
 
-        if (vm.IsSelf)
+        var isSelf = IsCurrentUser(user.Id);
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        var currentPrimaryRole = GetPrimaryRole(currentRoles);
+
+        // Self-edit guard: admins cannot change their own role.
+        if (isSelf)
         {
-            vm.Role = vm.CurrentRole;
+            requestedRole = currentPrimaryRole;
         }
 
-        if (vm.IsSelf && !vm.IsActive)
+        // Refresh VM fields used by the view in case we need to re-render.
+        vm.Email = user.Email ?? string.Empty;
+        vm.AvailableRoles = await _roleManager.Roles.Select(r => r.Name!).OrderBy(r => r).ToListAsync();
+        vm.IsSelf = isSelf;
+        vm.CurrentRole = currentPrimaryRole;
+        vm.Role = requestedRole;
+
+        if (isSelf && !vm.IsActive)
         {
             ModelState.AddModelError(nameof(vm.IsActive), T("CannotDeactivateSelf"));
         }
 
-        if (!await _roleManager.RoleExistsAsync(vm.Role))
+        if (string.IsNullOrWhiteSpace(requestedRole) || !await _roleManager.RoleExistsAsync(requestedRole))
         {
             ModelState.AddModelError(nameof(vm.Role), T("RoleNotFound"));
         }
 
+        // ModelState may still carry the original posted Role value; since we
+        // have intentionally normalised it above (self-edit guard), clear any
+        // stale validation state so re-rendering shows the correct value.
+        ModelState.Remove(nameof(vm.Role));
+
         if (!ModelState.IsValid) return View(vm);
 
+        // Apply role change FIRST so that a failure here aborts before we
+        // mutate the AppUser entity. This mirrors the original (working)
+        // ordering and avoids any interaction between UpdateAsync and the
+        // subsequent UserManager role-store calls.
+        var rolesToRemove = currentRoles.Where(role => role != requestedRole).ToList();
+        if (rolesToRemove.Count > 0)
+        {
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!removeResult.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, string.Join(" ", removeResult.Errors.Select(e => e.Description)));
+                return View(vm);
+            }
+        }
+
+        if (!await _userManager.IsInRoleAsync(user, requestedRole))
+        {
+            var addResult = await _userManager.AddToRoleAsync(user, requestedRole);
+            if (!addResult.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, string.Join(" ", addResult.Errors.Select(e => e.Description)));
+                return View(vm);
+            }
+        }
+
         user.IsActive = vm.IsActive;
-        if (vm.Role == "ServiceProvider")
+        if (requestedRole == "ServiceProvider")
         {
             user.IsProviderApplicant = false;
         }
@@ -163,31 +203,6 @@ public class UsersController : AdminControllerBase
         {
             ModelState.AddModelError(string.Empty, string.Join(" ", updateResult.Errors.Select(e => e.Description)));
             return View(vm);
-        }
-
-        currentRoles = await _userManager.GetRolesAsync(user);
-        if (!currentRoles.SequenceEqual(new[] { vm.Role }))
-        {
-            var rolesToRemove = currentRoles.Where(role => role != vm.Role).ToList();
-            if (rolesToRemove.Count > 0)
-            {
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
-                if (!removeResult.Succeeded)
-                {
-                    ModelState.AddModelError(string.Empty, string.Join(" ", removeResult.Errors.Select(e => e.Description)));
-                    return View(vm);
-                }
-            }
-
-            if (!await _userManager.IsInRoleAsync(user, vm.Role))
-            {
-                var addResult = await _userManager.AddToRoleAsync(user, vm.Role);
-                if (!addResult.Succeeded)
-                {
-                    ModelState.AddModelError(string.Empty, string.Join(" ", addResult.Errors.Select(e => e.Description)));
-                    return View(vm);
-                }
-            }
         }
 
         SetSuccessMessage(T("UserUpdated"));

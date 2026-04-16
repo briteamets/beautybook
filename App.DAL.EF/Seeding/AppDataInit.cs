@@ -854,6 +854,18 @@ public static class AppDataInit
     
      public static void SeedIdentity(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
+        // Remove legacy "User" role if it still exists in the database
+        var userRole = roleManager.FindByNameAsync("User").Result;
+        if (userRole != null)
+        {
+            var usersInRole = userManager.GetUsersInRoleAsync("User").Result;
+            foreach (var u in usersInRole)
+            {
+                userManager.RemoveFromRoleAsync(u, "User").Wait();
+            }
+            roleManager.DeleteAsync(userRole).Wait();
+        }
+
         foreach (var roleName in InitialData.Roles)
         {
             var role = roleManager.FindByNameAsync(roleName).Result;

@@ -4,10 +4,11 @@
 
 <form asp-area="Admin" asp-controller="Users" asp-action="Edit" asp-route-id="@Model.Id" method="post" class="card shadow-sm">
     <div class="card-body">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
         <input asp-for="Id" type="hidden"/>
         <div class="mb-3">
             <label class="form-label">@L["Email"]</label>
+            <input asp-for="Email" type="hidden"/>
             <input class="form-control" value="@Model.Email" disabled/>
         </div>
         <div class="mb-3">
@@ -30,12 +31,19 @@
             <span asp-validation-for="Role" class="text-danger"></span>
         </div>
         <div class="form-check">
-            <input asp-for="IsActive" class="form-check-input" disabled="@Model.IsSelf"/>
+            @if (Model.IsSelf)
+            {
+                <input asp-for="IsActive" class="form-check-input" disabled/>
+                <input asp-for="IsActive" type="hidden"/>
+            }
+            else
+            {
+                <input asp-for="IsActive" class="form-check-input"/>
+            }
             <label asp-for="IsActive" class="form-check-label">@L["Active"]</label>
             <span asp-validation-for="IsActive" class="text-danger d-block"></span>
             @if (Model.IsSelf)
             {
-                <input asp-for="IsActive" type="hidden"/>
                 <div class="form-text">@L["CannotDeactivateSelf"]</div>
             }
         </div>

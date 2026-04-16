@@ -9,6 +9,7 @@ riderModule.iml
 # Custom stuff
 
 app.db
+.env
 
 ## https://raw.githubusercontent.com/github/gitignore/main/Global/MicrosoftOffice.gitignore
 *.tmp
@@ -66,5 +67,4 @@ _UpgradeReport_Files/
 Thumbs.db
 Desktop.ini
 .DS_Store
-
 

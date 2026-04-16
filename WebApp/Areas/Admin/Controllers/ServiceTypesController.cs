@@ -12,49 +12,106 @@ public class ServiceTypesController : AdminControllerBase
     {
     }
 
-    public async Task<IActionResult> Index(Guid? categoryId, bool? isActive, int page = 1)
+    public async Task<IActionResult> Index(
+        string tab = "catalog",
+        Guid? ct_categoryId = null, bool? ct_isActive = null, int ct_page = 1,
+        Guid? svc_providerId = null, Guid? svc_categoryId = null, bool? svc_isActive = null, int svc_page = 1)
     {
-        page = Math.Max(1, page);
-        var query = Context.ServiceTypes
+        ct_page = Math.Max(1, ct_page);
+        svc_page = Math.Max(1, svc_page);
+
+        // --- Catalog tab data ---
+        var catalogQuery = Context.ServiceTypes
             .Include(t => t.ServiceCategory)
             .AsQueryable();
 
-        if (categoryId.HasValue)
-        {
-            query = query.Where(t => t.ServiceCategoryId == categoryId.Value);
-        }
+        if (ct_categoryId.HasValue)
+            catalogQuery = catalogQuery.Where(t => t.ServiceCategoryId == ct_categoryId.Value);
+        if (ct_isActive.HasValue)
+            catalogQuery = catalogQuery.Where(t => t.IsActive == ct_isActive.Value);
 
-        if (isActive.HasValue)
-        {
-            query = query.Where(t => t.IsActive == isActive.Value);
-        }
-
-        var totalItems = await query.CountAsync();
-        var serviceTypes = await query.OrderBy(t => t.Name)
-            .Skip((page - 1) * PageSize)
+        var catalogTotal = await catalogQuery.CountAsync();
+        var catalogItems = await catalogQuery.OrderBy(t => t.Name)
+            .Skip((ct_page - 1) * PageSize)
             .Take(PageSize)
             .ToListAsync();
 
-        return View(new ServiceTypeIndexViewModel
+        // --- Provider Services tab data ---
+        var svcQuery = Context.Services
+            .Include(s => s.BeautyProvider)
+            .Include(s => s.ServiceCategory)
+            .AsQueryable();
+
+        if (svc_providerId.HasValue)
+            svcQuery = svcQuery.Where(s => s.BeautyProviderId == svc_providerId.Value);
+        if (svc_categoryId.HasValue)
+            svcQuery = svcQuery.Where(s => s.ServiceCategoryId == svc_categoryId.Value);
+        if (svc_isActive.HasValue)
+            svcQuery = svcQuery.Where(s => s.IsActive == svc_isActive.Value);
+
+        var svcTotal = await svcQuery.CountAsync();
+        var svcItems = await svcQuery
+            .OrderBy(s => s.BeautyProvider!.ProfileName)
+            .ThenBy(s => s.Name)
+            .Skip((svc_page - 1) * PageSize)
+            .Take(PageSize)
+            .Select(s => new AdminServiceIndexItem
+            {
+                Id = s.Id,
+                ServiceName = s.Name.Translate() ?? string.Empty,
+                CategoryName = s.ServiceCategory!.Name.Translate() ?? string.Empty,
+                ProviderName = s.BeautyProvider!.ProfileName,
+                Price = s.Price,
+                DurationMinutes = s.DurationMinutes,
+                IsActive = s.IsActive
+            })
+            .ToListAsync();
+
+        var providers = await Context.BeautyProviders
+            .OrderBy(p => p.ProfileName)
+            .Select(p => new SelectListItem(p.ProfileName, p.Id.ToString(), p.Id == svc_providerId))
+            .ToListAsync();
+
+        var allCategories = await Context.ServiceCategories
+            .OrderBy(c => c.Name)
+            .ToListAsync();
+
+        return View(new AdminServicesPageViewModel
         {
-            Filter = new ServiceTypeIndexFilterViewModel
+            ActiveTab = tab,
+            Catalog = new ServiceTypeIndexViewModel
             {
-                CategoryId = categoryId,
-                IsActive = isActive
-            },
-            Categories = await GetCategoryOptions(categoryId),
-            Page = new PagedViewModel<ServiceTypeIndexItem>
-            {
-                Items = serviceTypes.Select(t => new ServiceTypeIndexItem
+                Filter = new ServiceTypeIndexFilterViewModel { CategoryId = ct_categoryId, IsActive = ct_isActive },
+                Categories = allCategories.Select(c => new SelectListItem(
+                    c.Name.Translate() ?? string.Empty, c.Id.ToString(), c.Id == ct_categoryId)).ToList(),
+                Page = new PagedViewModel<ServiceTypeIndexItem>
                 {
-                    Id = t.Id,
-                    Name = t.Name.Translate() ?? string.Empty,
-                    CategoryName = t.ServiceCategory?.Name.Translate() ?? string.Empty,
-                    IsActive = t.IsActive
-                }).ToList(),
-                PageNumber = page,
-                TotalItems = totalItems,
-                TotalPages = (int)Math.Ceiling(totalItems / (double)PageSize)
+                    Items = catalogItems.Select(t => new ServiceTypeIndexItem
+                    {
+                        Id = t.Id,
+                        Name = t.Name.Translate() ?? string.Empty,
+                        CategoryName = t.ServiceCategory?.Name.Translate() ?? string.Empty,
+                        IsActive = t.IsActive
+                    }).ToList(),
+                    PageNumber = ct_page,
+                    TotalItems = catalogTotal,
+                    TotalPages = (int)Math.Ceiling(catalogTotal / (double)PageSize)
+                }
+            },
+            Services = new AdminServiceIndexViewModel
+            {
+                Filter = new AdminServiceIndexFilterViewModel
+                    { ProviderId = svc_providerId, CategoryId = svc_categoryId, IsActive = svc_isActive },
+                Providers = providers,
+                Categories = allCategories.Select(c => new SelectListItem(
+                    c.Name.Translate() ?? string.Empty, c.Id.ToString(), c.Id == svc_categoryId)).ToList(),
+                Page = new PagedViewModel<AdminServiceIndexItem>
+                {
+                    Items = svcItems,
+                    PageNumber = svc_page,
+                    TotalItems = svcTotal,
+                    TotalPages = (int)Math.Ceiling(svcTotal / (double)PageSize)
+                }
             }
         });
     }

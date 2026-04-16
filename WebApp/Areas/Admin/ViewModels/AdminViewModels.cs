@@ -359,6 +359,13 @@ public class AdminServiceIndexViewModel
     public PagedViewModel<AdminServiceIndexItem> Page { get; set; } = new();
 }
 
+public class AdminServicesPageViewModel
+{
+    public string ActiveTab { get; set; } = "catalog";
+    public ServiceTypeIndexViewModel Catalog { get; set; } = new();
+    public AdminServiceIndexViewModel Services { get; set; } = new();
+}
+
 public class AdminServiceDetailsViewModel
 {
     public Guid Id { get; set; }

@@ -1,4 +1,4 @@
-@model ServiceTypeIndexViewModel
+@model AdminServicesPageViewModel
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -8,77 +8,231 @@
     <a class="btn btn-primary" asp-action="Create">@L["CreateServiceType"]</a>
 </div>
 
-<form method="get" class="card card-body shadow-sm mb-4">
-    <div class="row g-3 align-items-end">
-        <div class="col-md-5">
-            <label class="form-label" for="categoryId">@L["Category"]</label>
-            <select class="form-select" id="categoryId" name="categoryId">
-                <option value="">@L["All"]</option>
-                @foreach (var category in Model.Categories)
-                {
-                    <option value="@category.Value" selected="@(category.Selected ? "selected" : null)">@category.Text</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label" for="isActive">@L["Status"]</label>
-            <select class="form-select" id="isActive" name="isActive">
-                <option value="">@L["All"]</option>
-                <option value="true" selected="@(Model.Filter.IsActive == true ? "selected" : null)">@L["Active"]</option>
-                <option value="false" selected="@(Model.Filter.IsActive == false ? "selected" : null)">@L["Inactive"]</option>
-            </select>
-        </div>
-        <div class="col-md-3 d-grid">
-            <button type="submit" class="btn btn-primary">@L["Filter"]</button>
-        </div>
-    </div>
-</form>
+<ul class="nav nav-tabs mb-3" id="servicesTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(Model.ActiveTab == "catalog" ? "active" : "")"
+                id="catalog-tab" data-bs-toggle="tab" data-bs-target="#catalog-pane"
+                type="button" role="tab">
+            @L["ServiceCatalog"]
+            <span class="badge bg-secondary ms-1">@Model.Catalog.Page.TotalItems</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link @(Model.ActiveTab == "services" ? "active" : "")"
+                id="services-tab" data-bs-toggle="tab" data-bs-target="#services-pane"
+                type="button" role="tab">
+            @L["ProviderServices"]
+            <span class="badge bg-secondary ms-1">@Model.Services.Page.TotalItems</span>
+        </button>
+    </li>
+</ul>
 
-<div class="card shadow-sm">
-    <div class="table-responsive">
-        <table class="table table-striped table-hover mb-0">
-            <thead>
-            <tr>
-                <th>@L["Name"]</th>
-                <th>@L["Category"]</th>
-                <th>@L["Status"]</th>
-                <th class="text-end">@L["Actions"]</th>
-            </tr>
-            </thead>
-            <tbody>
-            @if (Model.Page.Items.Count == 0)
-            {
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
-                </tr>
-            }
-            else
-            {
-                foreach (var item in Model.Page.Items)
-                {
+<div class="tab-content">
+
+    @* ===== CATALOG TAB ===== *@
+    <div class="tab-pane fade @(Model.ActiveTab == "catalog" ? "show active" : "")" id="catalog-pane" role="tabpanel">
+
+        <form method="get" class="card card-body shadow-sm mb-4">
+            <input type="hidden" name="tab" value="catalog"/>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" for="ct_categoryId">@L["Category"]</label>
+                    <select class="form-select" id="ct_categoryId" name="ct_categoryId">
+                        <option value="">@L["All"]</option>
+                        @foreach (var category in Model.Catalog.Categories)
+                        {
+                            <option value="@category.Value" selected="@(category.Selected ? "selected" : null)">@category.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="ct_isActive">@L["Status"]</label>
+                    <select class="form-select" id="ct_isActive" name="ct_isActive">
+                        <option value="">@L["All"]</option>
+                        <option value="true" selected="@(Model.Catalog.Filter.IsActive == true ? "selected" : null)">@L["Active"]</option>
+                        <option value="false" selected="@(Model.Catalog.Filter.IsActive == false ? "selected" : null)">@L["Inactive"]</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-grid">
+                    <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
                     <tr>
-                        <td>@item.Name</td>
-                        <td>@item.CategoryName</td>
-                        <td>@(item.IsActive ? L["Active"] : L["Inactive"])</td>
-                        <td class="text-end">
-                            <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
-                            <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
-                            <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
-                            <form asp-action="ToggleActive" method="post" class="d-inline">
-                                <input type="hidden" name="id" value="@item.Id"/>
-                                <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")">
-                                    @(item.IsActive ? L["Deactivate"] : L["Activate"])
-                                </button>
-                            </form>
-                        </td>
+                        <th>@L["Name"]</th>
+                        <th>@L["Category"]</th>
+                        <th>@L["Status"]</th>
+                        <th class="text-end">@L["Actions"]</th>
                     </tr>
-                }
+                    </thead>
+                    <tbody>
+                    @if (Model.Catalog.Page.Items.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model.Catalog.Page.Items)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.CategoryName</td>
+                                <td>@(item.IsActive ? L["Active"] : L["Inactive"])</td>
+                                <td class="text-end">
+                                    <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                                    <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                                    <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
+                                    <form asp-action="ToggleActive" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.Id"/>
+                                        <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-outline-danger" : "btn-outline-success")">
+                                            @(item.IsActive ? L["Deactivate"] : L["Activate"])
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            @{
+                var catalogPager = Model.Catalog.Page;
             }
-            </tbody>
-        </table>
+            @for (var p = 1; p <= catalogPager.TotalPages; p++)
+            {
+                <a class="btn btn-sm @(p == catalogPager.PageNumber ? "btn-primary" : "btn-outline-secondary") me-1"
+                   asp-action="Index"
+                   asp-route-tab="catalog"
+                   asp-route-ct_categoryId="@Model.Catalog.Filter.CategoryId"
+                   asp-route-ct_isActive="@Model.Catalog.Filter.IsActive"
+                   asp-route-ct_page="@p">@p</a>
+            }
+        </div>
     </div>
+
+    @* ===== PROVIDER SERVICES TAB ===== *@
+    <div class="tab-pane fade @(Model.ActiveTab == "services" ? "show active" : "")" id="services-pane" role="tabpanel">
+
+        <form method="get" class="card card-body shadow-sm mb-4">
+            <input type="hidden" name="tab" value="services"/>
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="svc_providerId">@L["Provider"]</label>
+                    <select class="form-select" id="svc_providerId" name="svc_providerId">
+                        <option value="">@L["All"]</option>
+                        @foreach (var p in Model.Services.Providers)
+                        {
+                            <option value="@p.Value" selected="@(p.Selected ? "selected" : null)">@p.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="svc_categoryId">@L["Category"]</label>
+                    <select class="form-select" id="svc_categoryId" name="svc_categoryId">
+                        <option value="">@L["All"]</option>
+                        @foreach (var c in Model.Services.Categories)
+                        {
+                            <option value="@c.Value" selected="@(c.Selected ? "selected" : null)">@c.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="svc_isActive">@L["Status"]</label>
+                    <select class="form-select" id="svc_isActive" name="svc_isActive">
+                        <option value="">@L["All"]</option>
+                        <option value="true" selected="@(Model.Services.Filter.IsActive == true ? "selected" : null)">@L["Active"]</option>
+                        <option value="false" selected="@(Model.Services.Filter.IsActive == false ? "selected" : null)">@L["Inactive"]</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card shadow-sm">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>@L["ServiceName"]</th>
+                        <th>@L["Category"]</th>
+                        <th>@L["Provider"]</th>
+                        <th>@L["Price"]</th>
+                        <th>@L["Duration"]</th>
+                        <th>@L["Status"]</th>
+                        <th class="text-end">@L["Actions"]</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (!Model.Services.Page.Items.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">@L["NoResults"]</td>
+                        </tr>
+                    }
+                    @foreach (var item in Model.Services.Page.Items)
+                    {
+                        <tr>
+                            <td>@item.ServiceName</td>
+                            <td>@item.CategoryName</td>
+                            <td>@item.ProviderName</td>
+                            <td>@item.Price</td>
+                            <td>@item.DurationMinutes @L["Min"]</td>
+                            <td>
+                                <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                    @(item.IsActive ? L["Active"] : L["Inactive"])
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-primary" asp-controller="Services" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            @{
+                var svcPager = Model.Services.Page;
+            }
+            @for (var p = 1; p <= svcPager.TotalPages; p++)
+            {
+                <a class="btn btn-sm @(p == svcPager.PageNumber ? "btn-primary" : "btn-outline-secondary") me-1"
+                   asp-action="Index"
+                   asp-route-tab="services"
+                   asp-route-svc_providerId="@Model.Services.Filter.ProviderId"
+                   asp-route-svc_categoryId="@Model.Services.Filter.CategoryId"
+                   asp-route-svc_isActive="@Model.Services.Filter.IsActive"
+                   asp-route-svc_page="@p">@p</a>
+            }
+        </div>
+    </div>
+
 </div>
 
-<div class="mt-3">
-    <partial name="~/Areas/Admin/Views/Shared/_Pager.cshtml" model="Model.Page"/>
-</div>
+@section Scripts {
+    <script>
+        // Make tab buttons update the URL so a refresh lands on the same tab
+        document.querySelectorAll('#servicesTabs button[data-bs-toggle="tab"]').forEach(function(btn) {
+            btn.addEventListener('shown.bs.tab', function(e) {
+                var tab = e.target.id === 'catalog-tab' ? 'catalog' : 'services';
+                var url = new URL(window.location);
+                url.searchParams.set('tab', tab);
+                history.replaceState(null, '', url.toString());
+            });
+        });
+    </script>
+}

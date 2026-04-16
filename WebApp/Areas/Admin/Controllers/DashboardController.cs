@@ -22,6 +22,10 @@ public class DashboardController : AdminControllerBase
         var userCount = await Context.Users.CountAsync();
         var providerCount = await CountUsersInRoles("ServiceProvider");
         var bookingsToday = await Context.Bookings.CountAsync(b => b.BookingDate == today);
+        var totalRevenue = await Context.BookingPayments
+            .Where(bp => bp.Payment != null && bp.Payment.Status == Payment.StatusPaid)
+            .SumAsync(bp => (decimal?)bp.Payment!.Amount) ?? 0m;
+        var pendingApprovals = await Context.Users.CountAsync(u => u.IsProviderApplicant);
 
         var activity = new List<AdminActivityFeedItem>();
 
@@ -92,6 +96,8 @@ public class DashboardController : AdminControllerBase
             TotalRegisteredUsers = userCount,
             TotalServiceProviders = providerCount,
             TotalBookingsToday = bookingsToday,
+            TotalRevenue = totalRevenue,
+            PendingApprovals = pendingApprovals,
             RecentActivity = activity.OrderByDescending(a => a.Timestamp).Take(20).ToList()
         });
     }

@@ -19,8 +19,7 @@
                 <a class="nav-link @(controller == "Dashboard" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">@L["Dashboard"]</a>
                 <a class="nav-link @(controller == "Users" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">@L["Users"]</a>
                 <a class="nav-link @(controller == "BeautyProviders" ? "fw-bold" : "")" asp-area="Admin" asp-controller="BeautyProviders" asp-action="Index">@L["ServiceProviders"]</a>
-                <a class="nav-link @(controller is "ServiceTypes" or "Services" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceTypes" asp-action="Index">@L["ServiceCatalog"]</a>
-                <a class="nav-link @(controller == "ServiceCategories" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceCategories" asp-action="Index">@L["Categories"]</a>
+                <a class="nav-link @(controller is "ServiceTypes" or "Services" or "ServiceCategories" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceTypes" asp-action="Index">@L["ServiceCatalog"]</a>
                 <a class="nav-link @(controller == "Bookings" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a>
                 <a class="nav-link @(controller == "Salons" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
                 <a class="nav-link @(controller == "Reviews" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Reviews" asp-action="Index">@L["Reviews"]</a>

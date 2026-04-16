@@ -8,29 +8,47 @@
 </div>
 
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-4 col-lg">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted">@L["TotalRegisteredUsers"]</div>
+                <div class="text-muted small">@L["TotalRegisteredUsers"]</div>
                 <div class="display-6">@Model.TotalRegisteredUsers</div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 col-lg">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted">@L["TotalRegisteredServiceProviders"]</div>
+                <div class="text-muted small">@L["TotalRegisteredServiceProviders"]</div>
                 <div class="display-6">@Model.TotalServiceProviders</div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 col-lg">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-                <div class="text-muted">@L["TotalBookingsToday"]</div>
+                <div class="text-muted small">@L["TotalBookingsToday"]</div>
                 <div class="display-6">@Model.TotalBookingsToday</div>
             </div>
         </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">@L["TotalRevenue"]</div>
+                <div class="display-6">@Model.TotalRevenue.ToString("0.00")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg">
+        <a asp-controller="Users" asp-action="Index" asp-route-role="Client" class="text-decoration-none">
+            <div class="card shadow-sm h-100 @(Model.PendingApprovals > 0 ? "border-warning" : "")">
+                <div class="card-body">
+                    <div class="text-muted small">@L["PendingApprovals"]</div>
+                    <div class="display-6 @(Model.PendingApprovals > 0 ? "text-warning" : "")">@Model.PendingApprovals</div>
+                </div>
+            </div>
+        </a>
     </div>
 </div>
 

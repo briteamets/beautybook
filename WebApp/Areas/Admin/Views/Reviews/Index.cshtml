@@ -1,15 +1,50 @@
-@model PagedViewModel<Review>
-@{
-    var culture = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-}
+@model ReviewIndexViewModel
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h3 mb-1">@L["Reviews"]</h1>
         <p class="text-muted mb-0">@L["ReviewsAdminHelp"]</p>
     </div>
-    <span class="badge bg-secondary">@L["TotalCount", Model.TotalItems]</span>
+    <span class="badge bg-secondary">@L["TotalCount", Model.Page.TotalItems]</span>
 </div>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label" for="providerId">@L["Provider"]</label>
+            <select class="form-select" id="providerId" name="providerId">
+                <option value="">@L["All"]</option>
+                @foreach (var p in Model.Providers)
+                {
+                    <option value="@p.Value" selected="@(p.Selected ? "selected" : null)">@p.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" for="minRating">@L["MinRating"]</label>
+            <select class="form-select" id="minRating" name="minRating">
+                <option value="">@L["All"]</option>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    <option value="@i" selected="@(Model.Filter.MinRating == i ? "selected" : null)">@i ★</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" for="maxRating">@L["MaxRating"]</label>
+            <select class="form-select" id="maxRating" name="maxRating">
+                <option value="">@L["All"]</option>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    <option value="@i" selected="@(Model.Filter.MaxRating == i ? "selected" : null)">@i ★</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">@L["Filter"]</button>
+        </div>
+    </div>
+</form>
 
 <div class="card shadow-sm">
     <div class="table-responsive">
@@ -17,6 +52,7 @@
             <thead>
             <tr>
                 <th>@L["User"]</th>
+                <th>@L["Provider"]</th>
                 <th>@L["ServiceName"]</th>
                 <th>@L["Rating"]</th>
                 <th>@L["Created"]</th>
@@ -24,21 +60,27 @@
             </tr>
             </thead>
             <tbody>
-            @if (Model.Items.Count == 0)
+            @if (Model.Page.Items.Count == 0)
             {
                 <tr>
-                    <td colspan="5" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
+                    <td colspan="6" class="text-center text-muted py-4">@L["NoResultsFound"]</td>
                 </tr>
             }
             else
             {
-                foreach (var item in Model.Items)
+                foreach (var item in Model.Page.Items)
                 {
                     <tr>
-                        <td>@item.User?.Email</td>
-                        <td>@item.Booking?.Service?.Name.Translate(culture)</td>
-                        <td>@item.Rating / 5</td>
-                        <td>@item.From.ToLocalTime()</td>
+                        <td>@item.UserEmail</td>
+                        <td>@item.ProviderName</td>
+                        <td>@item.ServiceName</td>
+                        <td>
+                            @for (var s = 1; s <= 5; s++)
+                            {
+                                <span class="@(s <= item.Rating ? "text-warning" : "text-muted")">★</span>
+                            }
+                        </td>
+                        <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
                             <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@item.Id">@L["Delete"]</a>
@@ -52,5 +94,13 @@
 </div>
 
 <div class="mt-3">
-    <partial name="~/Areas/Admin/Views/Shared/_Pager.cshtml" model="Model"/>
+    @for (var p = 1; p <= Model.Page.TotalPages; p++)
+    {
+        <a class="btn btn-sm @(p == Model.Page.PageNumber ? "btn-primary" : "btn-outline-secondary") me-1"
+           asp-action="Index"
+           asp-route-minRating="@Model.Filter.MinRating"
+           asp-route-maxRating="@Model.Filter.MaxRating"
+           asp-route-providerId="@Model.Filter.ProviderId"
+           asp-route-page="@p">@p</a>
+    }
 </div>

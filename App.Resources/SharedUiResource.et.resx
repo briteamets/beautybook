@@ -377,4 +377,10 @@
   <data name="ProfileUpdated" xml:space="preserve"><value>Profiil uuendatud.</value></data>
   <data name="DisplayName" xml:space="preserve"><value>Kuvatav nimi (nähtav klientidele)</value></data>
   <data name="ProfilePicturePreview" xml:space="preserve"><value>Profiilipildi eelvaade</value></data>
+  <data name="TotalRevenue" xml:space="preserve"><value>Kogutuld (EUR)</value></data>
+  <data name="PendingApprovals" xml:space="preserve"><value>Ootel kinnitused</value></data>
+  <data name="ApproveAsProvider" xml:space="preserve"><value>Kinnita teenusepakkujaks</value></data>
+  <data name="ProviderApproved" xml:space="preserve"><value>Kasutaja kinnitati teenusepakkujaks.</value></data>
+  <data name="MinRating" xml:space="preserve"><value>Min reiting</value></data>
+  <data name="MaxRating" xml:space="preserve"><value>Max reiting</value></data>
 </root>

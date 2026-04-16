@@ -84,6 +84,8 @@ public class AdminDashboardViewModel
     public int TotalRegisteredUsers { get; set; }
     public int TotalServiceProviders { get; set; }
     public int TotalBookingsToday { get; set; }
+    public decimal TotalRevenue { get; set; }
+    public int PendingApprovals { get; set; }
     public List<AdminActivityFeedItem> RecentActivity { get; set; } = new();
 }
 
@@ -364,6 +366,32 @@ public class AdminServicesPageViewModel
     public string ActiveTab { get; set; } = "catalog";
     public ServiceTypeIndexViewModel Catalog { get; set; } = new();
     public AdminServiceIndexViewModel Services { get; set; } = new();
+    public ServiceCategoryIndexViewModel CategoryCatalog { get; set; } = new();
+}
+
+public class ReviewIndexFilterViewModel
+{
+    public int? MinRating { get; set; }
+    public int? MaxRating { get; set; }
+    public Guid? ProviderId { get; set; }
+}
+
+public class ReviewIndexViewModel
+{
+    public ReviewIndexFilterViewModel Filter { get; set; } = new();
+    public List<SelectListItem> Providers { get; set; } = new();
+    public PagedViewModel<ReviewIndexItem> Page { get; set; } = new();
+}
+
+public class ReviewIndexItem
+{
+    public Guid Id { get; set; }
+    public string UserEmail { get; set; } = default!;
+    public string ServiceName { get; set; } = default!;
+    public string ProviderName { get; set; } = default!;
+    public int Rating { get; set; }
+    public string? Comment { get; set; }
+    public DateTime CreatedAt { get; set; }
 }
 
 public class AdminServiceDetailsViewModel

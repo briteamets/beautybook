@@ -15,10 +15,12 @@ public class ServiceTypesController : AdminControllerBase
     public async Task<IActionResult> Index(
         string tab = "catalog",
         Guid? ct_categoryId = null, bool? ct_isActive = null, int ct_page = 1,
-        Guid? svc_providerId = null, Guid? svc_categoryId = null, bool? svc_isActive = null, int svc_page = 1)
+        Guid? svc_providerId = null, Guid? svc_categoryId = null, bool? svc_isActive = null, int svc_page = 1,
+        int cat_page = 1)
     {
         ct_page = Math.Max(1, ct_page);
         svc_page = Math.Max(1, svc_page);
+        cat_page = Math.Max(1, cat_page);
 
         // --- Catalog tab data ---
         var catalogQuery = Context.ServiceTypes
@@ -73,8 +75,22 @@ public class ServiceTypesController : AdminControllerBase
             .ToListAsync();
 
         var allCategories = await Context.ServiceCategories
+            .Include(c => c.ServiceTypes!)
             .OrderBy(c => c.Name)
             .ToListAsync();
+
+        var catTotal = allCategories.Count;
+        var catItems = allCategories
+            .Skip((cat_page - 1) * PageSize)
+            .Take(PageSize)
+            .Select(c => new ServiceCategoryIndexItem
+            {
+                Id = c.Id,
+                Name = c.Name.Translate() ?? string.Empty,
+                IsActive = c.IsActive,
+                ServiceTypeCount = c.ServiceTypes?.Count ?? 0
+            })
+            .ToList();
 
         return View(new AdminServicesPageViewModel
         {
@@ -111,6 +127,16 @@ public class ServiceTypesController : AdminControllerBase
                     PageNumber = svc_page,
                     TotalItems = svcTotal,
                     TotalPages = (int)Math.Ceiling(svcTotal / (double)PageSize)
+                }
+            },
+            CategoryCatalog = new ServiceCategoryIndexViewModel
+            {
+                Page = new PagedViewModel<ServiceCategoryIndexItem>
+                {
+                    Items = catItems,
+                    PageNumber = cat_page,
+                    TotalItems = catTotal,
+                    TotalPages = (int)Math.Ceiling(catTotal / (double)PageSize)
                 }
             }
         });

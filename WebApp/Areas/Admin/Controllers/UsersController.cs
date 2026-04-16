@@ -209,6 +209,29 @@ public class UsersController : AdminControllerBase
         return RedirectToAction(nameof(Details), "Users", new { area = "Admin", id });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ApproveAsProvider(Guid id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        if (user == null) return NotFound();
+
+        var currentRoles = await _userManager.GetRolesAsync(user);
+        if (!currentRoles.Contains("ServiceProvider"))
+        {
+            var rolesToRemove = currentRoles.Where(r => r != "ServiceProvider").ToList();
+            if (rolesToRemove.Count > 0)
+                await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            await _userManager.AddToRoleAsync(user, "ServiceProvider");
+        }
+
+        user.IsProviderApplicant = false;
+        await _userManager.UpdateAsync(user);
+
+        SetSuccessMessage(T("ProviderApproved"));
+        return RedirectToAction(nameof(Details), new { id });
+    }
+
     public async Task<IActionResult> ResetPassword(Guid id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());

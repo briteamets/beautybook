@@ -73,6 +73,13 @@
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@item.Id">@L["Details"]</a>
                             <a class="btn btn-sm btn-outline-secondary" asp-action="Edit" asp-route-id="@item.Id">@L["Edit"]</a>
+                            @if (item.IsProviderApplicant)
+                            {
+                                <form asp-action="ApproveAsProvider" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@item.Id"/>
+                                    <button type="submit" class="btn btn-sm btn-warning">@L["ApproveAsProvider"]</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }

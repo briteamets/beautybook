@@ -62,6 +62,13 @@
         </div>
         <div class="card shadow-sm">
             <div class="card-body d-flex flex-wrap gap-2">
+                @if (Model.IsProviderApplicant)
+                {
+                    <form asp-action="ApproveAsProvider" method="post">
+                        <input type="hidden" name="id" value="@Model.Id"/>
+                        <button type="submit" class="btn btn-warning">@L["ApproveAsProvider"]</button>
+                    </form>
+                }
                 <a class="btn btn-outline-warning" asp-action="ResetPassword" asp-route-id="@Model.Id">@L["ResetPassword"]</a>
                 <a class="btn btn-outline-danger" asp-action="ForceLogout" asp-route-id="@Model.Id">@L["ForceLogout"]</a>
             </div>

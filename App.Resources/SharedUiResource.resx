@@ -377,4 +377,10 @@
   <data name="ProfileUpdated" xml:space="preserve"><value>Profile updated.</value></data>
   <data name="DisplayName" xml:space="preserve"><value>Display name (shown to customers)</value></data>
   <data name="ProfilePicturePreview" xml:space="preserve"><value>Profile picture preview</value></data>
+  <data name="TotalRevenue" xml:space="preserve"><value>Total revenue (EUR)</value></data>
+  <data name="PendingApprovals" xml:space="preserve"><value>Pending approvals</value></data>
+  <data name="ApproveAsProvider" xml:space="preserve"><value>Approve as provider</value></data>
+  <data name="ProviderApproved" xml:space="preserve"><value>User approved as service provider.</value></data>
+  <data name="MinRating" xml:space="preserve"><value>Min rating</value></data>
+  <data name="MaxRating" xml:space="preserve"><value>Max rating</value></data>
 </root>

@@ -2,6 +2,7 @@ using App.DTO.v1.Identity;
 
 namespace ClientApp.Services;
 
+// teeb päringu AccountControllerile
 public class AuthApiService
 {
     private readonly BackendApiClient _api;
@@ -19,7 +20,8 @@ public class AuthApiService
             new LoginInfo { Email = email, Password = password });
         if (tokens == null) throw new UnauthorizedAccessException();
 
-        _httpContextAccessor.HttpContext!.Session.SetTokens(tokens.Jwt, tokens.RefreshToken);
+        _httpContextAccessor.HttpContext!.Session.SetTokens(tokens.Jwt, tokens.RefreshToken); // edukal juhul salvestatakse
+        // mõlemad tokenid serveripoolsesse sessiooni — JWT võtmega "ClientJwt" ja refresh token võtmega "ClientRefreshToken"
     }
 
     public async Task LogoutAsync()

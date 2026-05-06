@@ -58,6 +58,8 @@ public class BackendApiClient
         return await response.Content.ReadFromJsonAsync<T>();
     }
 
+    // jwt refresh
+    // Kui token aegub vähem kui 1 minuti pärast, loetakse see aegunuks ja uuendatakse kohe.
     private async Task EnsureFreshJwtAsync()
     {
         var session = _httpContextAccessor.HttpContext!.Session;

@@ -36,6 +36,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
     public DbSet<AppRefreshToken> RefreshTokens { get; set; } = default!;
 
     // This maps to the table that stores data protection keys.
+    // ASP.NET salvestab krüpteerimisvõtmed. See on vajalik selleks, et cookie-d ja
+    // muud krüpteeritud andmed töötaksid ka siis, kui server restartib.
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = default!;
 
 
@@ -44,6 +46,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
     {
     }
 
+    // See meetod käivitatakse üks kord rakenduse käivitumisel, kui EF Core ehitab oma sisemise mudeli andmebaasi struktuurist
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -52,6 +55,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
         ConfigureLangStrProperties(builder);
     }
 
+    // keele konverter salvestamiseks (langstr -> json) ja laadimiseks (json -> langstr)
     private static void ConfigureLangStrProperties(ModelBuilder builder)
     {
         var langStrConverter = new ValueConverter<LangStr?, string?>(

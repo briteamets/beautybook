@@ -134,6 +134,7 @@ public class AccountController : ControllerBase
         }
 
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
+        // jwt loomine
         var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
             _configuration.GetValue<string>("JWT:Key")!,
@@ -164,6 +165,7 @@ public class AccountController : ControllerBase
             : _configuration.GetValue<int>("JWT:ExpiresInSeconds");
 
         // verify user
+        // ASP.NET Identity otsib kasutajat emaili järgi andmebaasist.
         var appUser = await _userManager.FindByEmailAsync(loginInfo.Email);
         if (appUser == null)
         {
@@ -173,6 +175,7 @@ public class AccountController : ControllerBase
         }
 
         // verify password
+        // räsib sisestatud parooli ja võrdleb andmebaasis oleva räsiga.
         var result = await _signInManager.CheckPasswordSignInAsync(appUser, loginInfo.Password, false);
         if (!result.Succeeded)
         {
@@ -182,6 +185,7 @@ public class AccountController : ControllerBase
             return NotFound("User/Password problem");
         }
 
+        // Identity genereerib kasutaja kohta ClaimsPrincipal objekti — sees on kasutaja ID, email, rollid jne. Need lähevad JWT sisse.
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
 
 

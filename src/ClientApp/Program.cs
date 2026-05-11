@@ -23,6 +23,14 @@ builder.Services.AddScoped<ProvidersApiService>();
 builder.Services.AddScoped<ServicesApiService>();
 builder.Services.AddScoped<CategoriesApiService>();
 builder.Services.AddScoped<BookingsApiService>();
+builder.Services.AddScoped<ReviewsApiService>();
+builder.Services.AddScoped<AvailabilityApiService>();
+builder.Services.AddScoped<ServiceTypesApiService>();
+builder.Services.AddScoped<FavoritesApiService>();
+builder.Services.AddScoped<NotificationsApiService>();
+builder.Services.AddScoped<PaymentsApiService>();
+builder.Services.AddScoped<SalonsApiService>();
+builder.Services.AddScoped<ScheduleApiService>();
 
 var app = builder.Build();
 var supportedCultures = new[] { new CultureInfo("en"), new CultureInfo("et") };

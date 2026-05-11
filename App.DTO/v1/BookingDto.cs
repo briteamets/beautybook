@@ -11,6 +11,8 @@ public class BookingResponse
     public decimal TotalPrice { get; set; }
     public bool IsPaid { get; set; }
     public string? Notes { get; set; }
+    public bool HasReview { get; set; }
+    public string? ClientName { get; set; }
 }
 
 public class BookingCreateRequest

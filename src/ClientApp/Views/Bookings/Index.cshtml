@@ -33,6 +33,10 @@ else
                 <td>@booking.TotalPrice.ToString("0.00") EUR</td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@booking.Id">@L["Details"]</a>
+                    @if (!booking.IsPaid && booking.Status == "Pending")
+                    {
+                        <a class="btn btn-sm btn-success" asp-action="Details" asp-route-id="@booking.Id">@L["PayNow"]</a>
+                    }
                     <a class="btn btn-sm btn-outline-primary" asp-action="Edit" asp-route-id="@booking.Id">@L["Edit"]</a>
                     <a class="btn btn-sm btn-outline-danger" asp-action="Delete" asp-route-id="@booking.Id">@L["Delete"]</a>
                 </td>

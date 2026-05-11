@@ -25,21 +25,59 @@
                             <a class="nav-link text-dark" asp-controller="Providers" asp-action="Index">@L["Providers"]</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Services" asp-action="Index">@L["Services"]</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a>
                         </li>
+                        @if (Context.Session.HasUsableToken())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Bookings" asp-action="Wizard">@L["BookNow"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Payments" asp-action="Index">@L["Payments"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">@L["MyFavorites"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Schedule" asp-action="Index">@L["MySchedule"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Bookings" asp-action="ProviderBookings">@L["ProviderBookings"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Providers" asp-action="MyReviews">@L["MyReviews"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Services" asp-action="MyServices">@L["MyServices"]</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Providers" asp-action="EditProfile">@L["MyProfile"]</a>
+                            </li>
+                            @await Component.InvokeAsync("NotificationBell")
+                        }
                     </ul>
                     <div class="d-flex">
                         @if (Context.Session.HasUsableToken())
                         {
+                            var displayName = Context.Session.GetDisplayName();
+                            if (!string.IsNullOrWhiteSpace(displayName))
+                            {
+                                <span class="navbar-text me-3 text-muted small fw-semibold">@displayName</span>
+                            }
                             <form asp-controller="Auth" asp-action="Logout" method="post">
                                 <button type="submit" class="btn btn-outline-secondary">@L["Logout"]</button>
                             </form>
                         }
                         else
                         {
+                            <a class="btn btn-outline-secondary me-2" asp-controller="Auth" asp-action="Register">@L["RegisterAsClient"]</a>
+                            <a class="btn btn-outline-secondary me-2" asp-controller="Auth" asp-action="RegisterProvider">@L["RegisterAsProvider"]</a>
                             <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="Login">@L["Login"]</a>
                         }
                     </div>

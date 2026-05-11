@@ -17,8 +17,20 @@ public class ServicesApiService
         return await _api.GetAsync<List<ServiceResponse>>(url) ?? [];
     }
 
+    public async Task<ICollection<ServiceResponse>> GetPublicAsync(Guid? providerId = null, Guid? serviceTypeId = null)
+    {
+        var parts = new List<string>();
+        if (providerId.HasValue) parts.Add($"providerId={providerId}");
+        if (serviceTypeId.HasValue) parts.Add($"serviceTypeId={serviceTypeId}");
+        var url = parts.Count > 0 ? $"/api/v1/services?{string.Join("&", parts)}" : "/api/v1/services";
+        return await _api.AnonymousGetAsync<List<ServiceResponse>>(url) ?? [];
+    }
+
     public async Task<ServiceResponse?> GetAsync(Guid id)
         => (await GetAllAsync()).FirstOrDefault(s => s.Id == id);
+
+    public async Task<ICollection<ServiceResponse>> GetMyAsync()
+        => await _api.GetAsync<List<ServiceResponse>>("/api/v1/services/mine") ?? [];
 
     public Task<ServiceResponse?> CreateAsync(ServiceCreateRequest request)
         => _api.PostAsync<ServiceResponse>("/api/v1/services", request);

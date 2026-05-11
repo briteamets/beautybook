@@ -22,6 +22,15 @@ public class BackendApiClient
     public async Task<T?> PatchAsync<T>(string url, object body) => await SendAsync<T>(HttpMethod.Patch, url, body);
     public async Task DeleteAsync(string url) => await SendAsync<object>(HttpMethod.Delete, url);
 
+    public async Task<T?> AnonymousGetAsync<T>(string url)
+    {
+        var response = await _client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+        if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
+            return default;
+        return await response.Content.ReadFromJsonAsync<T>();
+    }
+
     public async Task<T?> AnonymousPostAsync<T>(string url, object body)
     {
         var response = await _client.PostAsJsonAsync(url, body);
@@ -49,11 +58,14 @@ public class BackendApiClient
             throw new UnauthorizedAccessException();
         }
 
-        response.EnsureSuccessStatusCode();
-        if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
+        if (!response.IsSuccessStatusCode)
         {
-            return default;
+            var errorBody = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"{(int)response.StatusCode} {response.StatusCode}: {errorBody}", null, response.StatusCode);
         }
+
+        if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
+            return default;
 
         return await response.Content.ReadFromJsonAsync<T>();
     }

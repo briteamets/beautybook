@@ -47,4 +47,65 @@ public class AuthController : Controller
         await _authApiService.LogoutAsync();
         return RedirectToAction(nameof(Login));
     }
+
+    // --- Client registration ---
+
+    public IActionResult Register()
+    {
+        return View(new RegisterViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            await _authApiService.RegisterAsync(
+                model.Email, model.Password,
+                model.Firstname, model.Lastname,
+                isProviderApplicant: false);
+            return RedirectToAction("Index", "Home");
+        }
+        catch
+        {
+            model.ErrorMessage = "failed";
+            return View(model);
+        }
+    }
+
+    // --- Service provider registration ---
+
+    public IActionResult RegisterProvider()
+    {
+        return View(new RegisterProviderViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RegisterProvider(RegisterProviderViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            await _authApiService.RegisterAsync(
+                model.Email, model.Password,
+                model.Firstname, model.Lastname,
+                isProviderApplicant: true);
+            return RedirectToAction(nameof(ProviderPending));
+        }
+        catch
+        {
+            model.ErrorMessage = "failed";
+            return View(model);
+        }
+    }
+
+    public IActionResult ProviderPending()
+    {
+        return View();
+    }
 }

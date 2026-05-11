@@ -1,0 +1,55 @@
+@model MyReviewsViewModel
+
+<h1 class="mb-3">@L["MyReviews"]</h1>
+
+@if (!Model.HasProviderProfile)
+{
+    <div class="alert alert-warning">@L["NotAProvider"]</div>
+}
+else if (!Model.Reviews.Any())
+{
+    <div class="alert alert-info">@L["NoRows"]</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>@L["Rating"]</th>
+            <th>@L["Comment"]</th>
+            <th>@L["Client"]</th>
+            <th>@L["Date"]</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var review in Model.Reviews)
+        {
+            <tr>
+                <td>@review.Rating / 5</td>
+                <td>
+                    @if (review.Comment != null)
+                    {
+                        @review.Comment
+                    }
+                    else
+                    {
+                        <span class="text-muted fst-italic">@L["CommentRemovedByProvider"]</span>
+                    }
+                </td>
+                <td>@review.UserName</td>
+                <td>@review.CreatedAt.ToString("d")</td>
+                <td class="text-end">
+                    @if (review.Comment != null)
+                    {
+                        <form asp-action="DeleteReviewComment" asp-route-id="@review.Id" method="post">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">@L["RemoveComment"]</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -43,6 +43,29 @@ public class BookingsController : BaseApiController
         return GetBookings();
     }
 
+    [HttpGet("incoming")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "ServiceProvider")]
+    public async Task<ActionResult<IEnumerable<BookingResponse>>> GetIncomingBookings()
+    {
+        var userId = GetCurrentUserId();
+        var bookings = await _context.Bookings
+            .Include(b => b.Service).ThenInclude(s => s!.BeautyProvider)
+            .Include(b => b.Salon)
+            .Include(b => b.BookingPayments!).ThenInclude(bp => bp.Payment)
+            .Include(b => b.Review)
+            .Include(b => b.User)
+            .Where(b => b.Service!.BeautyProvider!.UserId == userId && b.To == null)
+            .OrderByDescending(b => b.AppointmentDateTime)
+            .ToListAsync();
+
+        return Ok(bookings.Select(b =>
+        {
+            var r = b.ToResponse();
+            r.ClientName = b.User?.Email;
+            return r;
+        }));
+    }
+
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<BookingResponse>> GetBooking(Guid id)
     {
@@ -238,6 +261,28 @@ public class BookingsController : BaseApiController
             From = DateTime.UtcNow
         });
 
+        var notificationTitle = request.Status switch
+        {
+            Booking.StatusConfirmed => "Booking confirmed",
+            Booking.StatusCancelled => "Booking cancelled by provider",
+            Booking.StatusCompleted => "Booking completed",
+            _ => null
+        };
+        if (notificationTitle != null)
+        {
+            _context.Notifications.Add(new Notification
+            {
+                UserId = booking.UserId,
+                Type = request.Status == Booking.StatusCancelled
+                    ? Notification.TypeBookingCancelled
+                    : Notification.TypeBookingConfirmed,
+                Title = notificationTitle,
+                Body = $"Your booking for {booking.Service?.Name.Translate()} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm} has been updated.",
+                IsRead = false,
+                From = DateTime.UtcNow
+            });
+        }
+
         await _context.SaveChangesAsync();
 
         var response = await BookingQuery().FirstAsync(b => b.Id == id);
@@ -323,6 +368,7 @@ public class BookingsController : BaseApiController
             .Include(b => b.Salon)
             .Include(b => b.BookingPayments!)
             .ThenInclude(bp => bp.Payment)
+            .Include(b => b.Review)
             .AsQueryable();
     }
 }

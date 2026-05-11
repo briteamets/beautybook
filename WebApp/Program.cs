@@ -154,6 +154,8 @@ builder.Services.AddControllersWithViews(options =>
 
 builder.Services.AddScoped<ISchedulingRepository, SchedulingRepository>();
 builder.Services.AddScoped<ISlotGeneratorService, SlotGeneratorService>();
+builder.Services.AddScoped<ISlotGenerationRepository, SlotGenerationRepository>();
+builder.Services.AddScoped<ISlotGenerationService, SlotGenerationService>();
 builder.Services.AddHostedService<BookingCompletionHostedService>();
 
 // ==============================================
@@ -261,6 +263,8 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConf
 
 static void WaitDbConnection(AppDbContext ctx, ILogger<IApplicationBuilder> logger)
 {
+    if (!ctx.Database.IsRelational()) return;
+
     while (true)
     {
         try
@@ -284,3 +288,5 @@ static void WaitDbConnection(AppDbContext ctx, ILogger<IApplicationBuilder> logg
         }
     }
 }
+
+public partial class Program { }

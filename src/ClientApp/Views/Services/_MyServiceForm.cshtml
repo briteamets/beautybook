@@ -1,0 +1,59 @@
+@model ServiceFormViewModel
+
+<input type="hidden" asp-for="BeautyProviderId" />
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="mb-3">
+    <label asp-for="ServiceCategoryId" class="form-label">@L["Category"]</label>
+    <select asp-for="ServiceCategoryId" class="form-select">
+        @foreach (var category in Model.Categories)
+        {
+            <option value="@category.Id">@category.Label</option>
+        }
+    </select>
+</div>
+<div class="mb-3">
+    <label asp-for="ServiceTypeId" class="form-label">@L["ServiceType"]</label>
+    <select asp-for="ServiceTypeId" class="form-select">
+        <option value="">— @L["None"] —</option>
+        @foreach (var type in Model.ServiceTypes)
+        {
+            <option value="@type.Id">@type.Label</option>
+        }
+    </select>
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="NameEn" class="form-label">EN @L["Name"]</label>
+        <input asp-for="NameEn" class="form-control"/>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="NameEt" class="form-label">ET @L["Name"]</label>
+        <input asp-for="NameEt" class="form-control"/>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="DescriptionEn" class="form-label">EN @L["Description"]</label>
+        <textarea asp-for="DescriptionEn" class="form-control"></textarea>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="DescriptionEt" class="form-label">ET @L["Description"]</label>
+        <textarea asp-for="DescriptionEt" class="form-control"></textarea>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <label asp-for="Price" class="form-label">@L["Price"]</label>
+        <input asp-for="Price" class="form-control"/>
+    </div>
+    <div class="col-md-4 mb-3">
+        <label asp-for="DurationMinutes" class="form-label">@L["DurationMinutes"]</label>
+        <input asp-for="DurationMinutes" class="form-control"/>
+    </div>
+    <div class="col-md-4 mb-3 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="IsActive" class="form-check-input"/>
+            <label asp-for="IsActive" class="form-check-label">@L["Active"]</label>
+        </div>
+    </div>
+</div>

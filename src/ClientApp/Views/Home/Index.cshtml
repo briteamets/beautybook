@@ -1,4 +1,73 @@
-<div class="text-center">
-    <h1 class="display-4">@L["AppName"]</h1>
-    <p>@L["Login"]</p>
+@model HomeIndexViewModel
+
+<h1 class="mb-3">@L["Providers"]</h1>
+
+<div class="row g-2 mb-3 align-items-end">
+    <div class="col-auto">
+        <div class="btn-group" role="group">
+            <a href="@Url.Action("Index", "Home", new { serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
+               class="btn btn-@(Model.Filter == "all" ? "primary" : "outline-primary")">@L["AllProviders"]</a>
+            <a href="@Url.Action("Index", "Home", new { filter = "independent", serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
+               class="btn btn-@(Model.Filter == "independent" ? "primary" : "outline-primary")">@L["Independent"]</a>
+            <a href="@Url.Action("Index", "Home", new { filter = "salon", serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
+               class="btn btn-@(Model.Filter == "salon" ? "primary" : "outline-primary")">@L["Salons"]</a>
+        </div>
+    </div>
+    <div class="col-auto">
+        <form method="get" asp-action="Index" class="d-flex gap-2">
+            <input type="hidden" name="filter" value="@Model.Filter"/>
+            <input type="hidden" name="serviceTypeId" value="@Model.ServiceTypeId"/>
+            <input type="text" name="search" value="@Model.Search" class="form-control form-control-sm"
+                   placeholder="@L["SearchByName"]" style="width:180px"/>
+            <button type="submit" class="btn btn-sm btn-outline-secondary">@L["Search"]</button>
+            @if (!string.IsNullOrWhiteSpace(Model.Search))
+            {
+                <a href="@Url.Action("Index", "Home", new { filter = Model.Filter, serviceTypeId = Model.ServiceTypeId })"
+                   class="btn btn-sm btn-outline-secondary">✕</a>
+            }
+        </form>
+    </div>
 </div>
+
+@if (Model.ServiceTypes.Any())
+{
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <a href="@Url.Action("Index", "Home", new { filter = Model.Filter, search = Model.Search })"
+           class="btn btn-sm btn-@(Model.ServiceTypeId == null ? "dark" : "outline-dark")">@L["AllServiceTypes"]</a>
+        @foreach (var t in Model.ServiceTypes)
+        {
+            <a href="@Url.Action("Index", "Home", new { filter = Model.Filter, serviceTypeId = t.Id, search = Model.Search })"
+               class="btn btn-sm btn-@(Model.ServiceTypeId == t.Id ? "dark" : "outline-dark")">@t.Name</a>
+        }
+    </div>
+}
+
+@if (!Model.Providers.Any())
+{
+    <div class="alert alert-info">@L["NoRows"]</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        @foreach (var provider in Model.Providers)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@provider.ProfileName</h5>
+                        <p class="card-text text-muted small">@provider.Address</p>
+                        <p class="card-text">
+                            <span>&#9733; @provider.AverageRating.ToString("0.0")</span>
+                            &nbsp;&bull;&nbsp;
+                            <span class="text-success">@provider.TodayAvailabilityCount @L["SlotsToday"]</span>
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a asp-controller="Providers" asp-action="Details" asp-route-id="@provider.Id"
+                           class="btn btn-sm btn-outline-primary">@L["Details"]</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

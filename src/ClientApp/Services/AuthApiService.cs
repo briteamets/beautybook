@@ -24,6 +24,22 @@ public class AuthApiService
         // mõlemad tokenid serveripoolsesse sessiooni — JWT võtmega "ClientJwt" ja refresh token võtmega "ClientRefreshToken"
     }
 
+    public async Task RegisterAsync(string email, string password, string firstname, string lastname, bool isProviderApplicant)
+    {
+        var tokens = await _api.AnonymousPostAsync<JWTResponse>("/api/v1/identity/account/register",
+            new RegisterInfo
+            {
+                Email = email,
+                Password = password,
+                Firstname = firstname,
+                Lastname = lastname,
+                IsProviderApplicant = isProviderApplicant
+            });
+        if (tokens == null) throw new InvalidOperationException("Registration failed.");
+
+        _httpContextAccessor.HttpContext!.Session.SetTokens(tokens.Jwt, tokens.RefreshToken);
+    }
+
     public async Task LogoutAsync()
     {
         var session = _httpContextAccessor.HttpContext!.Session;

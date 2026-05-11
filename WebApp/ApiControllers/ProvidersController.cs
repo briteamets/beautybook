@@ -22,17 +22,32 @@ public class ProvidersController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BeautyProviderResponse>>> GetProviders()
+    public async Task<ActionResult<IEnumerable<BeautyProviderResponse>>> GetProviders(
+        [FromQuery] Guid? serviceTypeId = null,
+        [FromQuery] string? providerType = null,
+        [FromQuery] string? search = null)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var providers = await _context.BeautyProviders
+
+        IQueryable<BeautyProvider> query = _context.BeautyProviders
             .Where(p => p.To == null)
             .Include(p => p.Availabilities!.Where(a => a.To == null && a.Date == today))
             .Include(p => p.Services!)
-            .ThenInclude(s => s.Bookings!)
-            .ThenInclude(b => b.Review)
-            .OrderBy(p => p.ProfileName)
-            .ToListAsync();
+                .ThenInclude(s => s.Bookings!)
+                    .ThenInclude(b => b.Review);
+
+        if (serviceTypeId.HasValue)
+            query = query.Where(p => p.Services!.Any(s => s.ServiceTypeId == serviceTypeId.Value && s.IsActive && s.To == null));
+
+        if (providerType == "independent")
+            query = query.Where(p => !p.SalonStaff!.Any(ss => ss.To == null));
+        else if (providerType == "salon")
+            query = query.Where(p => p.SalonStaff!.Any(ss => ss.To == null));
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(p => EF.Functions.ILike(p.ProfileName, $"%{search}%"));
+
+        var providers = await query.OrderBy(p => p.ProfileName).ToListAsync();
 
         return Ok(providers.Select(provider =>
         {
@@ -51,6 +66,20 @@ public class ProvidersController : BaseApiController
 
             return provider.ToResponse(averageRating, reviews.Count, availability);
         }));
+    }
+
+    [HttpGet("mine")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<BeautyProviderResponse>> GetMyProvider()
+    {
+        var userId = GetCurrentUserId();
+        var provider = await _context.BeautyProviders
+            .Where(p => p.UserId == userId && p.To == null)
+            .FirstOrDefaultAsync();
+
+        if (provider == null) return NotFound();
+
+        return Ok(provider.ToResponse(0, 0, new List<AvailabilityResponse>()));
     }
 
     [HttpGet("{id:guid}")]
@@ -83,35 +112,71 @@ public class ProvidersController : BaseApiController
         return Ok(provider.ToResponse(averageRating, reviews.Count, availability));
     }
 
+    [HttpPut("mine")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<BeautyProviderResponse>> UpsertMyProvider([FromBody] BeautyProviderUpdateRequest request)
+    {
+        Guid userId;
+        try { userId = GetCurrentUserId(); }
+        catch (Exception ex) { return ApiError(HttpStatusCode.Unauthorized, $"Cannot resolve user id: {ex.Message}"); }
+
+        var provider = await _context.BeautyProviders
+            .AsTracking()
+            .FirstOrDefaultAsync(p => p.UserId == userId && p.To == null);
+
+        if (provider == null)
+        {
+            provider = new BeautyProvider
+            {
+                UserId = userId,
+                From = DateTime.UtcNow
+            };
+            _context.BeautyProviders.Add(provider);
+        }
+
+        provider.ProfileName = request.ProfileName ?? string.Empty;
+        provider.ProfilePictureUrl = request.ProfilePictureUrl;
+        provider.Bio = request.Bio;
+        provider.Latitude = request.Lat;
+        provider.Longitude = request.Lng;
+        provider.Address = request.Address ?? string.Empty;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            return ApiError(HttpStatusCode.InternalServerError, $"Database error: {ex.Message}");
+        }
+
+        return Ok(provider.ToResponse(0, 0, new List<AvailabilityResponse>()));
+    }
+
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<BeautyProviderResponse>> PostProvider([FromBody] BeautyProviderCreateRequest request)
     {
         var userId = GetCurrentUserId();
-        var existingProvider = await _context.BeautyProviders
-            .AnyAsync(p => p.UserId == userId && p.To == null);
-        if (existingProvider)
+        var provider = await _context.BeautyProviders
+            .AsTracking()
+            .FirstOrDefaultAsync(p => p.UserId == userId && p.To == null);
+
+        if (provider == null)
         {
-            return ApiError(HttpStatusCode.BadRequest, "Current user already has an active provider profile.");
+            provider = new BeautyProvider { UserId = userId, From = DateTime.UtcNow };
+            _context.BeautyProviders.Add(provider);
         }
 
-        var provider = new BeautyProvider
-        {
-            UserId = userId,
-            ProfileName = request.ProfileName,
-            ProfilePictureUrl = request.ProfilePictureUrl,
-            Bio = request.Bio,
-            Latitude = request.Lat,
-            Longitude = request.Lng,
-            Address = request.Address,
-            From = DateTime.UtcNow
-        };
+        provider.ProfileName = request.ProfileName ?? string.Empty;
+        provider.ProfilePictureUrl = request.ProfilePictureUrl;
+        provider.Bio = request.Bio;
+        provider.Latitude = request.Lat;
+        provider.Longitude = request.Lng;
+        provider.Address = request.Address ?? string.Empty;
 
-        _context.BeautyProviders.Add(provider);
         await _context.SaveChangesAsync();
-
-        return CreatedAtAction(nameof(GetProvider), new { id = provider.Id, version = "1.0" },
-            provider.ToResponse(0, 0, new List<AvailabilityResponse>()));
+        return Ok(provider.ToResponse(0, 0, new List<AvailabilityResponse>()));
     }
 
     [HttpPut("{id:guid}")]

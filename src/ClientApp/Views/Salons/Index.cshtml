@@ -1,0 +1,36 @@
+@model SalonsIndexViewModel
+
+<h2 class="mb-4">@L["Salons"]</h2>
+
+@if (!Model.Salons.Any())
+{
+    <p class="text-muted">@L["NoRows"]</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var salon in Model.Salons)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(salon.ProfilePictureUrl))
+                    {
+                        <img src="@salon.ProfilePictureUrl" class="card-img-top" alt="@salon.Name"
+                             style="height:180px;object-fit:cover" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@salon.Name</h5>
+                        <p class="card-text text-muted small">@salon.Address</p>
+                        <p class="card-text small">
+                            <span class="text-secondary">@L["SalonStaff"]: @salon.StaffCount</span>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-action="Details" asp-route-id="@salon.Id"
+                           class="btn btn-outline-primary btn-sm w-100">@L["Details"]</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

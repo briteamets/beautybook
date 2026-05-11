@@ -1,0 +1,36 @@
+@model WizardStep1ViewModel
+
+<h2 class="mb-4">@L["ChooseProvider"]</h2>
+
+@if (!Model.Providers.Any())
+{
+    <div class="alert alert-info">@L["NoRows"]</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        @foreach (var provider in Model.Providers)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@provider.ProfileName</h5>
+                        <p class="card-text text-muted small">@provider.Address</p>
+                        <p class="card-text">
+                            <span>&#9733; @provider.AverageRating.ToString("0.0")</span>
+                            &nbsp;&bull;&nbsp;
+                            <span class="text-success">@provider.TodayAvailabilityCount @L["SlotsToday"]</span>
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <form asp-action="WizardStep1Post" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="providerId" value="@provider.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary">@L["Select"]</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

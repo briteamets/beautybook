@@ -21,7 +21,10 @@ public class ServicesController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ServiceResponse>>> GetServices([FromQuery] Guid? providerId, [FromQuery] Guid? categoryId)
+    public async Task<ActionResult<IEnumerable<ServiceResponse>>> GetServices(
+        [FromQuery] Guid? providerId,
+        [FromQuery] Guid? categoryId,
+        [FromQuery] Guid? serviceTypeId)
     {
         var query = _context.Services
             .Where(s => s.To == null && s.IsActive && s.BeautyProvider!.To == null)
@@ -31,8 +34,23 @@ public class ServicesController : BaseApiController
 
         if (providerId.HasValue) query = query.Where(s => s.BeautyProviderId == providerId.Value);
         if (categoryId.HasValue) query = query.Where(s => s.ServiceCategoryId == categoryId.Value);
+        if (serviceTypeId.HasValue) query = query.Where(s => s.ServiceTypeId == serviceTypeId.Value);
 
         return Ok((await query.OrderBy(s => s.Name).ToListAsync()).Select(s => s.ToResponse()));
+    }
+
+    [HttpGet("mine")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<IEnumerable<ServiceResponse>>> GetMyServices()
+    {
+        var userId = GetCurrentUserId();
+        var services = await _context.Services
+            .Where(s => s.To == null && s.BeautyProvider!.UserId == userId)
+            .Include(s => s.ServiceCategory)
+            .Include(s => s.BeautyProvider)
+            .OrderBy(s => s.Name)
+            .ToListAsync();
+        return Ok(services.Select(s => s.ToResponse()));
     }
 
     [HttpPost]
@@ -51,6 +69,7 @@ public class ServicesController : BaseApiController
         {
             BeautyProviderId = request.BeautyProviderId,
             ServiceCategoryId = request.ServiceCategoryId,
+            ServiceTypeId = request.ServiceTypeId,
             Name = request.Name.ToLangStr(),
             Description = request.Description.ToLangStrOrNull(),
             Price = request.Price,
@@ -80,6 +99,7 @@ public class ServicesController : BaseApiController
         if (!IsCurrentUser(service.BeautyProvider!.UserId)) return Forbid();
 
         service.ServiceCategoryId = request.ServiceCategoryId;
+        service.ServiceTypeId = request.ServiceTypeId;
         service.Name = request.Name.ToLangStr();
         service.Description = request.Description.ToLangStrOrNull();
         service.Price = request.Price;

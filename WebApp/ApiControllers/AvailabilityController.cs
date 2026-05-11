@@ -22,10 +22,33 @@ public class AvailabilityController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<AvailabilityResponse>>> GetAvailability([FromQuery] Guid providerId, [FromQuery] DateOnly? date)
+    public async Task<ActionResult<IEnumerable<AvailabilityResponse>>> GetAvailability(
+        [FromQuery] Guid providerId,
+        [FromQuery] Guid? serviceId,
+        [FromQuery] DateOnly? date)
     {
         var query = _context.Availabilities
-            .Where(a => a.BeautyProviderId == providerId && a.To == null)
+            .Where(a => a.BeautyProviderId == providerId && a.To == null && !a.IsBooked)
+            .OrderBy(a => a.Date)
+            .ThenBy(a => a.StartTime)
+            .AsQueryable();
+
+        if (date.HasValue) query = query.Where(a => a.Date == date.Value);
+
+        return Ok((await query.ToListAsync()).Select(a => a.ToResponse()));
+    }
+
+    [HttpGet("mine")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<IEnumerable<AvailabilityResponse>>> GetMyAvailability([FromQuery] DateOnly? date)
+    {
+        var userId = GetCurrentUserId();
+        var provider = await _context.BeautyProviders
+            .FirstOrDefaultAsync(p => p.UserId == userId && p.To == null);
+        if (provider == null) return NotFound();
+
+        var query = _context.Availabilities
+            .Where(a => a.BeautyProviderId == provider.Id && a.To == null)
             .OrderBy(a => a.Date)
             .ThenBy(a => a.StartTime)
             .AsQueryable();

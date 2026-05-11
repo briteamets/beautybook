@@ -52,11 +52,11 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
         base.OnModelCreating(builder);
 
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
-        ConfigureLangStrProperties(builder);
+        ConfigureLangStrProperties(builder, Database.ProviderName);
     }
 
     // keele konverter salvestamiseks (langstr -> json) ja laadimiseks (json -> langstr)
-    private static void ConfigureLangStrProperties(ModelBuilder builder)
+    private static void ConfigureLangStrProperties(ModelBuilder builder, string? providerName)
     {
         var langStrConverter = new ValueConverter<LangStr?, string?>(
             value => SerializeLangStr(value),
@@ -84,7 +84,9 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>, IDataProt
 
                 propertyBuilder.Metadata.SetValueConverter(langStrConverter);
                 propertyBuilder.Metadata.SetValueComparer(langStrComparer);
-                propertyBuilder.HasColumnType("jsonb");
+                // jsonb is a PostgreSQL-specific type; SQLite stores it as binary and breaks the text converter.
+                if (providerName?.Contains("Npgsql") == true)
+                    propertyBuilder.HasColumnType("jsonb");
             }
         }
     }

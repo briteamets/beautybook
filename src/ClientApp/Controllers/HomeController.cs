@@ -1,14 +1,42 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using ClientApp.Models;
+using ClientApp.Services;
+using ClientApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClientApp.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly ProvidersApiService _providersApiService;
+    private readonly ServiceTypesApiService _serviceTypesApiService;
+
+    public HomeController(ProvidersApiService providersApiService, ServiceTypesApiService serviceTypesApiService)
     {
-        return RedirectToAction("Index", "Providers");
+        _providersApiService = providersApiService;
+        _serviceTypesApiService = serviceTypesApiService;
+    }
+
+    public async Task<IActionResult> Index(string? filter = null, Guid? serviceTypeId = null, string? search = null)
+    {
+        var normalizedFilter = filter is "independent" or "salon" ? filter : null;
+        var providers = await _providersApiService.GetAllAsync(normalizedFilter, serviceTypeId, search);
+        var serviceTypes = await _serviceTypesApiService.GetAsync();
+        return View(new HomeIndexViewModel
+        {
+            Filter = normalizedFilter ?? "all",
+            ServiceTypeId = serviceTypeId,
+            Search = search,
+            ServiceTypes = serviceTypes.Select(t => new ServiceTypeOptionViewModel { Id = t.Id, Name = t.Name }).ToList(),
+            Providers = providers.Select(p => new ProviderListItemViewModel
+            {
+                Id = p.Id,
+                ProfileName = p.ProfileName,
+                Address = p.Address,
+                AverageRating = p.AverageRating,
+                TodayAvailabilityCount = p.TodayAvailability.Count
+            }).ToList()
+        });
     }
 
     public IActionResult Privacy()

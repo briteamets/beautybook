@@ -10,10 +10,20 @@ namespace ClientApp.Controllers;
 public class ProvidersController : Controller
 {
     private readonly ProvidersApiService _providersApiService;
+    private readonly ReviewsApiService _reviewsApiService;
+    private readonly FavoritesApiService _favoritesApiService;
+    private readonly ILogger<ProvidersController> _logger;
 
-    public ProvidersController(ProvidersApiService providersApiService)
+    public ProvidersController(
+        ProvidersApiService providersApiService,
+        ReviewsApiService reviewsApiService,
+        FavoritesApiService favoritesApiService,
+        ILogger<ProvidersController> logger)
     {
         _providersApiService = providersApiService;
+        _reviewsApiService = reviewsApiService;
+        _favoritesApiService = favoritesApiService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -37,6 +47,20 @@ public class ProvidersController : Controller
         var provider = await _providersApiService.GetAsync(id);
         if (provider == null) return NotFound();
 
+        var reviews = await _reviewsApiService.GetByProviderIdAsync(id);
+
+        ICollection<App.DTO.v1.FavoriteProviderResponse> favorites;
+        try
+        {
+            favorites = await _favoritesApiService.GetAsync();
+        }
+        catch (HttpRequestException)
+        {
+            favorites = [];
+        }
+
+        var favorite = favorites.FirstOrDefault(f => f.ProviderId == id);
+
         return View(new ProviderDetailsViewModel
         {
             Id = provider.Id,
@@ -47,7 +71,17 @@ public class ProvidersController : Controller
             Lng = provider.Lng,
             ProfilePictureUrl = provider.ProfilePictureUrl,
             AverageRating = provider.AverageRating,
-            ReviewCount = provider.ReviewCount
+            ReviewCount = provider.ReviewCount,
+            Reviews = reviews.Select(r => new ReviewListItemViewModel
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                UserName = r.UserName,
+                CreatedAt = r.CreatedAt
+            }).ToList(),
+            IsFavorited = favorite != null,
+            FavoriteId = favorite?.Id
         });
     }
 
@@ -62,8 +96,16 @@ public class ProvidersController : Controller
     {
         if (!ModelState.IsValid) return View(model);
 
-        var created = await _providersApiService.CreateAsync(ToCreateRequest(model));
-        return RedirectToAction(nameof(Details), new { id = created!.Id });
+        try
+        {
+            var created = await _providersApiService.CreateAsync(ToCreateRequest(model));
+            return RedirectToAction(nameof(Details), new { id = created!.Id });
+        }
+        catch (HttpRequestException)
+        {
+            ModelState.AddModelError(string.Empty, "Save failed.");
+            return View(model);
+        }
     }
 
     public async Task<IActionResult> Edit(Guid id)
@@ -123,6 +165,103 @@ public class ProvidersController : Controller
     {
         await _providersApiService.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> EditProfile()
+    {
+        BeautyProviderResponse? provider;
+        try
+        {
+            provider = await _providersApiService.GetMineAsync();
+        }
+        catch (HttpRequestException)
+        {
+            provider = null;
+        }
+
+        if (provider == null)
+            return View("EditProfile", new ProviderFormViewModel());
+
+        return View(new ProviderFormViewModel
+        {
+            Id = provider.Id,
+            ProfileName = provider.ProfileName,
+            Bio = provider.Bio,
+            Address = provider.Address,
+            Lat = provider.Lat,
+            Lng = provider.Lng,
+            ProfilePictureUrl = provider.ProfilePictureUrl
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(ProviderFormViewModel model)
+    {
+        if (!ModelState.IsValid) return View(model);
+
+        try
+        {
+            await _providersApiService.SaveMineAsync(new BeautyProviderCreateRequest
+            {
+                ProfileName = model.ProfileName,
+                Bio = model.Bio,
+                Address = model.Address,
+                Lat = model.Lat,
+                Lng = model.Lng,
+                ProfilePictureUrl = model.ProfilePictureUrl
+            });
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError("EditProfile POST /api/v1/providers failed — status={Status} message={Message}", ex.StatusCode, ex.Message);
+            ModelState.AddModelError(string.Empty, $"Save failed [{ex.StatusCode}]: {ex.Message}");
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "ProfileSaved";
+        return RedirectToAction(nameof(EditProfile));
+    }
+
+    public async Task<IActionResult> MyReviews()
+    {
+        BeautyProviderResponse? provider;
+        try
+        {
+            provider = await _providersApiService.GetMineAsync();
+        }
+        catch (HttpRequestException)
+        {
+            provider = null;
+        }
+
+        if (provider == null)
+        {
+            TempData["SetupRequired"] = "true";
+            return RedirectToAction(nameof(EditProfile));
+        }
+
+        var reviews = await _reviewsApiService.GetByProviderIdAsync(provider.Id);
+        return View(new MyReviewsViewModel
+        {
+            HasProviderProfile = true,
+            Reviews = reviews.Select(r => new ReviewListItemViewModel
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                UserName = r.UserName,
+                CreatedAt = r.CreatedAt
+            }).ToList()
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteReviewComment(Guid id)
+    {
+        await _reviewsApiService.DeleteCommentAsync(id);
+        return RedirectToAction(nameof(MyReviews));
     }
 
     private static BeautyProviderCreateRequest ToCreateRequest(ProviderFormViewModel model) => new()

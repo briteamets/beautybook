@@ -1,6 +1,15 @@
 @model BookingListItemViewModel
 
-<h1>@L["Details"] @L["Bookings"]</h1>
+<h1 class="mb-4">@L["Details"] — @L["Bookings"]</h1>
+
+@if (Model.ErrorMessage == "pay")
+{
+    <div class="alert alert-danger alert-dismissible">
+        @L["PaymentError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
 <dl class="row">
     <dt class="col-sm-3">@L["Service"]</dt>
     <dd class="col-sm-9">@Model.ServiceName</dd>
@@ -12,6 +21,46 @@
     <dd class="col-sm-9">@Model.Status</dd>
     <dt class="col-sm-3">@L["Total"]</dt>
     <dd class="col-sm-9">@Model.TotalPrice.ToString("0.00") EUR</dd>
+    <dt class="col-sm-3">@L["Payment"]</dt>
+    <dd class="col-sm-9">
+        @if (Model.IsPaid)
+        {
+            <span class="badge bg-success">@L["Paid"]</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">@L["Unpaid"]</span>
+        }
+    </dd>
 </dl>
-<a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
-<a class="btn btn-outline-secondary" asp-action="Index">@L["Back"]</a>
+
+@if (!Model.IsPaid && Model.Status == "Pending")
+{
+    <div class="card mb-3" style="max-width:360px">
+        <div class="card-header fw-semibold">@L["PayNow"]</div>
+        <div class="card-body">
+            <form asp-controller="Payments" asp-action="Pay" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookingId" value="@Model.Id" />
+                <div class="mb-3">
+                    <label class="form-label">@L["PaymentMethod"]</label>
+                    <select name="paymentMethod" class="form-select">
+                        <option value="Card">@L["PayMethodCard"]</option>
+                        <option value="Cash">@L["PayMethodCash"]</option>
+                        <option value="BankTransfer">@L["PayMethodBank"]</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success w-100">@L["PayNow"]</button>
+            </form>
+        </div>
+    </div>
+}
+
+<div class="mt-3">
+    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
+    @if (Model.Status == "Completed" && !Model.HasReview)
+    {
+        <a class="btn btn-outline-success btn-sm ms-1" asp-action="Review" asp-route-id="@Model.Id">@L["LeaveReview"]</a>
+    }
+    <a class="btn btn-outline-secondary btn-sm ms-1" asp-action="Index">@L["Back"]</a>
+</div>

@@ -11,11 +11,13 @@ public class UsersController : AdminControllerBase
 {
     private readonly UserManager<AppUser> _userManager;
     private readonly RoleManager<AppRole> _roleManager;
+    private readonly IServiceScopeFactory _scopeFactory;
 
-    public UsersController(App.DAL.EF.AppDbContext context, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager) : base(context)
+    public UsersController(App.DAL.EF.AppDbContext context, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager, IServiceScopeFactory scopeFactory) : base(context)
     {
         _userManager = userManager;
         _roleManager = roleManager;
+        _scopeFactory = scopeFactory;
     }
 
     public async Task<IActionResult> Index(string? search, string? role, int page = 1)
@@ -227,6 +229,20 @@ public class UsersController : AdminControllerBase
 
         user.IsProviderApplicant = false;
         await _userManager.UpdateAsync(user);
+
+        // Use a fresh scope so UserManager's tracked entities don't interfere with SaveChanges.
+        await using var scope = _scopeFactory.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<App.DAL.EF.AppDbContext>();
+        db.Notifications.Add(new App.Domain.Notification
+        {
+            UserId = id,
+            Type = "ProviderApproved",
+            Title = "Provider application approved",
+            Body = "Your service provider application has been approved. Log out and back in to activate your provider account.",
+            IsRead = false,
+            From = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync();
 
         SetSuccessMessage(T("ProviderApproved"));
         return RedirectToAction(nameof(Details), new { id });

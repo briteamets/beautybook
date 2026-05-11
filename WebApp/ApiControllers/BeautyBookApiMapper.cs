@@ -50,6 +50,7 @@ public static class BeautyBookApiMapper
             DurationMinutes = entity.DurationMinutes,
             CategoryId = entity.ServiceCategoryId,
             CategoryName = entity.ServiceCategory?.Name.Translate() ?? string.Empty,
+            ServiceTypeId = entity.ServiceTypeId,
             IsActive = entity.IsActive
         };
     }
@@ -87,7 +88,8 @@ public static class BeautyBookApiMapper
             Status = entity.Status,
             TotalPrice = entity.Service?.Price ?? 0,
             IsPaid = entity.BookingPayments?.Any(bp => bp.Payment?.Status == Payment.StatusPaid) ?? false,
-            Notes = entity.Notes
+            Notes = entity.Notes,
+            HasReview = entity.Review != null
         };
     }
 
@@ -134,6 +136,17 @@ public static class BeautyBookApiMapper
                     Role = s.Role,
                     ProfilePictureUrl = s.BeautyProvider?.ProfilePictureUrl
                 }).ToList() ?? new List<SalonStaffResponse>()
+        };
+    }
+
+    public static ServiceTypeResponse ToResponse(this ServiceType entity)
+    {
+        return new ServiceTypeResponse
+        {
+            Id = entity.Id,
+            ServiceCategoryId = entity.ServiceCategoryId,
+            Name = entity.Name.Translate() ?? string.Empty,
+            Description = entity.Description?.Translate(Thread.CurrentThread.CurrentUICulture.Name)
         };
     }
 

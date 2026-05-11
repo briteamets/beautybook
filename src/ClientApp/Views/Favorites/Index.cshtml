@@ -1,0 +1,34 @@
+@model FavoritesIndexViewModel
+
+<h2 class="mb-4">@L["MyFavorites"]</h2>
+
+@if (!Model.Favorites.Any())
+{
+    <p class="text-muted">@L["NoFavorites"]</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var fav in Model.Favorites)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@fav.ProfileName</h5>
+                        <p class="card-text text-muted small">@fav.Address</p>
+                        <p class="card-text">&#9733; @fav.AverageRating.ToString("0.0") / 5</p>
+                    </div>
+                    <div class="card-footer d-flex gap-2">
+                        <a asp-controller="Providers" asp-action="Details" asp-route-id="@fav.ProviderId"
+                           class="btn btn-outline-primary btn-sm flex-grow-1">@L["Details"]</a>
+                        <form asp-controller="Favorites" asp-action="Remove" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@fav.Id" />
+                            <button type="submit" class="btn btn-outline-danger btn-sm">@L["RemoveFromFavorites"]</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

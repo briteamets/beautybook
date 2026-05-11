@@ -536,6 +536,27 @@ public static class AppDataInit
             }
         }
 
+        // Seed a review for the completed booking (provider@beautybook.com)
+        var completedBooking = context.Bookings
+            .FirstOrDefault(b =>
+                b.UserId == clientUser.Id &&
+                b.ServiceId == stylingService.Id &&
+                b.Status == Booking.StatusCompleted &&
+                b.To == null);
+
+        if (completedBooking != null && !context.Reviews.Any(r => r.BookingId == completedBooking.Id))
+        {
+            context.Reviews.Add(new Review
+            {
+                BookingId = completedBooking.Id,
+                UserId = clientUser.Id,
+                Rating = 5,
+                Comment = "Excellent styling service! Very professional.",
+                From = completedBooking.AppointmentDateTime.AddHours(2)
+            });
+            context.SaveChanges();
+        }
+
         SeedMoreDemoData();
 
         void SeedMoreDemoData()

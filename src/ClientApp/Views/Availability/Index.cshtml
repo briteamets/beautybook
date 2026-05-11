@@ -1,0 +1,103 @@
+@model AvailabilityIndexViewModel
+
+<h2 class="mb-4">@L["MySchedule"]</h2>
+
+@if (!Model.HasProviderProfile)
+{
+    <div class="alert alert-warning">@L["NotAProviderSchedule"]</div>
+    <a asp-controller="Providers" asp-action="Create" class="btn btn-primary">@L["CreateProviderProfile"]</a>
+}
+else
+{
+    @if (Model.ErrorMessage == "delete")
+    {
+        <div class="alert alert-danger alert-dismissible">
+            @L["SlotDeleteError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (Model.ErrorMessage == "create")
+    {
+        <div class="alert alert-danger alert-dismissible">
+            @L["ApiError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header fw-semibold">@L["AddSlot"]</div>
+                <div class="card-body">
+                    <form asp-controller="Availability" asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="BeautyProviderId" value="@Model.ProviderId" />
+
+                        <div class="mb-3">
+                            <label class="form-label">@L["Date"]</label>
+                            <input type="date" name="Date" class="form-control"
+                                   value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+                                   min="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")"
+                                   required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">@L["StartTime"]</label>
+                            <input type="time" name="StartTime" class="form-control" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">@L["EndTime"]</label>
+                            <input type="time" name="EndTime" class="form-control" required />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">@L["AddSlot"]</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <form method="get" asp-controller="Availability" asp-action="Index" class="d-flex gap-2 mb-3">
+                <input type="date" name="date" class="form-control" style="max-width:200px"
+                       value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
+                <button type="submit" class="btn btn-outline-primary">@L["Date"]</button>
+            </form>
+
+            <h5>@Model.SelectedDate.ToString("yyyy-MM-dd")</h5>
+
+            @if (!Model.Slots.Any())
+            {
+                <p class="text-muted">@L["NoRows"]</p>
+            }
+            else
+            {
+                <div class="list-group">
+                    @foreach (var slot in Model.Slots)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>
+                                @slot.StartTime.ToString("HH:mm") – @slot.EndTime.ToString("HH:mm")
+                            </span>
+                            <div class="d-flex align-items-center gap-2">
+                                @if (slot.IsBooked)
+                                {
+                                    <span class="badge bg-warning text-dark">@L["Booked"]</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">@L["Free"]</span>
+                                    <form asp-controller="Availability" asp-action="Delete" method="post"
+                                          class="d-inline"
+                                          onsubmit="return confirm('@L["ConfirmDelete"]')">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@slot.Id" />
+                                        <input type="hidden" name="returnDate" value="@Model.SelectedDate.ToString("yyyy-MM-dd")" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">@L["Delete"]</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,77 @@
+@model ProviderBookingsViewModel
+
+<h2 class="mb-4">@L["ProviderBookings"]</h2>
+
+@if (!Model.HasProviderProfile)
+{
+    <div class="alert alert-warning">@L["NotAProvider"]</div>
+    return;
+}
+
+@if (!Model.Bookings.Any())
+{
+    <p class="text-muted">@L["NoProviderBookings"]</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>@L["Appointment"]</th>
+                    <th>@L["Service"]</th>
+                    <th>@L["Client"]</th>
+                    <th>@L["Status"]</th>
+                    <th>@L["Price"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var b in Model.Bookings)
+                {
+                    <tr>
+                        <td>@b.AppointmentDateTime.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@b.ServiceName</td>
+                        <td class="text-muted small">@b.ClientName</td>
+                        <td>
+                            <span class="badge bg-@(b.Status == "Confirmed" ? "success" : b.Status == "Cancelled" ? "danger" : b.Status == "Completed" ? "secondary" : "warning text-dark")">
+                                @b.Status
+                            </span>
+                        </td>
+                        <td>@b.TotalPrice.ToString("0.00") €</td>
+                        <td class="d-flex gap-1 flex-wrap">
+                            @if (b.Status == "Pending")
+                            {
+                                <form asp-action="ProviderBookingStatus" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@b.Id"/>
+                                    <input type="hidden" name="status" value="Confirmed"/>
+                                    <button type="submit" class="btn btn-sm btn-success">@L["Confirm"]</button>
+                                </form>
+                            }
+                            @if (b.Status == "Confirmed")
+                            {
+                                <form asp-action="ProviderBookingStatus" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@b.Id"/>
+                                    <input type="hidden" name="status" value="Completed"/>
+                                    <button type="submit" class="btn btn-sm btn-secondary">@L["Complete"]</button>
+                                </form>
+                            }
+                            @if (b.Status is "Pending" or "Confirmed")
+                            {
+                                <form asp-action="ProviderBookingStatus" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@b.Id"/>
+                                    <input type="hidden" name="status" value="Cancelled"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('@L["ConfirmDelete"]')">@L["Cancel"]</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

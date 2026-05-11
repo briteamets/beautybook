@@ -25,4 +25,11 @@ public class BookingsApiService
 
     public Task<BookingResponse?> CancelAsync(Guid id, string? reason)
         => _api.PutAsync<BookingResponse>($"/api/v1/bookings/{id}/cancel", new BookingCancelRequest { Reason = reason });
+
+    public async Task<ICollection<BookingResponse>> GetIncomingAsync()
+        => await _api.GetAsync<List<BookingResponse>>("/api/v1/bookings/incoming") ?? [];
+
+    public Task<BookingResponse?> UpdateStatusAsync(Guid id, string status, string? reason = null)
+        => _api.PatchAsync<BookingResponse>($"/api/v1/bookings/{id}/status",
+            new BookingStatusUpdateRequest { Status = status, Reason = reason });
 }

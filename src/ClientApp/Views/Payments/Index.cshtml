@@ -1,0 +1,30 @@
+@model PaymentsIndexViewModel
+
+<h2 class="mb-4">@L["PaymentHistory"]</h2>
+
+@if (!Model.Payments.Any())
+{
+    <p class="text-muted">@L["NoPayments"]</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>@L["Total"]</th>
+            <th>@L["Status"]</th>
+            <th>@L["PaidAt"]</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var p in Model.Payments)
+        {
+            <tr>
+                <td>@p.Amount.ToString("0.00") @p.Currency</td>
+                <td>@p.Status</td>
+                <td>@(p.PaidAt.HasValue ? p.PaidAt.Value.ToString("g") : "-")</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

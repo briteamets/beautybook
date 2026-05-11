@@ -1,0 +1,53 @@
+@model RegisterViewModel
+
+<h1>@L["Register"]</h1>
+
+@if (Model.ErrorMessage == "failed")
+{
+    <div class="alert alert-danger alert-dismissible">
+        @L["RegisterFailed"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<form asp-action="Register" method="post" class="mt-3 col-md-6">
+    @Html.AntiForgeryToken()
+    <div class="mb-3">
+        <label asp-for="Firstname" class="form-label">@L["Firstname"]</label>
+        <input asp-for="Firstname" class="form-control" />
+        <span asp-validation-for="Firstname" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Lastname" class="form-label">@L["Lastname"]</label>
+        <input asp-for="Lastname" class="form-control" />
+        <span asp-validation-for="Lastname" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">@L["Email"]</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">@L["Password"]</label>
+        <input asp-for="Password" class="form-control" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ConfirmPassword" class="form-label">@L["ConfirmPassword"]</label>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">@L["Register"]</button>
+    <a asp-action="Login" class="btn btn-link ms-2">@L["AlreadyHaveAccount"]</a>
+</form>
+
+<div class="mt-4 col-md-6">
+    <div class="alert alert-info">
+        @L["WantToBeProvider"]
+        <a asp-action="RegisterProvider" class="alert-link">@L["RegisterAsProvider"]</a>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

@@ -33,6 +33,30 @@ public class ReviewsController : BaseApiController
         return Ok(reviews.Select(r => r.ToResponse()));
     }
 
+    [HttpDelete("{id:guid}/comment")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<ActionResult<ReviewResponse>> DeleteComment(Guid id)
+    {
+        var review = await _context.Reviews
+            .AsTracking()
+            .Include(r => r.User)
+            .Include(r => r.Booking!)
+                .ThenInclude(b => b.Service!)
+                    .ThenInclude(s => s.BeautyProvider)
+            .FirstOrDefaultAsync(r => r.Id == id && r.To == null);
+
+        if (review == null) return NotFound();
+
+        var providerUserId = review.Booking?.Service?.BeautyProvider?.UserId;
+        if (providerUserId == null || !IsCurrentUser(providerUserId.Value))
+            return ApiError(HttpStatusCode.Forbidden, "Only the provider of this service may remove the comment.");
+
+        review.Comment = null;
+        await _context.SaveChangesAsync();
+
+        return Ok(review.ToResponse());
+    }
+
     [HttpPost]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<ReviewResponse>> PostReview([FromBody] ReviewCreateRequest request)

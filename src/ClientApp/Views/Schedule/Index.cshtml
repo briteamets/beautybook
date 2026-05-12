@@ -46,10 +46,10 @@
                                             <strong>@L[day.DayOfWeek.ToString()]</strong>
                                         </td>
                                         <td>
-                                            <input type="hidden" name="Days[@i].IsWorkingDay" value="false" />
                                             <input type="checkbox" name="Days[@i].IsWorkingDay" value="true"
                                                    class="form-check-input"
                                                    @(day.IsWorkingDay ? "checked" : "") />
+                                            <input type="hidden" name="Days[@i].IsWorkingDay" value="false" />
                                         </td>
                                         <td>
                                             <input type="time" name="Days[@i].StartTime" class="form-control form-control-sm"

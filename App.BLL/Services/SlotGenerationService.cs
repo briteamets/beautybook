@@ -21,6 +21,7 @@ public class SlotGenerationService : ISlotGenerationService
         var durationMinutes = await _repo.GetShortestServiceDurationAsync(providerId) ?? 30;
         var existing = await _repo.GetExistingSlotKeysAsync(providerId, fromDate, toDate);
 
+
         var duration = TimeSpan.FromMinutes(durationMinutes);
         var newSlots = new List<(DateOnly Date, TimeOnly Start, TimeOnly End)>();
 

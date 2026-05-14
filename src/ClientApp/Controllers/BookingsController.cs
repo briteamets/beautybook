@@ -311,12 +311,17 @@ public class BookingsController : Controller
     }
 
     [HttpGet]
-    public IActionResult WizardStep3()
+    public async Task<IActionResult> WizardStep3(DateOnly? date = null)
     {
         var json = TempData[WizardKey] as string;
         if (json == null) return RedirectToAction(nameof(Wizard));
         var state = JsonSerializer.Deserialize<BookingWizardState>(json)!;
-        TempData[WizardKey] = json;
+
+        var selectedDate = date ?? state.Date ?? DateOnly.FromDateTime(DateTime.Today);
+        state.Date = selectedDate;
+        TempData[WizardKey] = JsonSerializer.Serialize(state);
+
+        var slots = await _availabilityApiService.GetAsync(state.ProviderId!.Value, selectedDate);
 
         return View("WizardStep3", new WizardStep3ViewModel
         {
@@ -324,41 +329,8 @@ public class BookingsController : Controller
             ProviderName = state.ProviderName!,
             ServiceId = state.ServiceId!.Value,
             ServiceName = state.ServiceName!,
-            Date = state.Date
-        });
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public IActionResult WizardStep3Post(DateOnly date)
-    {
-        var json = TempData[WizardKey] as string;
-        if (json == null) return RedirectToAction(nameof(Wizard));
-        var state = JsonSerializer.Deserialize<BookingWizardState>(json)!;
-
-        state.Date = date;
-        TempData[WizardKey] = JsonSerializer.Serialize(state);
-        return RedirectToAction(nameof(WizardStep4));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> WizardStep4()
-    {
-        var json = TempData[WizardKey] as string;
-        if (json == null) return RedirectToAction(nameof(Wizard));
-        var state = JsonSerializer.Deserialize<BookingWizardState>(json)!;
-        TempData[WizardKey] = json;
-
-        var slots = await _availabilityApiService.GetAsync(state.ProviderId!.Value, state.Date!.Value);
-
-        return View("WizardStep4", new WizardStep4ViewModel
-        {
-            ProviderId = state.ProviderId!.Value,
-            ProviderName = state.ProviderName!,
-            ServiceId = state.ServiceId!.Value,
-            ServiceName = state.ServiceName!,
             ServicePrice = state.ServicePrice,
-            Date = state.Date!.Value,
+            Date = selectedDate,
             Slots = slots
                 .Where(s => !s.IsBooked)
                 .Select(s => new WizardSlotViewModel

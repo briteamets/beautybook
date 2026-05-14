@@ -101,7 +101,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     {
         // Order is important, it's in which order they will be evaluated
         new QueryStringRequestCultureProvider(),
-        new CookieRequestCultureProvider()
+        new CookieRequestCultureProvider(),
+        new AcceptLanguageHeaderRequestCultureProvider()
     };
 });
 

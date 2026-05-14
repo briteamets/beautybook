@@ -165,4 +165,12 @@
   <data name="Thursday" xml:space="preserve"><value>Neljapäev</value></data>
   <data name="Friday" xml:space="preserve"><value>Reede</value></data>
   <data name="Saturday" xml:space="preserve"><value>Laupäev</value></data>
+  <data name="Pending" xml:space="preserve"><value>Ootel</value></data>
+  <data name="Confirmed" xml:space="preserve"><value>Kinnitatud</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>Tühistatud</value></data>
+  <data name="Completed" xml:space="preserve"><value>Lõpetatud</value></data>
+  <data name="MyAccount" xml:space="preserve"><value>Minu konto</value></data>
+  <data name="Language" xml:space="preserve"><value>Keel</value></data>
+  <data name="English" xml:space="preserve"><value>EN</value></data>
+  <data name="Estonian" xml:space="preserve"><value>ET</value></data>
 </root>

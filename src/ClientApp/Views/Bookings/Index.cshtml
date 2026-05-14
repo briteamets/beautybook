@@ -29,7 +29,7 @@ else
                 <td>@booking.ServiceName</td>
                 <td>@booking.ProviderName</td>
                 <td>@booking.AppointmentDateTime.ToString("g")</td>
-                <td>@booking.Status</td>
+                <td>@L[booking.Status]</td>
                 <td>@booking.TotalPrice.ToString("0.00") EUR</td>
                 <td class="text-end">
                     <a class="btn btn-sm btn-outline-secondary" asp-action="Details" asp-route-id="@booking.Id">@L["Details"]</a>

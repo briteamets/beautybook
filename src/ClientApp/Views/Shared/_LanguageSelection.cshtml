@@ -1,0 +1,13 @@
+@{
+    var current = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+}
+<li class="nav-item d-flex align-items-center gap-1 ms-2">
+    <a class="btn btn-sm @(current == "en" ? "btn-dark" : "btn-outline-dark")"
+       asp-controller="Home" asp-action="SetLanguage"
+       asp-route-culture="en"
+       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">EN</a>
+    <a class="btn btn-sm @(current == "et" ? "btn-dark" : "btn-outline-dark")"
+       asp-controller="Home" asp-action="SetLanguage"
+       asp-route-culture="et"
+       asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString">ET</a>
+</li>

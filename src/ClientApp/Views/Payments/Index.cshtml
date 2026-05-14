@@ -21,7 +21,7 @@ else
         {
             <tr>
                 <td>@p.Amount.ToString("0.00") @p.Currency</td>
-                <td>@p.Status</td>
+                <td>@L[p.Status]</td>
                 <td>@(p.PaidAt.HasValue ? p.PaidAt.Value.ToString("g") : "-")</td>
             </tr>
         }

@@ -35,7 +35,7 @@ else
                         <td class="text-muted small">@b.ClientName</td>
                         <td>
                             <span class="badge bg-@(b.Status == "Confirmed" ? "success" : b.Status == "Cancelled" ? "danger" : b.Status == "Completed" ? "secondary" : "warning text-dark")">
-                                @b.Status
+                                @L[b.Status]
                             </span>
                         </td>
                         <td>@b.TotalPrice.ToString("0.00") €</td>

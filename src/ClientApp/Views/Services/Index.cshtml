@@ -1,8 +1,7 @@
 @model ServiceIndexViewModel
 
-<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="mb-3">
     <h1>@L["Services"]</h1>
-    <a class="btn btn-primary" asp-action="Create">@L["Create"]</a>
 </div>
 
 @if (!Model.Services.Any())

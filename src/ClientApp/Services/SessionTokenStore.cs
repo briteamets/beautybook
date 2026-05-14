@@ -27,6 +27,40 @@ public static class SessionTokenStore
         return !string.IsNullOrWhiteSpace(session.GetJwt()) && !string.IsNullOrWhiteSpace(session.GetRefreshToken());
     }
 
+    public static bool IsProvider(this ISession session)
+    {
+        var roles = GetRoles(session);
+        return roles.Contains("ServiceProvider") || roles.Contains("SalonOwner");
+    }
+
+    public static bool IsClient(this ISession session)
+    {
+        var roles = GetRoles(session);
+        return roles.Contains("Client");
+    }
+
+    private static IReadOnlyList<string> GetRoles(ISession session)
+    {
+        var jwt = session.GetJwt();
+        if (string.IsNullOrWhiteSpace(jwt)) return [];
+        var payload = DecodePayload(jwt);
+        if (payload == null) return [];
+
+        foreach (var key in new[]
+        {
+            "role",
+            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+        })
+        {
+            if (!payload.RootElement.TryGetProperty(key, out var v)) continue;
+            if (v.ValueKind == JsonValueKind.Array)
+                return v.EnumerateArray().Select(e => e.GetString() ?? "").Where(s => s.Length > 0).ToList();
+            var s = v.GetString();
+            if (!string.IsNullOrWhiteSpace(s)) return [s];
+        }
+        return [];
+    }
+
     public static string? GetDisplayName(this ISession session)
     {
         var jwt = session.GetJwt();

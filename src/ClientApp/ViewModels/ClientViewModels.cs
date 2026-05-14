@@ -289,7 +289,10 @@ public class WizardStep3ViewModel
     public string ProviderName { get; set; } = default!;
     public Guid ServiceId { get; set; }
     public string ServiceName { get; set; } = default!;
-    public DateOnly? Date { get; set; }
+    public DateOnly Date { get; set; }
+    public decimal ServicePrice { get; set; }
+    public string? Notes { get; set; }
+    public ICollection<WizardSlotViewModel> Slots { get; set; } = [];
 }
 
 public class WizardSlotViewModel

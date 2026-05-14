@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net;
+using System.Threading;
 using App.DTO.v1.Identity;
 
 namespace ClientApp.Services;
@@ -24,7 +25,10 @@ public class BackendApiClient
 
     public async Task<T?> AnonymousGetAsync<T>(string url)
     {
-        var response = await _client.GetAsync(url);
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(
+            Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName));
+        var response = await _client.SendAsync(request);
         response.EnsureSuccessStatusCode();
         if (response.StatusCode == HttpStatusCode.NoContent || response.Content.Headers.ContentLength == 0)
             return default;
@@ -45,6 +49,8 @@ public class BackendApiClient
         using var request = new HttpRequestMessage(method, url);
         var jwt = _httpContextAccessor.HttpContext!.Session.GetJwt();
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+        request.Headers.AcceptLanguage.Add(new StringWithQualityHeaderValue(
+            Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName));
 
         if (body != null)
         {

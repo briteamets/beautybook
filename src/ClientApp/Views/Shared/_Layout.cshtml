@@ -12,73 +12,77 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">@L["AppName"]</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">@L["AppName"]</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Providers" asp-action="Index">@L["Providers"]</a>
+                            <a class="nav-link" asp-controller="Providers" asp-action="Index">@L["Providers"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
+                            <a class="nav-link" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Services" asp-action="Index">@L["Services"]</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a>
+                            <a class="nav-link" asp-controller="Services" asp-action="Index">@L["Services"]</a>
                         </li>
                         @if (Context.Session.HasUsableToken())
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Bookings" asp-action="Wizard">@L["BookNow"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Payments" asp-action="Index">@L["Payments"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Favorites" asp-action="Index">@L["MyFavorites"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Schedule" asp-action="Index">@L["MySchedule"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Bookings" asp-action="ProviderBookings">@L["ProviderBookings"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Providers" asp-action="MyReviews">@L["MyReviews"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Services" asp-action="MyServices">@L["MyServices"]</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Providers" asp-action="EditProfile">@L["MyProfile"]</a>
-                            </li>
+                            if (Context.Session.IsClient())
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        @L["MyAccount"]
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Bookings" asp-action="Wizard">@L["BookNow"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Payments" asp-action="Index">@L["Payments"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Favorites" asp-action="Index">@L["MyFavorites"]</a></li>
+                                    </ul>
+                                </li>
+                            }
+                            if (Context.Session.IsProvider())
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                        @L["MyAccount"]
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" asp-controller="Schedule" asp-action="Index">@L["MySchedule"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Bookings" asp-action="ProviderBookings">@L["ProviderBookings"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Providers" asp-action="MyReviews">@L["MyReviews"]</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Services" asp-action="MyServices">@L["MyServices"]</a></li>
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-controller="Providers" asp-action="EditProfile">@L["MyProfile"]</a></li>
+                                    </ul>
+                                </li>
+                            }
                             @await Component.InvokeAsync("NotificationBell")
                         }
+                        <partial name="_LanguageSelection" />
                     </ul>
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center gap-2">
                         @if (Context.Session.HasUsableToken())
                         {
                             var displayName = Context.Session.GetDisplayName();
                             if (!string.IsNullOrWhiteSpace(displayName))
                             {
-                                <span class="navbar-text me-3 text-muted small fw-semibold">@displayName</span>
+                                <span class="text-muted small fw-semibold">@displayName</span>
                             }
-                            <form asp-controller="Auth" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-outline-secondary">@L["Logout"]</button>
+                            <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">@L["Logout"]</button>
                             </form>
                         }
                         else
                         {
-                            <a class="btn btn-outline-secondary me-2" asp-controller="Auth" asp-action="Register">@L["RegisterAsClient"]</a>
-                            <a class="btn btn-outline-secondary me-2" asp-controller="Auth" asp-action="RegisterProvider">@L["RegisterAsProvider"]</a>
-                            <a class="btn btn-outline-primary" asp-controller="Auth" asp-action="Login">@L["Login"]</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="Auth" asp-action="Register">@L["RegisterAsClient"]</a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-controller="Auth" asp-action="RegisterProvider">@L["RegisterAsProvider"]</a>
+                            <a class="btn btn-sm btn-outline-primary" asp-controller="Auth" asp-action="Login">@L["Login"]</a>
                         }
                     </div>
                 </div>

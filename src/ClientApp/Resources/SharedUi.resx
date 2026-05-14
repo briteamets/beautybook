@@ -165,4 +165,12 @@
   <data name="Thursday" xml:space="preserve"><value>Thursday</value></data>
   <data name="Friday" xml:space="preserve"><value>Friday</value></data>
   <data name="Saturday" xml:space="preserve"><value>Saturday</value></data>
+  <data name="Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Confirmed" xml:space="preserve"><value>Confirmed</value></data>
+  <data name="Cancelled" xml:space="preserve"><value>Cancelled</value></data>
+  <data name="Completed" xml:space="preserve"><value>Completed</value></data>
+  <data name="MyAccount" xml:space="preserve"><value>My Account</value></data>
+  <data name="Language" xml:space="preserve"><value>Language</value></data>
+  <data name="English" xml:space="preserve"><value>EN</value></data>
+  <data name="Estonian" xml:space="preserve"><value>ET</value></data>
 </root>

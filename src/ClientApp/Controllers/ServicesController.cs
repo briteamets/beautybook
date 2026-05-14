@@ -59,8 +59,17 @@ public class ServicesController : Controller
             return View(model);
         }
 
-        var created = await _servicesApiService.CreateAsync(ToCreateRequest(model));
-        return RedirectToAction(nameof(Details), new { id = created!.Id });
+        try
+        {
+            var created = await _servicesApiService.CreateAsync(ToCreateRequest(model));
+            return RedirectToAction(nameof(Details), new { id = created!.Id });
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
+        {
+            ModelState.AddModelError(string.Empty, "You can only create services for your own provider profile. Use My Services instead.");
+            await LoadOptionsAsync(model);
+            return View(model);
+        }
     }
 
     public async Task<IActionResult> Edit(Guid id)

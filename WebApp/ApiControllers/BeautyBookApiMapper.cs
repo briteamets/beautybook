@@ -45,7 +45,11 @@ public static class BeautyBookApiMapper
         {
             Id = entity.Id,
             Name = entity.Name.Translate() ?? string.Empty,
+            NameEn = entity.Name.Translate("en") ?? string.Empty,
+            NameEt = entity.Name.Translate("et") ?? string.Empty,
             Description = entity.Description?.Translate(Thread.CurrentThread.CurrentUICulture.Name),
+            DescriptionEn = entity.Description?.Translate("en"),
+            DescriptionEt = entity.Description?.Translate("et"),
             Price = entity.Price,
             DurationMinutes = entity.DurationMinutes,
             CategoryId = entity.ServiceCategoryId,
@@ -145,7 +149,8 @@ public static class BeautyBookApiMapper
         {
             Id = entity.Id,
             ServiceCategoryId = entity.ServiceCategoryId,
-            Name = entity.Name.Translate() ?? string.Empty,
+            NameEn = entity.Name.Translate("en") ?? string.Empty,
+            NameEt = entity.Name.Translate("et") ?? string.Empty,
             Description = entity.Description?.Translate(Thread.CurrentThread.CurrentUICulture.Name)
         };
     }
@@ -156,6 +161,7 @@ public static class BeautyBookApiMapper
         {
             Id = entity.Id,
             Name = entity.Name.Translate() ?? string.Empty,
+            NameEn = entity.Name.Translate("en") ?? string.Empty,
             Description = entity.Description?.Translate(Thread.CurrentThread.CurrentUICulture.Name)
         };
     }

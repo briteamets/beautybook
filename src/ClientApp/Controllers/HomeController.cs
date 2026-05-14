@@ -23,12 +23,17 @@ public class HomeController : Controller
         var normalizedFilter = filter is "independent" or "salon" ? filter : null;
         var providers = await _providersApiService.GetAllAsync(normalizedFilter, serviceTypeId, search);
         var serviceTypes = await _serviceTypesApiService.GetAsync();
+        var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
         return View(new HomeIndexViewModel
         {
             Filter = normalizedFilter ?? "all",
             ServiceTypeId = serviceTypeId,
             Search = search,
-            ServiceTypes = serviceTypes.Select(t => new ServiceTypeOptionViewModel { Id = t.Id, Name = t.Name }).ToList(),
+            ServiceTypes = serviceTypes.Select(t => new ServiceTypeOptionViewModel
+            {
+                Id = t.Id,
+                Name = lang == "et" ? t.NameEt : t.NameEn
+            }).ToList(),
             Providers = providers.Select(p => new ProviderListItemViewModel
             {
                 Id = p.Id,

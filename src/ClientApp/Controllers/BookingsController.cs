@@ -267,6 +267,7 @@ public class BookingsController : Controller
 
         var services = await _servicesApiService.GetPublicAsync(state.ProviderId, serviceTypeId);
         var serviceTypes = await _serviceTypesApiService.GetAsync();
+        var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
 
         return View("WizardStep2", new WizardStep2ViewModel
         {
@@ -274,7 +275,11 @@ public class BookingsController : Controller
             ProviderName = state.ProviderName!,
             ServiceTypeId = serviceTypeId,
             ServiceTypes = serviceTypes
-                .Select(t => new ServiceTypeOptionViewModel { Id = t.Id, Name = t.Name })
+                .Select(t => new ServiceTypeOptionViewModel
+                {
+                    Id = t.Id,
+                    Name = lang == "et" ? t.NameEt : t.NameEn
+                })
                 .ToList(),
             Services = services
                 .Where(s => s.IsActive)

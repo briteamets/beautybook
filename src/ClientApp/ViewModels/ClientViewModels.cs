@@ -147,6 +147,15 @@ public class ServiceFormViewModel
     public ICollection<SelectOptionViewModel> Providers { get; set; } = [];
     public ICollection<SelectOptionViewModel> Categories { get; set; } = [];
     public ICollection<SelectOptionViewModel> ServiceTypes { get; set; } = [];
+    public Dictionary<Guid, List<ServicePresetOption>> CategoryPresets { get; set; } = [];
+}
+
+public class ServicePresetOption
+{
+    public string NameEn { get; set; } = default!;
+    public string NameEt { get; set; } = default!;
+    public bool IsOther { get; set; }
+    public Guid? ServiceTypeId { get; set; }
 }
 
 public class MyServicesViewModel

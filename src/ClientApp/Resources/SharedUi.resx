@@ -173,4 +173,11 @@
   <data name="Language" xml:space="preserve"><value>Language</value></data>
   <data name="English" xml:space="preserve"><value>EN</value></data>
   <data name="Estonian" xml:space="preserve"><value>ET</value></data>
+  <data name="SelectCategory" xml:space="preserve"><value>Select a category</value></data>
+  <data name="TypeCustomName" xml:space="preserve"><value>Type custom service name…</value></data>
+  <data name="NameEnglish" xml:space="preserve"><value>Name (English)</value></data>
+  <data name="NameEstonian" xml:space="preserve"><value>Name (Estonian)</value></data>
+  <data name="NoBookingsYet" xml:space="preserve"><value>You have no bookings yet.</value></data>
+  <data name="Upcoming" xml:space="preserve"><value>Upcoming</value></data>
+  <data name="Past" xml:space="preserve"><value>Past</value></data>
 </root>

@@ -27,9 +27,6 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Salons" asp-action="Index">@L["Salons"]</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Services" asp-action="Index">@L["Services"]</a>
-                        </li>
                         @if (Context.Session.HasUsableToken())
                         {
                             if (Context.Session.IsClient())

@@ -81,10 +81,10 @@ public class ServicesController : Controller
         {
             Id = service.Id,
             ServiceCategoryId = service.CategoryId,
-            NameEn = service.Name,
-            NameEt = service.Name,
-            DescriptionEn = service.Description,
-            DescriptionEt = service.Description,
+            NameEn = service.NameEn,
+            NameEt = service.NameEt,
+            DescriptionEn = service.DescriptionEn,
+            DescriptionEt = service.DescriptionEt,
             Price = service.Price,
             DurationMinutes = service.DurationMinutes,
             IsActive = service.IsActive
@@ -189,8 +189,10 @@ public class ServicesController : Controller
             Id = service.Id,
             ServiceCategoryId = service.CategoryId,
             ServiceTypeId = service.ServiceTypeId,
-            NameEn = service.Name,
-            NameEt = service.Name,
+            NameEn = service.NameEn,
+            NameEt = service.NameEt,
+            DescriptionEn = service.DescriptionEn,
+            DescriptionEt = service.DescriptionEt,
             Price = service.Price,
             DurationMinutes = service.DurationMinutes,
             IsActive = service.IsActive
@@ -241,12 +243,31 @@ public class ServicesController : Controller
 
     private async Task LoadCategoriesAsync(ServiceFormViewModel model)
     {
-        model.Categories = (await _categoriesApiService.GetAllAsync())
+        var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+        var categories = (await _categoriesApiService.GetAllAsync()).ToList();
+        var serviceTypes = (await _serviceTypesApiService.GetAsync()).ToList();
+
+        model.Categories = categories
             .Select(c => new SelectOptionViewModel { Id = c.Id, Label = c.Name })
             .ToList();
-        model.ServiceTypes = (await _serviceTypesApiService.GetAsync())
-            .Select(t => new SelectOptionViewModel { Id = t.Id, Label = t.Name })
-            .ToList();
+
+        model.CategoryPresets = categories
+            .ToDictionary(
+                cat => cat.Id,
+                cat =>
+                {
+                    if (!ServiceCategoryPresets.ByCategory.TryGetValue(cat.NameEn, out var presets))
+                        return new List<ServicePresetOption>();
+
+                    return presets.Select(p => new ServicePresetOption
+                    {
+                        NameEn = p.En,
+                        NameEt = p.Et,
+                        IsOther = p.IsOther,
+                        ServiceTypeId = serviceTypes
+                            .FirstOrDefault(t => string.Equals(t.NameEn, p.En, StringComparison.OrdinalIgnoreCase))?.Id
+                    }).ToList();
+                });
     }
 
     private static ServiceListItemViewModel ToListItem(ServiceResponse service) => new()
@@ -266,11 +287,8 @@ public class ServicesController : Controller
         ServiceCategoryId = model.ServiceCategoryId,
         ServiceTypeId = model.ServiceTypeId,
         Name = new Dictionary<string, string> { ["en"] = model.NameEn, ["et"] = model.NameEt },
-        Description = new Dictionary<string, string>
-        {
-            ["en"] = model.DescriptionEn ?? string.Empty,
-            ["et"] = model.DescriptionEt ?? string.Empty
-        },
+        Description = string.IsNullOrWhiteSpace(model.DescriptionEn) && string.IsNullOrWhiteSpace(model.DescriptionEt) ? null :
+            new Dictionary<string, string> { ["en"] = model.DescriptionEn ?? string.Empty, ["et"] = model.DescriptionEt ?? string.Empty },
         Price = model.Price,
         DurationMinutes = model.DurationMinutes,
         IsActive = model.IsActive
@@ -281,11 +299,8 @@ public class ServicesController : Controller
         ServiceCategoryId = model.ServiceCategoryId,
         ServiceTypeId = model.ServiceTypeId,
         Name = new Dictionary<string, string> { ["en"] = model.NameEn, ["et"] = model.NameEt },
-        Description = new Dictionary<string, string>
-        {
-            ["en"] = model.DescriptionEn ?? string.Empty,
-            ["et"] = model.DescriptionEt ?? string.Empty
-        },
+        Description = string.IsNullOrWhiteSpace(model.DescriptionEn) && string.IsNullOrWhiteSpace(model.DescriptionEt) ? null :
+            new Dictionary<string, string> { ["en"] = model.DescriptionEn ?? string.Empty, ["et"] = model.DescriptionEt ?? string.Empty },
         Price = model.Price,
         DurationMinutes = model.DurationMinutes,
         IsActive = model.IsActive

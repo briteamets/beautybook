@@ -4,7 +4,8 @@ public class ServiceTypeResponse
 {
     public Guid Id { get; set; }
     public Guid ServiceCategoryId { get; set; }
-    public string Name { get; set; } = default!;
+    public string NameEn { get; set; } = default!;
+    public string NameEt { get; set; } = default!;
     public string? Description { get; set; }
 }
 
@@ -12,7 +13,11 @@ public class ServiceResponse
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = default!;
+    public string NameEn { get; set; } = default!;
+    public string NameEt { get; set; } = default!;
     public string? Description { get; set; }
+    public string? DescriptionEn { get; set; }
+    public string? DescriptionEt { get; set; }
     public decimal Price { get; set; }
     public int DurationMinutes { get; set; }
     public Guid CategoryId { get; set; }

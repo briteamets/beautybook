@@ -19,24 +19,32 @@
         }
     </select>
 </div>
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label asp-for="NameEn" class="form-label">EN @L["Name"]</label>
-        <input asp-for="NameEn" class="form-control"/>
-    </div>
-    <div class="col-md-6 mb-3">
-        <label asp-for="NameEt" class="form-label">ET @L["Name"]</label>
-        <input asp-for="NameEt" class="form-control"/>
+<div class="mb-3">
+    <label class="form-label">@L["Name"]</label>
+    <div class="row g-2">
+        <div class="col">
+            <label class="form-label text-muted small">@L["English"]</label>
+            <input asp-for="NameEn" class="form-control"/>
+            <span asp-validation-for="NameEn" class="text-danger"></span>
+        </div>
+        <div class="col">
+            <label class="form-label text-muted small">@L["Estonian"]</label>
+            <input asp-for="NameEt" class="form-control"/>
+            <span asp-validation-for="NameEt" class="text-danger"></span>
+        </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label asp-for="DescriptionEn" class="form-label">EN @L["Description"]</label>
-        <textarea asp-for="DescriptionEn" class="form-control"></textarea>
-    </div>
-    <div class="col-md-6 mb-3">
-        <label asp-for="DescriptionEt" class="form-label">ET @L["Description"]</label>
-        <textarea asp-for="DescriptionEt" class="form-control"></textarea>
+<div class="mb-3">
+    <label class="form-label">@L["Description"]</label>
+    <div class="row g-2">
+        <div class="col">
+            <label class="form-label text-muted small">@L["English"]</label>
+            <textarea asp-for="DescriptionEn" class="form-control"></textarea>
+        </div>
+        <div class="col">
+            <label class="form-label text-muted small">@L["Estonian"]</label>
+            <textarea asp-for="DescriptionEt" class="form-control"></textarea>
+        </div>
     </div>
 </div>
 <div class="row">

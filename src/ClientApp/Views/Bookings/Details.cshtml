@@ -57,10 +57,9 @@
 }
 
 <div class="mt-3">
-    <a class="btn btn-outline-primary btn-sm" asp-action="Edit" asp-route-id="@Model.Id">@L["Edit"]</a>
     @if (Model.Status == "Completed" && !Model.HasReview)
     {
-        <a class="btn btn-outline-success btn-sm ms-1" asp-action="Review" asp-route-id="@Model.Id">@L["LeaveReview"]</a>
+        <a class="btn btn-outline-success btn-sm" asp-action="Review" asp-route-id="@Model.Id">@L["LeaveReview"]</a>
     }
     <a class="btn btn-outline-secondary btn-sm ms-1" asp-action="Index">@L["Back"]</a>
 </div>

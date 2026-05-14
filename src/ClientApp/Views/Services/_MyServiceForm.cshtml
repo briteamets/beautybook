@@ -1,46 +1,67 @@
 @model ServiceFormViewModel
 
+@{
+    var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+    var presetsJson = System.Text.Json.JsonSerializer.Serialize(
+        Model.CategoryPresets.ToDictionary(
+            kvp => kvp.Key.ToString(),
+            kvp => kvp.Value.Select(p => new {
+                nameEn = p.NameEn,
+                nameEt = p.NameEt,
+                isOther = p.IsOther,
+                serviceTypeId = p.ServiceTypeId?.ToString()
+            })
+        )
+    );
+}
+
 <input type="hidden" asp-for="BeautyProviderId" />
+<input type="hidden" asp-for="ServiceTypeId" id="ServiceTypeId" />
+<input type="hidden" asp-for="NameEn" id="NameEn" />
+<input type="hidden" asp-for="NameEt" id="NameEt" />
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 <div class="mb-3">
     <label asp-for="ServiceCategoryId" class="form-label">@L["Category"]</label>
-    <select asp-for="ServiceCategoryId" class="form-select">
+    <select asp-for="ServiceCategoryId" class="form-select" id="ServiceCategoryId">
+        <option value="">— @L["SelectCategory"] —</option>
         @foreach (var category in Model.Categories)
         {
             <option value="@category.Id">@category.Label</option>
         }
     </select>
 </div>
+
+<div class="mb-3" id="presetsSection" style="display:none">
+    <label class="form-label">@L["ServiceType"]</label>
+    <div id="presetChips" class="d-flex flex-wrap gap-2 mb-2"></div>
+    <div id="customNameWrapper" style="display:none">
+        <div class="row g-2">
+            <div class="col">
+                <input type="text" id="customNameEn" class="form-control" placeholder="@L["NameEnglish"]" />
+            </div>
+            <div class="col">
+                <input type="text" id="customNameEt" class="form-control" placeholder="@L["NameEstonian"]" />
+            </div>
+        </div>
+    </div>
+</div>
+<span asp-validation-for="NameEn" class="text-danger"></span>
+
 <div class="mb-3">
-    <label asp-for="ServiceTypeId" class="form-label">@L["ServiceType"]</label>
-    <select asp-for="ServiceTypeId" class="form-select">
-        <option value="">— @L["None"] —</option>
-        @foreach (var type in Model.ServiceTypes)
-        {
-            <option value="@type.Id">@type.Label</option>
-        }
-    </select>
-</div>
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label asp-for="NameEn" class="form-label">EN @L["Name"]</label>
-        <input asp-for="NameEn" class="form-control"/>
-    </div>
-    <div class="col-md-6 mb-3">
-        <label asp-for="NameEt" class="form-label">ET @L["Name"]</label>
-        <input asp-for="NameEt" class="form-control"/>
+    <label class="form-label">@L["Description"]</label>
+    <div class="row g-2">
+        <div class="col">
+            <label class="form-label text-muted small">@L["English"]</label>
+            <textarea asp-for="DescriptionEn" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="col">
+            <label class="form-label text-muted small">@L["Estonian"]</label>
+            <textarea asp-for="DescriptionEt" class="form-control" rows="3"></textarea>
+        </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-md-6 mb-3">
-        <label asp-for="DescriptionEn" class="form-label">EN @L["Description"]</label>
-        <textarea asp-for="DescriptionEn" class="form-control"></textarea>
-    </div>
-    <div class="col-md-6 mb-3">
-        <label asp-for="DescriptionEt" class="form-label">ET @L["Description"]</label>
-        <textarea asp-for="DescriptionEt" class="form-control"></textarea>
-    </div>
-</div>
+
 <div class="row">
     <div class="col-md-4 mb-3">
         <label asp-for="Price" class="form-label">@L["Price"]</label>
@@ -57,3 +78,114 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        var lang = '@lang';
+        var presets = @Html.Raw(presetsJson);
+        var categorySelect = document.getElementById('ServiceCategoryId');
+        var presetsSection = document.getElementById('presetsSection');
+        var presetChips = document.getElementById('presetChips');
+        var customWrapper = document.getElementById('customNameWrapper');
+        var customEn = document.getElementById('customNameEn');
+        var customEt = document.getElementById('customNameEt');
+        var nameEnHidden = document.getElementById('NameEn');
+        var nameEtHidden = document.getElementById('NameEt');
+        var serviceTypeHidden = document.getElementById('ServiceTypeId');
+
+        function setNames(en, et) {
+            nameEnHidden.value = en;
+            nameEtHidden.value = et;
+        }
+
+        function renderChips(categoryId) {
+            presetChips.innerHTML = '';
+            customWrapper.style.display = 'none';
+            var list = presets[categoryId];
+            if (!list || list.length === 0) {
+                presetsSection.style.display = 'none';
+                return;
+            }
+            presetsSection.style.display = '';
+            list.forEach(function (p) {
+                var label = lang === 'et' ? p.nameEt : p.nameEn;
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-outline-secondary btn-sm chip-btn';
+                btn.textContent = label;
+                btn.dataset.nameEn = p.nameEn;
+                btn.dataset.nameEt = p.nameEt;
+                btn.dataset.isOther = p.isOther ? '1' : '0';
+                btn.dataset.serviceTypeId = p.serviceTypeId || '';
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.chip-btn').forEach(function (b) {
+                        b.classList.remove('active', 'btn-secondary');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('active', 'btn-secondary');
+                    serviceTypeHidden.value = btn.dataset.serviceTypeId;
+                    if (btn.dataset.isOther === '1') {
+                        customWrapper.style.display = '';
+                        customEn.value = '';
+                        customEt.value = '';
+                        setNames('', '');
+                        (lang === 'et' ? customEt : customEn).focus();
+                    } else {
+                        customWrapper.style.display = 'none';
+                        setNames(btn.dataset.nameEn, btn.dataset.nameEt);
+                        customEn.value = '';
+                        customEt.value = '';
+                    }
+                });
+                presetChips.appendChild(btn);
+            });
+        }
+
+        customEn.addEventListener('input', function () { nameEnHidden.value = customEn.value; });
+        customEt.addEventListener('input', function () { nameEtHidden.value = customEt.value; });
+
+        categorySelect.addEventListener('change', function () {
+            setNames('', '');
+            serviceTypeHidden.value = '';
+            customEn.value = '';
+            customEt.value = '';
+            renderChips(categorySelect.value);
+        });
+
+        // restore on page load (edit mode)
+        var initialCategory = categorySelect.value;
+        var initialNameEn = nameEnHidden.value;
+        var initialNameEt = nameEtHidden.value;
+        if (initialCategory) {
+            renderChips(initialCategory);
+            var list = presets[initialCategory];
+            if (list && (initialNameEn || initialNameEt)) {
+                var matched = false;
+                list.forEach(function (p) {
+                    if (p.isOther) return;
+                    if (p.nameEn === initialNameEn || p.nameEt === initialNameEt) {
+                        var chips = document.querySelectorAll('.chip-btn');
+                        chips.forEach(function (b) {
+                            if (b.dataset.nameEn === p.nameEn) {
+                                b.classList.remove('btn-outline-secondary');
+                                b.classList.add('active', 'btn-secondary');
+                                matched = true;
+                            }
+                        });
+                    }
+                });
+                if (!matched) {
+                    var otherBtn = Array.from(document.querySelectorAll('.chip-btn')).find(function (b) { return b.dataset.isOther === '1'; });
+                    if (otherBtn) {
+                        otherBtn.classList.remove('btn-outline-secondary');
+                        otherBtn.classList.add('active', 'btn-secondary');
+                        customWrapper.style.display = '';
+                        customEn.value = initialNameEn;
+                        customEt.value = initialNameEt;
+                    }
+                }
+            }
+        }
+    })();
+</script>

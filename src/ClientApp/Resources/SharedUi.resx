@@ -180,4 +180,10 @@
   <data name="NoBookingsYet" xml:space="preserve"><value>You have no bookings yet.</value></data>
   <data name="Upcoming" xml:space="preserve"><value>Upcoming</value></data>
   <data name="Past" xml:space="preserve"><value>Past</value></data>
+  <data name="ChooseCategory" xml:space="preserve"><value>Choose Category</value></data>
+  <data name="ChooseServiceType" xml:space="preserve"><value>Choose Service Type</value></data>
+  <data name="NoProvidersForService" xml:space="preserve"><value>No providers found for this service type.</value></data>
+  <data name="BrowseByService" xml:space="preserve"><value>Find by service type</value></data>
+  <data name="BrowseByProvider" xml:space="preserve"><value>Find by provider</value></data>
+  <data name="SeeProviders" xml:space="preserve"><value>See Providers</value></data>
 </root>

@@ -9,6 +9,10 @@
 
 <h2 class="mb-1">@L["ChooseService"]</h2>
 <p class="text-muted mb-3">@Model.ProviderName</p>
+@if (!string.IsNullOrWhiteSpace(Model.SalonName))
+{
+    <p class="text-muted mb-3"><span class="badge bg-info text-dark">@Model.SalonName</span></p>
+}
 
 @if (Model.ServiceTypes.Any())
 {

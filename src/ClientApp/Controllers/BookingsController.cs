@@ -18,6 +18,8 @@ public class BookingsController : Controller
     private readonly AvailabilityApiService _availabilityApiService;
     private readonly ServiceTypesApiService _serviceTypesApiService;
     private readonly ReviewsApiService _reviewsApiService;
+    private readonly CategoriesApiService _categoriesApiService;
+    private readonly SalonsApiService _salonsApiService;
 
     public BookingsController(
         BookingsApiService bookingsApiService,
@@ -25,7 +27,9 @@ public class BookingsController : Controller
         ProvidersApiService providersApiService,
         AvailabilityApiService availabilityApiService,
         ServiceTypesApiService serviceTypesApiService,
-        ReviewsApiService reviewsApiService)
+        ReviewsApiService reviewsApiService,
+        CategoriesApiService categoriesApiService,
+        SalonsApiService salonsApiService)
     {
         _bookingsApiService = bookingsApiService;
         _servicesApiService = servicesApiService;
@@ -33,6 +37,8 @@ public class BookingsController : Controller
         _availabilityApiService = availabilityApiService;
         _serviceTypesApiService = serviceTypesApiService;
         _reviewsApiService = reviewsApiService;
+        _categoriesApiService = categoriesApiService;
+        _salonsApiService = salonsApiService;
     }
 
     // ── Existing CRUD ──────────────────────────────────────────────────────────
@@ -243,7 +249,11 @@ public class BookingsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> WizardStep1Post(Guid providerId)
+    public async Task<IActionResult> WizardStep1Post(
+        Guid providerId,
+        Guid? salonId = null,
+        string? salonName = null,
+        Guid? serviceTypeId = null)
     {
         var provider = await _providersApiService.GetAsync(providerId);
         if (provider == null) return NotFound();
@@ -251,7 +261,10 @@ public class BookingsController : Controller
         var state = new BookingWizardState
         {
             ProviderId = providerId,
-            ProviderName = provider.ProfileName
+            ProviderName = provider.ProfileName,
+            SalonId = salonId,
+            SalonName = salonName,
+            ServiceTypeId = serviceTypeId
         };
         TempData[WizardKey] = JsonSerializer.Serialize(state);
         return RedirectToAction(nameof(WizardStep2));
@@ -265,7 +278,8 @@ public class BookingsController : Controller
         var state = JsonSerializer.Deserialize<BookingWizardState>(json)!;
         TempData[WizardKey] = json;
 
-        var services = await _servicesApiService.GetPublicAsync(state.ProviderId, serviceTypeId);
+        var effectiveServiceTypeId = serviceTypeId ?? state.ServiceTypeId;
+        var services = await _servicesApiService.GetPublicAsync(state.ProviderId, effectiveServiceTypeId);
         var serviceTypes = await _serviceTypesApiService.GetAsync();
         var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
 
@@ -273,7 +287,8 @@ public class BookingsController : Controller
         {
             ProviderId = state.ProviderId!.Value,
             ProviderName = state.ProviderName!,
-            ServiceTypeId = serviceTypeId,
+            ServiceTypeId = effectiveServiceTypeId,
+            SalonName = state.SalonName,
             ServiceTypes = serviceTypes
                 .Select(t => new ServiceTypeOptionViewModel
                 {
@@ -336,6 +351,7 @@ public class BookingsController : Controller
             ServiceName = state.ServiceName!,
             ServicePrice = state.ServicePrice,
             Date = selectedDate,
+            SalonName = state.SalonName,
             Slots = slots
                 .Where(s => !s.IsBooked)
                 .Select(s => new WizardSlotViewModel
@@ -359,9 +375,92 @@ public class BookingsController : Controller
         {
             ServiceId = state.ServiceId!.Value,
             AvailabilityId = availabilityId,
-            Notes = notes
+            Notes = notes,
+            SalonId = state.SalonId
         });
         return RedirectToAction(nameof(Details), new { id = created!.Id });
+    }
+
+    // ── Service-first wizard ───────────────────────────────────────────────────
+
+    [HttpGet]
+    public async Task<IActionResult> ServiceWizard(Guid? salonId = null, string? salonName = null)
+    {
+        var categories = await _categoriesApiService.GetAllAsync();
+        return View("WizardCategoryStep", new WizardCategoryStepViewModel
+        {
+            Categories = categories
+                .Select(c => new WizardCategoryItemViewModel { Id = c.Id, Name = c.Name })
+                .ToList(),
+            SalonId = salonId,
+            SalonName = salonName
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ServiceWizardTypes(Guid categoryId, Guid? salonId = null, string? salonName = null)
+    {
+        var categories = await _categoriesApiService.GetAllAsync();
+        var category = categories.FirstOrDefault(c => c.Id == categoryId);
+        if (category == null) return RedirectToAction(nameof(ServiceWizard), new { salonId, salonName });
+
+        var serviceTypes = await _serviceTypesApiService.GetAsync(categoryId);
+        var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+
+        return View("WizardServiceTypeStep", new WizardServiceTypeStepViewModel
+        {
+            CategoryId = categoryId,
+            CategoryName = category.Name,
+            ServiceTypes = serviceTypes
+                .Select(t => new WizardServiceTypeItemViewModel
+                {
+                    Id = t.Id,
+                    Name = lang == "et" ? t.NameEt : t.NameEn
+                })
+                .ToList(),
+            SalonId = salonId,
+            SalonName = salonName
+        });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ServiceWizardProviders(Guid categoryId, Guid serviceTypeId, Guid? salonId = null, string? salonName = null)
+    {
+        var serviceTypes = await _serviceTypesApiService.GetAsync(categoryId);
+        var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+        var serviceType = serviceTypes.FirstOrDefault(t => t.Id == serviceTypeId);
+        if (serviceType == null) return RedirectToAction(nameof(ServiceWizardTypes), new { categoryId, salonId, salonName });
+
+        var providers = await _providersApiService.GetAllAsync(serviceTypeId: serviceTypeId);
+
+        if (salonId.HasValue)
+        {
+            var salon = await _salonsApiService.GetAsync(salonId.Value);
+            if (salon != null)
+            {
+                var staffIds = salon.StaffMembers.Select(s => s.ProviderId).ToHashSet();
+                providers = providers.Where(p => staffIds.Contains(p.Id)).ToList();
+            }
+        }
+
+        return View("WizardProviderByServiceStep", new WizardProviderByServiceStepViewModel
+        {
+            CategoryId = categoryId,
+            ServiceTypeId = serviceTypeId,
+            ServiceTypeName = lang == "et" ? serviceType.NameEt : serviceType.NameEn,
+            Providers = providers
+                .Select(p => new ProviderListItemViewModel
+                {
+                    Id = p.Id,
+                    ProfileName = p.ProfileName,
+                    Address = p.Address,
+                    AverageRating = p.AverageRating,
+                    TodayAvailabilityCount = p.TodayAvailability.Count
+                })
+                .ToList(),
+            SalonId = salonId,
+            SalonName = salonName
+        });
     }
 
     // ── Helpers ────────────────────────────────────────────────────────────────

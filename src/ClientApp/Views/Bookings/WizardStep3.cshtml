@@ -10,6 +10,10 @@
 
 <h2 class="mb-1">@L["ChooseDate"]</h2>
 <p class="text-muted mb-4">@Model.ProviderName &mdash; @Model.ServiceName</p>
+@if (!string.IsNullOrWhiteSpace(Model.SalonName))
+{
+    <p class="text-muted mb-4"><span class="badge bg-info text-dark">@Model.SalonName</span></p>
+}
 
 <div class="mb-4" style="max-width: 320px;">
     <label class="form-label fw-semibold">@L["Date"]</label>

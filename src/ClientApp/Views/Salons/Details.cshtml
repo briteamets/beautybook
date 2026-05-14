@@ -21,36 +21,55 @@
     }
 </dl>
 
-<h4 class="mb-3">@L["SalonStaff"]</h4>
+<div class="d-flex gap-3 mb-4 flex-wrap">
+    <a asp-controller="Bookings" asp-action="ServiceWizard"
+       asp-route-salonId="@Model.Id"
+       asp-route-salonName="@Model.Name"
+       class="btn btn-primary btn-lg">@L["BookNow"]</a>
+    <button class="btn btn-outline-secondary btn-lg" type="button"
+            data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
+        @L["SeeProviders"]
+    </button>
+</div>
 
-@if (!Model.Staff.Any())
-{
-    <p class="text-muted">@L["NoStaff"]</p>
-}
-else
-{
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        @foreach (var member in Model.Staff)
-        {
-            <div class="col">
-                <div class="card h-100">
-                    @if (!string.IsNullOrWhiteSpace(member.ProfilePictureUrl))
-                    {
-                        <img src="@member.ProfilePictureUrl" class="card-img-top" alt="@member.ProviderName"
-                             style="height:140px;object-fit:cover" />
-                    }
-                    <div class="card-body py-2">
-                        <h6 class="card-title mb-1">@member.ProviderName</h6>
-                        <span class="badge @(member.Role == "Owner" ? "bg-primary" : "bg-secondary")">
-                            @(member.Role == "Owner" ? L["StaffOwner"] : L["StaffEmployee"])
-                        </span>
-                    </div>
-                    <div class="card-footer p-2">
-                        <a asp-controller="Providers" asp-action="Details" asp-route-id="@member.ProviderId"
-                           class="btn btn-outline-primary btn-sm w-100">@L["Details"]</a>
+<div class="collapse" id="staffPanel">
+    <h4 class="mb-3">@L["SalonStaff"]</h4>
+    @if (!Model.Staff.Any())
+    {
+        <p class="text-muted">@L["NoStaff"]</p>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            @foreach (var member in Model.Staff)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        @if (!string.IsNullOrWhiteSpace(member.ProfilePictureUrl))
+                        {
+                            <img src="@member.ProfilePictureUrl" class="card-img-top" alt="@member.ProviderName"
+                                 style="height:140px;object-fit:cover" />
+                        }
+                        <div class="card-body py-2">
+                            <h6 class="card-title mb-1">@member.ProviderName</h6>
+                            <span class="badge @(member.Role == "Owner" ? "bg-primary" : "bg-secondary")">
+                                @(member.Role == "Owner" ? L["StaffOwner"] : L["StaffEmployee"])
+                            </span>
+                        </div>
+                        <div class="card-footer p-2 d-flex gap-2">
+                            <a asp-controller="Providers" asp-action="Details" asp-route-id="@member.ProviderId"
+                               class="btn btn-outline-primary btn-sm flex-fill">@L["Details"]</a>
+                            <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post" class="flex-fill">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="providerId" value="@member.ProviderId" />
+                                <input type="hidden" name="salonId"    value="@Model.Id" />
+                                <input type="hidden" name="salonName"  value="@Model.Name" />
+                                <button type="submit" class="btn btn-primary btn-sm w-100">@L["BookNow"]</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-}
+            }
+        </div>
+    }
+</div>

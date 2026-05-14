@@ -180,4 +180,10 @@
   <data name="NoBookingsYet" xml:space="preserve"><value>Sul pole veel broneeringuid.</value></data>
   <data name="Upcoming" xml:space="preserve"><value>Tulevased</value></data>
   <data name="Past" xml:space="preserve"><value>Varasemad</value></data>
+  <data name="ChooseCategory" xml:space="preserve"><value>Vali kategooria</value></data>
+  <data name="ChooseServiceType" xml:space="preserve"><value>Vali teenuse tüüp</value></data>
+  <data name="NoProvidersForService" xml:space="preserve"><value>Seda teenust ei paku ükski spetsialist.</value></data>
+  <data name="BrowseByService" xml:space="preserve"><value>Otsi teenuse järgi</value></data>
+  <data name="BrowseByProvider" xml:space="preserve"><value>Otsi spetsialisti järgi</value></data>
+  <data name="SeeProviders" xml:space="preserve"><value>Vaata spetsialiste</value></data>
 </root>

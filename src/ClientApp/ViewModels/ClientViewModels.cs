@@ -260,11 +260,52 @@ public class BookingWizardState
     public decimal ServicePrice { get; set; }
     public int ServiceDurationMinutes { get; set; }
     public DateOnly? Date { get; set; }
+    public Guid? SalonId { get; set; }
+    public string? SalonName { get; set; }
+    public Guid? ServiceTypeId { get; set; }
 }
 
 public class WizardStep1ViewModel
 {
     public ICollection<ProviderListItemViewModel> Providers { get; set; } = [];
+}
+
+public class WizardCategoryStepViewModel
+{
+    public ICollection<WizardCategoryItemViewModel> Categories { get; set; } = [];
+    public Guid? SalonId { get; set; }
+    public string? SalonName { get; set; }
+}
+
+public class WizardCategoryItemViewModel
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = default!;
+}
+
+public class WizardServiceTypeStepViewModel
+{
+    public Guid CategoryId { get; set; }
+    public string CategoryName { get; set; } = default!;
+    public ICollection<WizardServiceTypeItemViewModel> ServiceTypes { get; set; } = [];
+    public Guid? SalonId { get; set; }
+    public string? SalonName { get; set; }
+}
+
+public class WizardServiceTypeItemViewModel
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = default!;
+}
+
+public class WizardProviderByServiceStepViewModel
+{
+    public Guid CategoryId { get; set; }
+    public Guid ServiceTypeId { get; set; }
+    public string ServiceTypeName { get; set; } = default!;
+    public ICollection<ProviderListItemViewModel> Providers { get; set; } = [];
+    public Guid? SalonId { get; set; }
+    public string? SalonName { get; set; }
 }
 
 public class ServiceTypeOptionViewModel
@@ -290,6 +331,7 @@ public class WizardStep2ViewModel
     public Guid? ServiceTypeId { get; set; }
     public ICollection<ServiceTypeOptionViewModel> ServiceTypes { get; set; } = [];
     public ICollection<WizardServiceViewModel> Services { get; set; } = [];
+    public string? SalonName { get; set; }
 }
 
 public class WizardStep3ViewModel
@@ -302,6 +344,7 @@ public class WizardStep3ViewModel
     public decimal ServicePrice { get; set; }
     public string? Notes { get; set; }
     public ICollection<WizardSlotViewModel> Slots { get; set; } = [];
+    public string? SalonName { get; set; }
 }
 
 public class WizardSlotViewModel

@@ -1,6 +1,9 @@
 @model WizardStep1ViewModel
 
-<h2 class="mb-4">@L["ChooseProvider"]</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h2 class="mb-0">@L["ChooseProvider"]</h2>
+    <a asp-action="ServiceWizard" class="btn btn-outline-primary">@L["BrowseByService"] &rarr;</a>
+</div>
 
 @if (!Model.Providers.Any())
 {

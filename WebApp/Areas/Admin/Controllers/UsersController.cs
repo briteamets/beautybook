@@ -20,7 +20,7 @@ public class UsersController : AdminControllerBase
         _scopeFactory = scopeFactory;
     }
 
-    public async Task<IActionResult> Index(string? search, string? role, int page = 1)
+    public async Task<IActionResult> Index(string? search, string? role, bool pendingOnly = false, int page = 1)
     {
         page = Math.Max(1, page);
         var query = Context.Users.AsQueryable();
@@ -30,6 +30,11 @@ public class UsersController : AdminControllerBase
             query = query.Where(u =>
                 (u.Email != null && u.Email.ToLower().Contains(search.ToLower())) ||
                 (u.UserName != null && u.UserName.ToLower().Contains(search.ToLower())));
+        }
+
+        if (pendingOnly)
+        {
+            query = query.Where(u => u.IsProviderApplicant);
         }
 
         var users = await query.OrderBy(u => u.Email).ToListAsync();
@@ -67,6 +72,7 @@ public class UsersController : AdminControllerBase
         {
             Search = search,
             Role = role,
+            PendingOnly = pendingOnly,
             AvailableRoles = availableRoles,
             Page = new PagedViewModel<AdminUserIndexItem>
             {

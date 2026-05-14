@@ -280,4 +280,9 @@
   <data name="ErrorMessage" xml:space="preserve"><value>An error occurred while processing your request.</value></data>
   <data name="RequestId" xml:space="preserve"><value>Request ID</value></data>
   <data name="PrivacyText" xml:space="preserve"><value>BeautyBook uses only the data needed to provide booking, provider, and account features.</value></data>
+  <data name="WantsToBeProvider" xml:space="preserve"><value>Wants to be provider</value></data>
+  <data name="PendingApplicationsOnly" xml:space="preserve"><value>Pending applications only</value></data>
+  <data name="PendingApprovals" xml:space="preserve"><value>Pending approvals</value></data>
+  <data name="ApproveAsProvider" xml:space="preserve"><value>Approve as provider</value></data>
+  <data name="ProviderApplication" xml:space="preserve"><value>Provider application</value></data>
 </root>

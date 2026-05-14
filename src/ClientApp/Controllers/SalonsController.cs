@@ -7,10 +7,12 @@ namespace ClientApp.Controllers;
 public class SalonsController : Controller
 {
     private readonly SalonsApiService _salonsApiService;
+    private readonly ReviewsApiService _reviewsApiService;
 
-    public SalonsController(SalonsApiService salonsApiService)
+    public SalonsController(SalonsApiService salonsApiService, ReviewsApiService reviewsApiService)
     {
         _salonsApiService = salonsApiService;
+        _reviewsApiService = reviewsApiService;
     }
 
     public async Task<IActionResult> Index()
@@ -52,6 +54,21 @@ public class SalonsController : Controller
 
         if (salon == null) return NotFound();
 
+        var reviews = new List<ReviewListItemViewModel>();
+        foreach (var member in salon.StaffMembers)
+        {
+            var staffReviews = await _reviewsApiService.GetByProviderIdAsync(member.ProviderId);
+            reviews.AddRange(staffReviews.Select(r => new ReviewListItemViewModel
+            {
+                Id = r.Id,
+                Rating = r.Rating,
+                Comment = r.Comment,
+                UserName = r.UserName,
+                CreatedAt = r.CreatedAt,
+                ProviderName = member.ProviderName
+            }));
+        }
+
         return View(new SalonDetailsViewModel
         {
             Id = salon.Id,
@@ -67,7 +84,8 @@ public class SalonsController : Controller
                 ProviderName = s.ProviderName,
                 Role = s.Role,
                 ProfilePictureUrl = s.ProfilePictureUrl
-            }).ToList()
+            }).ToList(),
+            Reviews = reviews.OrderByDescending(r => r.CreatedAt).ToList()
         });
     }
 }

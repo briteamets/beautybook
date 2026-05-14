@@ -1,3 +1,4 @@
+@using ClientApp.Services
 @model SalonDetailsViewModel
 
 <div class="d-flex justify-content-between align-items-start mb-3">
@@ -21,16 +22,19 @@
     }
 </dl>
 
-<div class="d-flex gap-3 mb-4 flex-wrap">
-    <a asp-controller="Bookings" asp-action="ServiceWizard"
-       asp-route-salonId="@Model.Id"
-       asp-route-salonName="@Model.Name"
-       class="btn btn-primary btn-lg">@L["BookNow"]</a>
-    <button class="btn btn-outline-secondary btn-lg" type="button"
-            data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
-        @L["SeeProviders"]
-    </button>
-</div>
+@if (Context.Session.HasUsableToken())
+{
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        <a asp-controller="Bookings" asp-action="ServiceWizard"
+           asp-route-salonId="@Model.Id"
+           asp-route-salonName="@Model.Name"
+           class="btn btn-primary btn-lg">@L["BookNow"]</a>
+        <button class="btn btn-outline-secondary btn-lg" type="button"
+                data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
+            @L["SeeProviders"]
+        </button>
+    </div>
+}
 
 <div class="collapse" id="staffPanel">
     <h4 class="mb-3">@L["SalonStaff"]</h4>
@@ -40,7 +44,7 @@
     }
     else
     {
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 mb-4">
             @foreach (var member in Model.Staff)
             {
                 <div class="col">
@@ -57,15 +61,21 @@
                             </span>
                         </div>
                         <div class="card-footer p-2 d-flex gap-2">
-                            <a asp-controller="Providers" asp-action="Details" asp-route-id="@member.ProviderId"
+                            <a asp-controller="Providers" asp-action="Details"
+                               asp-route-id="@member.ProviderId"
+                               asp-route-salonId="@Model.Id"
+                               asp-route-salonName="@Model.Name"
                                class="btn btn-outline-primary btn-sm flex-fill">@L["Details"]</a>
-                            <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post" class="flex-fill">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="providerId" value="@member.ProviderId" />
-                                <input type="hidden" name="salonId"    value="@Model.Id" />
-                                <input type="hidden" name="salonName"  value="@Model.Name" />
-                                <button type="submit" class="btn btn-primary btn-sm w-100">@L["BookNow"]</button>
-                            </form>
+                            @if (Context.Session.HasUsableToken())
+                            {
+                                <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post" class="flex-fill">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="providerId" value="@member.ProviderId" />
+                                    <input type="hidden" name="salonId"    value="@Model.Id" />
+                                    <input type="hidden" name="salonName"  value="@Model.Name" />
+                                    <button type="submit" class="btn btn-primary btn-sm w-100">@L["BookNow"]</button>
+                                </form>
+                            }
                         </div>
                     </div>
                 </div>
@@ -73,3 +83,42 @@
         </div>
     }
 </div>
+
+<h4 class="mb-3">@L["Reviews"]</h4>
+
+@if (!Model.Reviews.Any())
+{
+    <p class="text-muted">@L["NoReviews"]</p>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var review in Model.Reviews)
+        {
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span class="@(i <= review.Rating ? "text-warning" : "text-muted")">&#9733;</span>
+                        }
+                        <strong class="ms-1">@review.UserName</strong>
+                        @if (!string.IsNullOrWhiteSpace(review.ProviderName))
+                        {
+                            <span class="text-muted ms-2 small">@review.ProviderName</span>
+                        }
+                    </div>
+                    <small class="text-muted">@review.CreatedAt.ToString("yyyy-MM-dd")</small>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(review.Comment))
+                {
+                    <p class="mb-0 mt-1">@review.Comment</p>
+                }
+                else
+                {
+                    <p class="mb-0 mt-1 text-muted fst-italic">@L["CommentRemovedByProvider"]</p>
+                }
+            </div>
+        }
+    </div>
+}

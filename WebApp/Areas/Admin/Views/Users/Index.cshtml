@@ -10,11 +10,11 @@
 
 <form method="get" class="card card-body shadow-sm mb-4">
     <div class="row g-3 align-items-end">
-        <div class="col-md-5">
+        <div class="col-md-4">
             <label class="form-label" for="search">@L["Search"]</label>
             <input class="form-control" id="search" name="search" value="@Model.Search"/>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label class="form-label" for="role">@L["Role"]</label>
             <select class="form-select" id="role" name="role">
                 <option value="">@L["All"]</option>
@@ -24,11 +24,25 @@
                 }
             </select>
         </div>
-        <div class="col-md-3 d-grid">
+        <div class="col-md-3 d-flex align-items-center pt-4">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="pendingOnly" name="pendingOnly" value="true"
+                       @(Model.PendingOnly ? "checked" : "") />
+                <label class="form-check-label" for="pendingOnly">@L["PendingApplicationsOnly"]</label>
+            </div>
+        </div>
+        <div class="col-md-2 d-grid">
             <button type="submit" class="btn btn-primary">@L["Filter"]</button>
         </div>
     </div>
 </form>
+
+@if (Model.PendingOnly)
+{
+    <div class="alert alert-warning mb-3">
+        <strong>@L["PendingApplicationsOnly"]</strong> — @L["PendingApprovals"]: @Model.Page.TotalItems
+    </div>
+}
 
 <div class="card shadow-sm">
     <div class="table-responsive">

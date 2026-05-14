@@ -280,4 +280,9 @@
   <data name="ErrorMessage" xml:space="preserve"><value>Päringu töötlemisel tekkis viga.</value></data>
   <data name="RequestId" xml:space="preserve"><value>Päringu ID</value></data>
   <data name="PrivacyText" xml:space="preserve"><value>BeautyBook kasutab ainult andmeid, mida on vaja broneeringute, teenusepakkujate ja konto funktsioonide jaoks.</value></data>
+  <data name="WantsToBeProvider" xml:space="preserve"><value>Soovib teenusepakkujaks</value></data>
+  <data name="PendingApplicationsOnly" xml:space="preserve"><value>Ainult ootel taotlused</value></data>
+  <data name="PendingApprovals" xml:space="preserve"><value>Ootel kinnitused</value></data>
+  <data name="ApproveAsProvider" xml:space="preserve"><value>Kinnita teenusepakkujana</value></data>
+  <data name="ProviderApplication" xml:space="preserve"><value>Teenusepakkuja taotlus</value></data>
 </root>

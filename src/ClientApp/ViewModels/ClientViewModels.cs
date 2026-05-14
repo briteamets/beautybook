@@ -86,6 +86,8 @@ public class ProviderDetailsViewModel : ProviderFormViewModel
     public ICollection<ReviewListItemViewModel> Reviews { get; set; } = [];
     public bool IsFavorited { get; set; }
     public Guid? FavoriteId { get; set; }
+    public Guid? SalonId { get; set; }
+    public string? SalonName { get; set; }
 }
 
 public class ProviderFormViewModel
@@ -249,6 +251,7 @@ public class ReviewListItemViewModel
     public string? Comment { get; set; }
     public string UserName { get; set; } = default!;
     public DateTime CreatedAt { get; set; }
+    public string? ProviderName { get; set; }
 }
 
 public class BookingWizardState
@@ -483,6 +486,7 @@ public class SalonDetailsViewModel
     public double Lng { get; set; }
     public string? ProfilePictureUrl { get; set; }
     public ICollection<SalonStaffViewModel> Staff { get; set; } = [];
+    public ICollection<ReviewListItemViewModel> Reviews { get; set; } = [];
 }
 
 public class SalonsIndexViewModel

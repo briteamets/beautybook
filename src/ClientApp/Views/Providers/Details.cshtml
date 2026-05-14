@@ -1,31 +1,9 @@
+@using ClientApp.Services
 @model ProviderDetailsViewModel
 
 <div class="d-flex justify-content-between align-items-start mb-3">
     <h1 class="mb-0">@Model.ProfileName</h1>
-    <div class="d-flex gap-2">
-        @if (Model.IsFavorited)
-        {
-            <form asp-controller="Favorites" asp-action="Remove" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.FavoriteId" />
-                <input type="hidden" name="returnProviderId" value="@Model.Id" />
-                <button type="submit" class="btn btn-warning">&#9733; @L["RemoveFromFavorites"]</button>
-            </form>
-        }
-        else
-        {
-            <form asp-controller="Favorites" asp-action="Add" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="providerId" value="@Model.Id" />
-                <button type="submit" class="btn btn-outline-warning">&#9734; @L["AddToFavorites"]</button>
-            </form>
-        }
-        <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="providerId" value="@Model.Id" />
-            <button type="submit" class="btn btn-success">@L["BookNow"]</button>
-        </form>
-    </div>
+    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">@L["Back"]</a>
 </div>
 
 <dl class="row mb-4">
@@ -40,9 +18,42 @@
     <dd class="col-sm-9">&#9733; @Model.AverageRating.ToString("0.0") / 5 (@Model.ReviewCount)</dd>
 </dl>
 
-<div class="mb-4">
-    <a class="btn btn-outline-secondary btn-sm" asp-action="Index">@L["Back"]</a>
-</div>
+@if (Context.Session.HasUsableToken())
+{
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="providerId" value="@Model.Id" />
+            <button type="submit" class="btn btn-primary btn-lg">@L["BookNow"]</button>
+        </form>
+        @if (Model.SalonId.HasValue)
+        {
+            <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
+               class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+        }
+        @if (Model.IsFavorited)
+        {
+            <form asp-controller="Favorites" asp-action="Remove" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.FavoriteId" />
+                <input type="hidden" name="returnProviderId" value="@Model.Id" />
+                <button type="submit" class="btn btn-warning btn-lg">&#9733; @L["RemoveFromFavorites"]</button>
+            </form>
+        }
+        else
+        {
+            <form asp-controller="Favorites" asp-action="Add" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="providerId" value="@Model.Id" />
+                <button type="submit" class="btn btn-outline-warning btn-lg">&#9734; @L["AddToFavorites"]</button>
+            </form>
+        }
+    </div>
+}
 
 <h4>@L["Reviews"]</h4>
 

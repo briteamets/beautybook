@@ -12,17 +12,20 @@ public class ProvidersController : Controller
     private readonly ProvidersApiService _providersApiService;
     private readonly ReviewsApiService _reviewsApiService;
     private readonly FavoritesApiService _favoritesApiService;
+    private readonly SalonsApiService _salonsApiService;
     private readonly ILogger<ProvidersController> _logger;
 
     public ProvidersController(
         ProvidersApiService providersApiService,
         ReviewsApiService reviewsApiService,
         FavoritesApiService favoritesApiService,
+        SalonsApiService salonsApiService,
         ILogger<ProvidersController> logger)
     {
         _providersApiService = providersApiService;
         _reviewsApiService = reviewsApiService;
         _favoritesApiService = favoritesApiService;
+        _salonsApiService = salonsApiService;
         _logger = logger;
     }
 
@@ -42,10 +45,25 @@ public class ProvidersController : Controller
         });
     }
 
-    public async Task<IActionResult> Details(Guid id)
+    public async Task<IActionResult> Details(Guid id, Guid? salonId = null, string? salonName = null)
     {
         var provider = await _providersApiService.GetAsync(id);
         if (provider == null) return NotFound();
+
+        if (salonId == null)
+        {
+            try
+            {
+                var salons = await _salonsApiService.GetAllAsync();
+                var salon = salons.FirstOrDefault(s => s.StaffMembers.Any(m => m.ProviderId == id));
+                if (salon != null)
+                {
+                    salonId = salon.Id;
+                    salonName = salon.Name;
+                }
+            }
+            catch (HttpRequestException) { }
+        }
 
         var reviews = await _reviewsApiService.GetByProviderIdAsync(id);
 
@@ -81,7 +99,9 @@ public class ProvidersController : Controller
                 CreatedAt = r.CreatedAt
             }).ToList(),
             IsFavorited = favorite != null,
-            FavoriteId = favorite?.Id
+            FavoriteId = favorite?.Id,
+            SalonId = salonId,
+            SalonName = salonName
         });
     }
 

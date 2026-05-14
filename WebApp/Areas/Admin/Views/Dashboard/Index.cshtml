@@ -41,7 +41,7 @@
         </div>
     </div>
     <div class="col-md-4 col-lg">
-        <a asp-controller="Users" asp-action="Index" asp-route-role="Client" class="text-decoration-none">
+        <a asp-controller="Users" asp-action="Index" asp-route-pendingOnly="true" class="text-decoration-none">
             <div class="card shadow-sm h-100 @(Model.PendingApprovals > 0 ? "border-warning" : "")">
                 <div class="card-body">
                     <div class="text-muted small">@L["PendingApprovals"]</div>

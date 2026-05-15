@@ -383,4 +383,23 @@
   <data name="ProviderApproved" xml:space="preserve"><value>User approved as service provider.</value></data>
   <data name="MinRating" xml:space="preserve"><value>Min rating</value></data>
   <data name="MaxRating" xml:space="preserve"><value>Max rating</value></data>
+  <data name="CalendarView" xml:space="preserve"><value>Calendar</value></data>
+  <data name="OotelView" xml:space="preserve"><value>Waiting</value></data>
+  <data name="PrevWeek" xml:space="preserve"><value>Previous</value></data>
+  <data name="NextWeek" xml:space="preserve"><value>Next</value></data>
+  <data name="DayView" xml:space="preserve"><value>Day view</value></data>
+  <data name="ToggleOn" xml:space="preserve"><value>Make working day</value></data>
+  <data name="ToggleOff" xml:space="preserve"><value>Mark as day off</value></data>
+  <data name="DayOff" xml:space="preserve"><value>Day off</value></data>
+  <data name="AddBlock" xml:space="preserve"><value>Add block</value></data>
+  <data name="RemoveBlock" xml:space="preserve"><value>Remove block</value></data>
+  <data name="RemoveBlockConfirm" xml:space="preserve"><value>Remove block "{0}"?</value></data>
+  <data name="BreakLabel" xml:space="preserve"><value>Label</value></data>
+  <data name="Lunch" xml:space="preserve"><value>Lunch</value></data>
+  <data name="NoPendingBookings" xml:space="preserve"><value>No pending bookings.</value></data>
+  <data name="Confirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="Reject" xml:space="preserve"><value>Reject</value></data>
+  <data name="BookingConfirmed" xml:space="preserve"><value>Booking confirmed.</value></data>
+  <data name="BookingRejected" xml:space="preserve"><value>Booking rejected.</value></data>
+  <data name="ScheduleWarning" xml:space="preserve"><value>Some booked slots fall outside your updated working hours:</value></data>
 </root>

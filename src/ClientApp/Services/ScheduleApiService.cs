@@ -14,8 +14,8 @@ public class ScheduleApiService
     public Task<List<ScheduleDayResponse>?> GetScheduleAsync()
         => _api.GetAsync<List<ScheduleDayResponse>>("/api/v1/schedule");
 
-    public Task<List<ScheduleDayResponse>?> SaveScheduleAsync(List<ScheduleDayUpsertRequest> days)
-        => _api.PutAsync<List<ScheduleDayResponse>>("/api/v1/schedule", days);
+    public Task<ScheduleSaveResponse?> SaveScheduleAsync(List<ScheduleDayUpsertRequest> days)
+        => _api.PutAsync<ScheduleSaveResponse>("/api/v1/schedule", days);
 
     public Task<List<BreakResponse>?> GetBreaksAsync()
         => _api.GetAsync<List<BreakResponse>>("/api/v1/schedule/breaks");
@@ -26,4 +26,14 @@ public class ScheduleApiService
     public Task<GenerateSlotsResponse?> GenerateSlotsAsync(DateOnly fromDate, DateOnly toDate)
         => _api.PostAsync<GenerateSlotsResponse>("/api/v1/schedule/generate-slots",
             new GenerateSlotsRequest { FromDate = fromDate, ToDate = toDate });
+
+    public Task<WeekBundleResponse?> GetWeekBundleAsync(string? weekStart = null)
+    {
+        var url = "/api/v1/schedule/week";
+        if (!string.IsNullOrEmpty(weekStart)) url += $"?weekStart={weekStart}";
+        return _api.GetAsync<WeekBundleResponse>(url);
+    }
+
+    public Task<ScheduleSaveResponse?> PatchDayAsync(PatchDayRequest request)
+        => _api.PatchAsync<ScheduleSaveResponse>("/api/v1/schedule/day", request);
 }

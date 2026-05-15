@@ -494,31 +494,63 @@ public class SalonsIndexViewModel
     public ICollection<SalonListItemViewModel> Salons { get; set; } = [];
 }
 
-public class ScheduleIndexViewModel
+public class WeekCalendarViewModel
 {
-    public List<DayScheduleViewModel> Days { get; set; } = [];
-    public List<BreakViewModel> Breaks { get; set; } = [];
-    public GenerateSlotsFormViewModel GenerateForm { get; set; } = new();
-    public List<AvailabilitySlotViewModel> UpcomingSlots { get; set; } = [];
-    public string? GenerateResult { get; set; }
+    public DateOnly WeekStart { get; set; }
+    public string ProviderName { get; set; } = default!;
+    public List<WeekDayCalendarViewModel> Days { get; set; } = [];
+    public List<PendingBookingCalendarViewModel> PendingBookings { get; set; } = [];
+    public List<string> Warnings { get; set; } = [];
     public string? ErrorMessage { get; set; }
     public string? SuccessMessage { get; set; }
 }
 
-public class DayScheduleViewModel
+public class WeekDayCalendarViewModel
 {
     public DayOfWeek DayOfWeek { get; set; }
+    public DateOnly Date { get; set; }
     public bool IsWorkingDay { get; set; }
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+    public List<CalendarBreakViewModel> Breaks { get; set; } = [];
+    public List<CalendarBookingViewModel> Bookings { get; set; } = [];
+}
+
+public class CalendarBreakViewModel
+{
+    public Guid Id { get; set; }
+    public TimeSpan BreakStart { get; set; }
+    public TimeSpan BreakEnd { get; set; }
+    public string? Label { get; set; }
+}
+
+public class CalendarBookingViewModel
+{
+    public Guid Id { get; set; }
+    public string ClientName { get; set; } = default!;
+    public string ServiceName { get; set; } = default!;
+    public TimeSpan StartTime { get; set; }
+    public TimeSpan EndTime { get; set; }
+    public string Status { get; set; } = default!;
+}
+
+public class PendingBookingCalendarViewModel
+{
+    public Guid Id { get; set; }
+    public string ClientName { get; set; } = default!;
+    public string ServiceName { get; set; } = default!;
+    public DateOnly BookingDate { get; set; }
     public TimeSpan StartTime { get; set; }
     public TimeSpan EndTime { get; set; }
 }
 
-public class BreakViewModel
+public class AddBlockViewModel
 {
-    public Guid? Id { get; set; }
     public DayOfWeek DayOfWeek { get; set; }
     public TimeSpan BreakStart { get; set; }
     public TimeSpan BreakEnd { get; set; }
+    public string? Label { get; set; }
+    public string WeekStart { get; set; } = default!;
 }
 
 public class GenerateSlotsFormViewModel

@@ -12,18 +12,21 @@ public class ScheduleController : Controller
     private readonly ScheduleApiService _scheduleApi;
     private readonly AvailabilityApiService _availabilityApi;
     private readonly ProvidersApiService _providersApi;
+    private readonly BookingsApiService _bookingsApi;
 
     public ScheduleController(
         ScheduleApiService scheduleApi,
         AvailabilityApiService availabilityApi,
-        ProvidersApiService providersApi)
+        ProvidersApiService providersApi,
+        BookingsApiService bookingsApi)
     {
         _scheduleApi = scheduleApi;
         _availabilityApi = availabilityApi;
         _providersApi = providersApi;
+        _bookingsApi = bookingsApi;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? weekStart)
     {
         BeautyProviderResponse? provider;
         try { provider = await _providersApi.GetMineAsync(); }
@@ -35,55 +38,111 @@ public class ScheduleController : Controller
             return RedirectToAction("EditProfile", "Providers");
         }
 
-        var model = await BuildViewModelAsync(provider.Id);
+        var model = await BuildWeekViewModelAsync(provider, weekStart);
         return View(model);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> SaveSchedule(ScheduleIndexViewModel model)
+    public async Task<IActionResult> ToggleWorkingDay(int day, string weekStart)
     {
+        var dow = (DayOfWeek)day;
         try
         {
-            await _scheduleApi.SaveScheduleAsync(model.Days.Select(d => new ScheduleDayUpsertRequest
+            WeekBundleResponse? bundle = null;
+            try { bundle = await _scheduleApi.GetWeekBundleAsync(weekStart); } catch { }
+            var current = bundle?.Days.FirstOrDefault(d => d.DayOfWeek == dow);
+            var isWorking = !(current?.IsWorkingDay ?? false);
+
+            var result = await _scheduleApi.PatchDayAsync(new PatchDayRequest
             {
-                DayOfWeek = d.DayOfWeek,
-                IsWorkingDay = d.IsWorkingDay,
-                StartTime = d.StartTime,
-                EndTime = d.EndTime
-            }).ToList());
+                DayOfWeek = dow,
+                IsWorkingDay = isWorking
+            });
+            if (result?.Warnings.Count > 0)
+                TempData["Warnings"] = string.Join("|", result.Warnings);
+
             TempData["SuccessMessage"] = "ScheduleSaved";
         }
         catch (HttpRequestException ex)
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { weekStart });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> AddBreak(BreakViewModel model)
+    public async Task<IActionResult> ShiftTime(int day, string which, int deltaMinutes, string weekStart)
+    {
+        var dow = (DayOfWeek)day;
+        try
+        {
+            WeekBundleResponse? bundle = null;
+            try { bundle = await _scheduleApi.GetWeekBundleAsync(weekStart); } catch { }
+            var current = bundle?.Days.FirstOrDefault(d => d.DayOfWeek == dow);
+            var startTime = current?.StartTime ?? new TimeSpan(9, 0, 0);
+            var endTime = current?.EndTime ?? new TimeSpan(17, 0, 0);
+
+            if (which == "start")
+                startTime = Clamp(startTime + TimeSpan.FromMinutes(deltaMinutes));
+            else
+                endTime = Clamp(endTime + TimeSpan.FromMinutes(deltaMinutes));
+
+            if (startTime >= endTime)
+            {
+                TempData["ErrorMessage"] = "StartTime must be before EndTime.";
+                return RedirectToAction(nameof(Index), new { weekStart });
+            }
+
+            var result = await _scheduleApi.PatchDayAsync(new PatchDayRequest
+            {
+                DayOfWeek = dow,
+                StartTime = which == "start" ? startTime : null,
+                EndTime = which == "end" ? endTime : null
+            });
+            if (result?.Warnings.Count > 0)
+                TempData["Warnings"] = string.Join("|", result.Warnings);
+        }
+        catch (HttpRequestException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { weekStart });
+    }
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddBlock(AddBlockViewModel model)
     {
         try
         {
             var current = await _scheduleApi.GetBreaksAsync() ?? [];
             var updated = current
                 .Select(b => new BreakUpsertRequest
-                    { DayOfWeek = b.DayOfWeek, BreakStart = b.BreakStart, BreakEnd = b.BreakEnd })
+                {
+                    DayOfWeek = b.DayOfWeek,
+                    BreakStart = b.BreakStart,
+                    BreakEnd = b.BreakEnd,
+                    Label = b.Label
+                })
                 .Append(new BreakUpsertRequest
-                    { DayOfWeek = model.DayOfWeek, BreakStart = model.BreakStart, BreakEnd = model.BreakEnd })
+                {
+                    DayOfWeek = model.DayOfWeek,
+                    BreakStart = model.BreakStart,
+                    BreakEnd = model.BreakEnd,
+                    Label = string.IsNullOrWhiteSpace(model.Label) ? null : model.Label
+                })
                 .ToList();
             await _scheduleApi.SaveBreaksAsync(updated);
-            TempData["SuccessMessage"] = "BreaksSaved";
+            TempData["SuccessMessage"] = "BreakAdded";
         }
         catch (HttpRequestException ex)
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { weekStart = model.WeekStart });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> RemoveBreak(Guid id)
+    public async Task<IActionResult> RemoveBlock(Guid id, string weekStart)
     {
         try
         {
@@ -91,92 +150,129 @@ public class ScheduleController : Controller
             var updated = current
                 .Where(b => b.Id != id)
                 .Select(b => new BreakUpsertRequest
-                    { DayOfWeek = b.DayOfWeek, BreakStart = b.BreakStart, BreakEnd = b.BreakEnd })
+                {
+                    DayOfWeek = b.DayOfWeek,
+                    BreakStart = b.BreakStart,
+                    BreakEnd = b.BreakEnd,
+                    Label = b.Label
+                })
                 .ToList();
             await _scheduleApi.SaveBreaksAsync(updated);
-            TempData["SuccessMessage"] = "BreaksSaved";
+            TempData["SuccessMessage"] = "BreakRemoved";
         }
         catch (HttpRequestException ex)
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { weekStart });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> GenerateSlots(GenerateSlotsFormViewModel form)
+    public async Task<IActionResult> ConfirmBooking(Guid id, string weekStart)
     {
         try
         {
-            var result = await _scheduleApi.GenerateSlotsAsync(form.FromDate, form.ToDate);
-            TempData["GenerateResult"] = (result?.SlotsGenerated ?? 0).ToString();
+            await _bookingsApi.UpdateStatusAsync(id, "Confirmed");
+            TempData["SuccessMessage"] = "BookingConfirmed";
         }
         catch (HttpRequestException ex)
         {
             TempData["ErrorMessage"] = ex.Message;
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { weekStart });
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteSlot(Guid id)
+    public async Task<IActionResult> RejectBooking(Guid id, string weekStart)
     {
-        try { await _availabilityApi.DeleteAsync(id); }
-        catch (HttpRequestException) { }
-        return RedirectToAction(nameof(Index));
+        try
+        {
+            await _bookingsApi.UpdateStatusAsync(id, "Cancelled");
+            TempData["SuccessMessage"] = "BookingRejected";
+        }
+        catch (HttpRequestException ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
+        }
+        return RedirectToAction(nameof(Index), new { weekStart });
     }
 
-    private async Task<ScheduleIndexViewModel> BuildViewModelAsync(Guid providerId)
+    private async Task<WeekCalendarViewModel> BuildWeekViewModelAsync(
+        BeautyProviderResponse provider, string? weekStart)
     {
-        List<ScheduleDayResponse> schedule;
-        try { schedule = await _scheduleApi.GetScheduleAsync() ?? []; }
-        catch (HttpRequestException) { schedule = []; }
+        WeekBundleResponse? bundle = null;
+        try { bundle = await _scheduleApi.GetWeekBundleAsync(weekStart); } catch { }
 
-        List<BreakResponse> breaks;
-        try { breaks = await _scheduleApi.GetBreaksAsync() ?? []; }
-        catch (HttpRequestException) { breaks = []; }
+        var weekStartDate = bundle?.WeekStart ?? ThisWeekMonday();
 
-        ICollection<AvailabilityResponse> slots;
-        try { slots = await _availabilityApi.GetMineAsync(); }
-        catch (HttpRequestException) { slots = []; }
-
-        var days = Enum.GetValues<DayOfWeek>().Select(dow =>
+        var days = new List<WeekDayCalendarViewModel>();
+        for (int i = 0; i < 7; i++)
         {
-            var s = schedule.FirstOrDefault(x => x.DayOfWeek == dow);
-            return new DayScheduleViewModel
-            {
-                DayOfWeek = dow,
-                IsWorkingDay = s?.IsWorkingDay ?? (dow is >= DayOfWeek.Monday and <= DayOfWeek.Friday),
-                StartTime = s?.StartTime ?? new TimeSpan(9, 0, 0),
-                EndTime = s?.EndTime ?? new TimeSpan(17, 0, 0)
-            };
-        }).ToList();
+            var date = weekStartDate.AddDays(i);
+            var bundleDay = bundle?.Days.FirstOrDefault(d => d.Date == date);
 
-        return new ScheduleIndexViewModel
-        {
-            Days = days,
-            Breaks = breaks.Select(b => new BreakViewModel
+            days.Add(new WeekDayCalendarViewModel
             {
-                Id = b.Id,
-                DayOfWeek = b.DayOfWeek,
-                BreakStart = b.BreakStart,
-                BreakEnd = b.BreakEnd
-            }).ToList(),
-            GenerateForm = new GenerateSlotsFormViewModel(),
-            UpcomingSlots = slots
-                .Where(s => s.Date >= DateOnly.FromDateTime(DateTime.Today))
-                .OrderBy(s => s.Date).ThenBy(s => s.StartTime)
-                .Select(s => new AvailabilitySlotViewModel
+                DayOfWeek = date.DayOfWeek,
+                Date = date,
+                IsWorkingDay = bundleDay?.IsWorkingDay ?? false,
+                StartTime = bundleDay?.StartTime ?? new TimeSpan(9, 0, 0),
+                EndTime = bundleDay?.EndTime ?? new TimeSpan(17, 0, 0),
+                Breaks = (bundleDay?.Breaks ?? []).Select(b => new CalendarBreakViewModel
                 {
-                    Id = s.Id,
-                    Date = s.Date,
-                    StartTime = s.StartTime,
-                    EndTime = s.EndTime,
-                    IsBooked = s.IsBooked
+                    Id = b.Id,
+                    BreakStart = b.BreakStart,
+                    BreakEnd = b.BreakEnd,
+                    Label = b.Label
                 }).ToList(),
-            GenerateResult = TempData["GenerateResult"]?.ToString(),
+                Bookings = (bundleDay?.Bookings ?? []).Select(b => new CalendarBookingViewModel
+                {
+                    Id = b.Id,
+                    ClientName = b.ClientName,
+                    ServiceName = b.ServiceName,
+                    StartTime = b.StartTime,
+                    EndTime = b.EndTime,
+                    Status = b.Status
+                }).ToList()
+            });
+        }
+
+        var warnings = TempData["Warnings"]?.ToString()?.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList()
+                       ?? [];
+
+        return new WeekCalendarViewModel
+        {
+            WeekStart = weekStartDate,
+            ProviderName = provider.ProfileName,
+            Days = days,
+            PendingBookings = (bundle?.PendingBookings ?? []).Select(p => new PendingBookingCalendarViewModel
+            {
+                Id = p.Id,
+                ClientName = p.ClientName,
+                ServiceName = p.ServiceName,
+                BookingDate = p.BookingDate,
+                StartTime = p.StartTime,
+                EndTime = p.EndTime
+            }).ToList(),
+            Warnings = warnings,
             ErrorMessage = TempData["ErrorMessage"]?.ToString(),
             SuccessMessage = TempData["SuccessMessage"]?.ToString()
         };
+    }
+
+    private static DateOnly ThisWeekMonday()
+    {
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        var diff = ((int)today.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+        return today.AddDays(-diff);
+    }
+
+    private static TimeSpan Clamp(TimeSpan t)
+    {
+        var min = TimeSpan.Zero;
+        var max = new TimeSpan(23, 45, 0);
+        if (t < min) return min;
+        if (t > max) return max;
+        return t;
     }
 }

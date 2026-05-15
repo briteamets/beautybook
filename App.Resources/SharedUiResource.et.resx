@@ -383,4 +383,23 @@
   <data name="ProviderApproved" xml:space="preserve"><value>Kasutaja kinnitati teenusepakkujaks.</value></data>
   <data name="MinRating" xml:space="preserve"><value>Min reiting</value></data>
   <data name="MaxRating" xml:space="preserve"><value>Max reiting</value></data>
+  <data name="CalendarView" xml:space="preserve"><value>Kalender</value></data>
+  <data name="OotelView" xml:space="preserve"><value>Ootel</value></data>
+  <data name="PrevWeek" xml:space="preserve"><value>Eelmine</value></data>
+  <data name="NextWeek" xml:space="preserve"><value>Järgmine</value></data>
+  <data name="DayView" xml:space="preserve"><value>Päevavaade</value></data>
+  <data name="ToggleOn" xml:space="preserve"><value>Tee tööpäevaks</value></data>
+  <data name="ToggleOff" xml:space="preserve"><value>Märgi vabaks päevaks</value></data>
+  <data name="DayOff" xml:space="preserve"><value>Puhkepäev</value></data>
+  <data name="AddBlock" xml:space="preserve"><value>Lisa blokk</value></data>
+  <data name="RemoveBlock" xml:space="preserve"><value>Eemalda blokk</value></data>
+  <data name="RemoveBlockConfirm" xml:space="preserve"><value>Eemalda blokk "{0}"?</value></data>
+  <data name="BreakLabel" xml:space="preserve"><value>Nimetus</value></data>
+  <data name="Lunch" xml:space="preserve"><value>Lõuna</value></data>
+  <data name="NoPendingBookings" xml:space="preserve"><value>Ootel broneeringuid ei ole.</value></data>
+  <data name="Confirm" xml:space="preserve"><value>Kinnita</value></data>
+  <data name="Reject" xml:space="preserve"><value>Lükka tagasi</value></data>
+  <data name="BookingConfirmed" xml:space="preserve"><value>Broneering kinnitati.</value></data>
+  <data name="BookingRejected" xml:space="preserve"><value>Broneering lükati tagasi.</value></data>
+  <data name="ScheduleWarning" xml:space="preserve"><value>Mõned broneeritud ajad jäävad väljaspoole uut tööaega:</value></data>
 </root>

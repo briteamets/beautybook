@@ -10,4 +10,5 @@ public class ProviderBreak : BaseEntity
     public DayOfWeek DayOfWeek { get; set; }
     public TimeSpan BreakStart { get; set; }
     public TimeSpan BreakEnd { get; set; }
+    public string? Label { get; set; }
 }

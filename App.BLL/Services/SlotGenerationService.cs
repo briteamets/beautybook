@@ -11,6 +11,37 @@ public class SlotGenerationService : ISlotGenerationService
         _repo = repo;
     }
 
+    public async Task<RegenerateResult> RegenerateUpcomingSlotsAsync(Guid providerId, int weeksAhead = 8)
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var toDate = today.AddDays(weeksAhead * 7);
+
+        var schedule = await _repo.GetScheduleAsync(providerId);
+        var breaks = await _repo.GetBreaksAsync(providerId);
+        var bookedSlots = await _repo.GetBookedSlotRangesAsync(providerId, today, toDate);
+
+        var warnings = new List<string>();
+        foreach (var slot in bookedSlots)
+        {
+            var day = schedule.FirstOrDefault(s => s.DayOfWeek == slot.Date.DayOfWeek);
+            var slotStart = slot.StartTime.ToTimeSpan();
+            var slotEnd = slot.EndTime.ToTimeSpan();
+
+            bool outside = day == null || !day.IsWorkingDay
+                || slotStart < day.StartTime || slotEnd > day.EndTime
+                || breaks.Where(b => b.DayOfWeek == slot.Date.DayOfWeek)
+                         .Any(b => slotStart < b.BreakEnd && slotEnd > b.BreakStart);
+
+            if (outside)
+                warnings.Add($"{slot.Date:yyyy-MM-dd} {slot.StartTime:HH\\:mm}–{slot.EndTime:HH\\:mm}");
+        }
+
+        await _repo.SoftDeleteUnbookedSlotsAsync(providerId, today, toDate);
+        var added = await GenerateSlotsAsync(providerId, today, toDate);
+
+        return new RegenerateResult(added, warnings);
+    }
+
     public async Task<int> GenerateSlotsAsync(Guid providerId, DateOnly fromDate, DateOnly toDate)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow);

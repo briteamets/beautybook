@@ -58,4 +58,28 @@ public class SlotGenerationRepository : ISlotGenerationRepository
         await _context.SaveChangesAsync();
         return entities.Count;
     }
+
+    public async Task<int> SoftDeleteUnbookedSlotsAsync(Guid providerId, DateOnly from, DateOnly to)
+    {
+        var now = DateTime.UtcNow;
+        var rows = await _context.Availabilities
+            .AsTracking()
+            .Where(a => a.BeautyProviderId == providerId && a.To == null
+                        && !a.IsBooked && a.Date >= from && a.Date <= to)
+            .ToListAsync();
+        foreach (var r in rows) r.To = now;
+        await _context.SaveChangesAsync();
+        return rows.Count;
+    }
+
+    public async Task<IReadOnlyList<(DateOnly Date, TimeOnly StartTime, TimeOnly EndTime)>> GetBookedSlotRangesAsync(
+        Guid providerId, DateOnly from, DateOnly to)
+    {
+        var rows = await _context.Availabilities
+            .Where(a => a.BeautyProviderId == providerId && a.To == null
+                        && a.IsBooked && a.Date >= from && a.Date <= to)
+            .Select(a => new { a.Date, a.StartTime, a.EndTime })
+            .ToListAsync();
+        return rows.Select(r => (r.Date, r.StartTime, r.EndTime)).ToList();
+    }
 }

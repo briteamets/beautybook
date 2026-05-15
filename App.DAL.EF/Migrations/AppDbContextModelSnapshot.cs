@@ -522,6 +522,9 @@ namespace App.DAL.EF.Migrations
                     b.Property<int>("DayOfWeek")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Label")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("ProviderId")
                         .HasColumnType("uuid");
 

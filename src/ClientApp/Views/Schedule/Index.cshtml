@@ -1,208 +1,437 @@
-@model ScheduleIndexViewModel
+@using ClientApp.ViewModels
+@model WeekCalendarViewModel
 
-<h2 class="mb-4">@L["ScheduleSetup"]</h2>
+@{
+    const int PixelsPerHour = 60;
+    const int WindowStartHour = 6;   // 06:00
+    const int WindowEndHour = 22;    // 22:00
+    const int WindowMinutes = (WindowEndHour - WindowStartHour) * 60;
+    var today = DateOnly.FromDateTime(DateTime.Today);
+    var weekStartStr = Model.WeekStart.ToString("yyyy-MM-dd");
+    var prevWeek = Model.WeekStart.AddDays(-7).ToString("yyyy-MM-dd");
+    var nextWeek = Model.WeekStart.AddDays(7).ToString("yyyy-MM-dd");
 
+    string[] etMonths = ["jaan", "veebr", "märts", "apr", "mai", "juuni",
+                          "juuli", "aug", "sept", "okt", "nov", "dets"];
+    string EtDate(DateOnly d) => $"{d.Day}. {etMonths[d.Month - 1]}";
+}
+
+@* Hidden forms for JS-driven actions *@
+<form id="shiftForm" asp-action="ShiftTime" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="sf-day" name="day" />
+    <input type="hidden" id="sf-which" name="which" />
+    <input type="hidden" id="sf-delta" name="deltaMinutes" />
+    <input type="hidden" name="weekStart" value="@weekStartStr" />
+</form>
+<form id="toggleForm" asp-action="ToggleWorkingDay" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="tf-day" name="day" />
+    <input type="hidden" name="weekStart" value="@weekStartStr" />
+</form>
+<form id="removeBlockForm" asp-action="RemoveBlock" method="post" style="display:none">
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="rb-id" name="id" />
+    <input type="hidden" name="weekStart" value="@weekStartStr" />
+</form>
+
+@* Toolbar *@
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+    <div class="d-flex align-items-center flex-wrap gap-2">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-dark">@L["CalendarView"]</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary position-relative"
+                    data-bs-toggle="offcanvas" data-bs-target="#ootelOffcanvas" aria-controls="ootelOffcanvas">
+                @L["OotelView"]
+                @if (Model.PendingBookings.Count > 0)
+                {
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                          style="font-size:.65rem">
+                        @Model.PendingBookings.Count
+                    </span>
+                }
+            </button>
+        </div>
+        <div class="btn-group ms-1">
+            <a asp-action="Index" asp-route-weekStart="@prevWeek"
+               class="btn btn-sm btn-outline-secondary">&#8249; @L["PrevWeek"]</a>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">@L["Today"]</a>
+            <a asp-action="Index" asp-route-weekStart="@nextWeek"
+               class="btn btn-sm btn-outline-secondary">@L["NextWeek"] &#8250;</a>
+        </div>
+        <button type="button" class="btn btn-sm btn-outline-secondary ms-1" disabled>@L["DayView"]</button>
+    </div>
+    <span class="fw-semibold text-secondary small">@Model.ProviderName</span>
+</div>
+
+@* Alerts *@
+@if (Model.Warnings.Count > 0)
+{
+    <div class="alert alert-warning alert-dismissible fade show py-2">
+        <strong>@L["ScheduleWarning"]</strong>
+        <ul class="mb-0 mt-1 small">
+            @foreach (var w in Model.Warnings)
+            {
+                <li>@w</li>
+            }
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
 {
-    <div class="alert alert-danger alert-dismissible fade show">
+    <div class="alert alert-danger alert-dismissible fade show py-2">
         @Model.ErrorMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 @if (!string.IsNullOrWhiteSpace(Model.SuccessMessage))
 {
-    <div class="alert alert-success alert-dismissible fade show">
+    <div class="alert alert-success alert-dismissible fade show py-2">
         @L[Model.SuccessMessage]
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="row g-4">
+@* Week calendar grid *@
+<div class="row g-0 border rounded overflow-hidden" id="weekCalendar">
+    @foreach (var day in Model.Days)
+    {
+        var isToday = day.Date == today;
+        var colClass = day.IsWorkingDay ? "" : "bg-light";
+        var colId = $"col-{(int)day.DayOfWeek}";
+        var startMin = (int)day.StartTime.TotalMinutes;
+        var endMin = (int)day.EndTime.TotalMinutes;
 
-    @* Weekly schedule *@
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header fw-semibold">@L["WeeklySchedule"]</div>
-            <div class="card-body">
-                <form asp-action="SaveSchedule" method="post">
-                    @Html.AntiForgeryToken()
-                    <div class="table-responsive">
-                        <table class="table table-sm align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>@L["Day"]</th>
-                                    <th>@L["WorkingDay"]</th>
-                                    <th>@L["StartTime"]</th>
-                                    <th>@L["EndTime"]</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Days.Count; i++)
-                                {
-                                    var day = Model.Days[i];
-                                    <tr>
-                                        <td>
-                                            <input type="hidden" name="Days[@i].DayOfWeek" value="@((int)day.DayOfWeek)" />
-                                            <strong>@L[day.DayOfWeek.ToString()]</strong>
-                                        </td>
-                                        <td>
-                                            <input type="checkbox" name="Days[@i].IsWorkingDay" value="true"
-                                                   class="form-check-input"
-                                                   @(day.IsWorkingDay ? "checked" : "") />
-                                            <input type="hidden" name="Days[@i].IsWorkingDay" value="false" />
-                                        </td>
-                                        <td>
-                                            <input type="time" name="Days[@i].StartTime" class="form-control form-control-sm"
-                                                   style="max-width:130px"
-                                                   value="@day.StartTime.ToString(@"hh\:mm")" />
-                                        </td>
-                                        <td>
-                                            <input type="time" name="Days[@i].EndTime" class="form-control form-control-sm"
-                                                   style="max-width:130px"
-                                                   value="@day.EndTime.ToString(@"hh\:mm")" />
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <button type="submit" class="btn btn-primary">@L["Save"]</button>
-                </form>
+        <div class="col border-end @colClass" style="min-width:0">
+
+            @* Column header *@
+            <div class="d-flex flex-column align-items-center py-1 px-1 border-bottom
+                        @(isToday ? "bg-primary bg-opacity-10" : "")">
+                @* Sun/star icon toggle *@
+                <button type="button"
+                        class="btn btn-link p-0 lh-1 @(day.IsWorkingDay ? "text-warning" : "text-secondary")"
+                        style="font-size:1rem"
+                        onclick="toggleDay(@((int)day.DayOfWeek))"
+                        title="@(day.IsWorkingDay ? L["ToggleOff"].Value : L["ToggleOn"].Value)">
+                    @(day.IsWorkingDay ? "☀" : "☆")
+                </button>
+                <span class="fw-semibold @(isToday ? "text-primary" : "")" style="font-size:.8rem">
+                    @EtDate(day.Date)
+                </span>
+                <button class="btn btn-link btn-sm p-0 text-secondary lh-1"
+                        style="font-size:.75rem"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#@colId">&#8964;</button>
             </div>
-        </div>
-    </div>
 
-    @* Breaks *@
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header fw-semibold">@L["Breaks"]</div>
-            <div class="card-body">
-                @if (Model.Breaks.Count == 0)
+            @* Collapsible column body *@
+            <div class="collapse show" id="@colId">
+                @if (day.IsWorkingDay)
                 {
-                    <p class="text-muted small mb-3">@L["NoRows"]</p>
-                }
-                else
-                {
-                    <div class="list-group mb-3">
-                        @foreach (var b in Model.Breaks)
+                    @* Start time control *@
+                    <div class="d-flex align-items-center justify-content-center gap-1 py-1 border-bottom"
+                         style="font-size:.75rem; background:#f8f9fa">
+                        <div class="d-flex flex-column lh-1">
+                            <button type="button" class="btn btn-link p-0 lh-1 text-secondary"
+                                    style="font-size:.6rem"
+                                    onclick="shiftTime(@((int)day.DayOfWeek),'start',-15)">▲</button>
+                            <button type="button" class="btn btn-link p-0 lh-1 text-secondary"
+                                    style="font-size:.6rem"
+                                    onclick="shiftTime(@((int)day.DayOfWeek),'start',15)">▼</button>
+                        </div>
+                        <span class="fw-semibold">@day.StartTime.ToString(@"hh\:mm")</span>
+                    </div>
+
+                    @* Timeline body *@
+                    <div class="cal-timeline position-relative"
+                         style="height:@(WindowMinutes)px; overflow:hidden"
+                         data-day="@((int)day.DayOfWeek)"
+                         data-start-min="@startMin"
+                         data-is-today="@(isToday ? "1" : "0")">
+
+                        @* Hour grid lines *@
+                        @for (int h = WindowStartHour; h <= WindowEndHour; h++)
                         {
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <span>
-                                    <strong>@L[b.DayOfWeek.ToString()]</strong>
-                                    &mdash; @b.BreakStart.ToString(@"hh\:mm") – @b.BreakEnd.ToString(@"hh\:mm")
-                                </span>
-                                <form asp-action="RemoveBreak" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@b.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">@L["RemoveBreak"]</button>
-                                </form>
+                            var lineTop = (h - WindowStartHour) * PixelsPerHour;
+                            <div style="position:absolute;top:@(lineTop)px;left:0;right:0;
+                                        border-top:1px solid #e9ecef;
+                                        font-size:9px;color:#adb5bd;padding-left:3px;line-height:1">
+                                @h.ToString("D2"):00
                             </div>
                         }
-                    </div>
-                }
 
-                <h6 class="mb-2">@L["AddBreak"]</h6>
-                <form asp-action="AddBreak" method="post" class="row g-2 align-items-end">
-                    @Html.AntiForgeryToken()
-                    <div class="col-auto">
-                        <select name="DayOfWeek" class="form-select form-select-sm">
-                            @foreach (var dow in Enum.GetValues<DayOfWeek>())
-                            {
-                                <option value="@((int)dow)">@L[dow.ToString()]</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="col-auto">
-                        <label class="form-label small mb-1">@L["BreakStart"]</label>
-                        <input type="time" name="BreakStart" class="form-control form-control-sm" required />
-                    </div>
-                    <div class="col-auto">
-                        <label class="form-label small mb-1">@L["BreakEnd"]</label>
-                        <input type="time" name="BreakEnd" class="form-control form-control-sm" required />
-                    </div>
-                    <div class="col-auto mt-3">
-                        <button type="submit" class="btn btn-sm btn-outline-primary">@L["AddBreak"]</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                        @* Working window shading — grey outside working hours *@
+                        @{
+                            var workTopPx = startMin - WindowStartHour * 60;
+                            var workHeightPx = endMin - startMin;
+                            var afterTopPx = workTopPx + workHeightPx;
+                            var afterHeightPx = WindowMinutes - afterTopPx;
+                        }
+                        @if (workTopPx > 0)
+                        {
+                            <div style="position:absolute;top:0;left:0;right:0;height:@(workTopPx)px;
+                                        background:rgba(0,0,0,.04);pointer-events:none"></div>
+                        }
+                        @if (afterHeightPx > 0)
+                        {
+                            <div style="position:absolute;top:@(afterTopPx)px;left:0;right:0;
+                                        height:@(afterHeightPx)px;background:rgba(0,0,0,.04);
+                                        pointer-events:none"></div>
+                        }
 
-    @* Generate slots *@
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header fw-semibold">@L["GenerateSlots"]</div>
-            <div class="card-body">
-                @if (!string.IsNullOrWhiteSpace(Model.GenerateResult))
-                {
-                    <div class="alert alert-success">
-                        @string.Format(L["SlotsGenerated"].Value, Model.GenerateResult)
-                    </div>
-                }
-                <form asp-action="GenerateSlots" method="post" class="row g-2 align-items-end">
-                    @Html.AntiForgeryToken()
-                    <div class="col-auto">
-                        <label class="form-label small mb-1">@L["From"]</label>
-                        <input type="date" name="FromDate" class="form-control form-control-sm"
-                               value="@Model.GenerateForm.FromDate.ToString("yyyy-MM-dd")"
-                               min="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" required />
-                    </div>
-                    <div class="col-auto">
-                        <label class="form-label small mb-1">@L["To"]</label>
-                        <input type="date" name="ToDate" class="form-control form-control-sm"
-                               value="@Model.GenerateForm.ToDate.ToString("yyyy-MM-dd")"
-                               min="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" required />
-                    </div>
-                    <div class="col-auto mt-3">
-                        <button type="submit" class="btn btn-success">@L["GenerateSlots"]</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+                        @* Break blocks (green) *@
+                        @foreach (var b in day.Breaks)
+                        {
+                            var bTop = (int)b.BreakStart.TotalMinutes - WindowStartHour * 60;
+                            var bHeight = Math.Max(20, (int)(b.BreakEnd - b.BreakStart).TotalMinutes);
+                            var bLabel = string.IsNullOrEmpty(b.Label) ? L["Lunch"].Value : b.Label;
+                            <div class="cal-block cal-break rounded"
+                                 style="position:absolute;top:@(bTop)px;height:@(bHeight)px;
+                                        left:2px;right:2px;background:#28a745;color:#fff;
+                                        font-size:10px;padding:2px 4px;overflow:hidden;cursor:pointer;z-index:2"
+                                 title="@bLabel @b.BreakStart.ToString(@"hh\:mm")–@b.BreakEnd.ToString(@"hh\:mm")"
+                                 onclick="removeBlock('@b.Id', '@bLabel')">
+                                <div class="fw-semibold text-truncate">@bLabel</div>
+                                <div>@b.BreakStart.ToString(@"hh\:mm")–@b.BreakEnd.ToString(@"hh\:mm")</div>
+                            </div>
+                        }
 
-    @* Upcoming slots *@
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header fw-semibold">@L["UpcomingSlots"]</div>
-            <div class="card-body">
-                @if (Model.UpcomingSlots.Count == 0)
-                {
-                    <p class="text-muted">@L["NoUpcomingSlots"]</p>
+                        @* Booking blocks (blue) *@
+                        @foreach (var bk in day.Bookings)
+                        {
+                            var bkTop = (int)bk.StartTime.TotalMinutes - WindowStartHour * 60;
+                            var bkHeight = Math.Max(20, (int)(bk.EndTime - bk.StartTime).TotalMinutes);
+                            var statusColor = bk.Status == "Confirmed" ? "#0d6efd" :
+                                              bk.Status == "Completed" ? "#6c757d" : "#0dcaf0";
+                            <div class="cal-block cal-booking rounded"
+                                 style="position:absolute;top:@(bkTop)px;height:@(bkHeight)px;
+                                        left:2px;right:2px;background:@statusColor;color:#fff;
+                                        font-size:10px;padding:2px 4px;overflow:hidden;z-index:2"
+                                 title="@bk.ClientName — @bk.ServiceName">
+                                <div class="fw-semibold text-truncate">@bk.ClientName</div>
+                                <div class="text-truncate">@bk.ServiceName</div>
+                                <div>@bk.StartTime.ToString(@"hh\:mm")–@bk.EndTime.ToString(@"hh\:mm")</div>
+                            </div>
+                        }
+
+                        @* Current-time red line (today only) *@
+                        @if (isToday)
+                        {
+                            <div id="currentTimeLine"
+                                 style="position:absolute;left:0;right:0;height:2px;
+                                        background:red;z-index:10;pointer-events:none"></div>
+                        }
+                    </div>
+
+                    @* End time control *@
+                    <div class="d-flex align-items-center justify-content-center gap-1 py-1 border-top"
+                         style="font-size:.75rem;background:#f8f9fa">
+                        <div class="d-flex flex-column lh-1">
+                            <button type="button" class="btn btn-link p-0 lh-1 text-secondary"
+                                    style="font-size:.6rem"
+                                    onclick="shiftTime(@((int)day.DayOfWeek),'end',-15)">▲</button>
+                            <button type="button" class="btn btn-link p-0 lh-1 text-secondary"
+                                    style="font-size:.6rem"
+                                    onclick="shiftTime(@((int)day.DayOfWeek),'end',15)">▼</button>
+                        </div>
+                        <span class="fw-semibold">@day.EndTime.ToString(@"hh\:mm")</span>
+                    </div>
+
+                    @* Add block button *@
+                    <div class="text-center py-1 border-top">
+                        <button type="button"
+                                class="btn btn-link btn-sm p-0 text-secondary"
+                                style="font-size:.75rem"
+                                data-bs-toggle="modal"
+                                data-bs-target="#addBlockModal"
+                                onclick="prepareAddBlock(@((int)day.DayOfWeek), '@day.StartTime.ToString(@"hh\:mm")', '@day.EndTime.ToString(@"hh\:mm")')">
+                            + @L["AddBlock"]
+                        </button>
+                    </div>
                 }
                 else
                 {
-                    @foreach (var group in Model.UpcomingSlots.GroupBy(s => s.Date))
-                    {
-                        <h6 class="mt-3 mb-1 text-secondary">@group.Key.ToString("yyyy-MM-dd")</h6>
-                        <div class="list-group mb-2">
-                            @foreach (var slot in group)
-                            {
-                                <div class="list-group-item d-flex justify-content-between align-items-center @(slot.IsBooked ? "text-muted" : "")">
-                                    <span>@slot.StartTime.ToString("HH:mm") – @slot.EndTime.ToString("HH:mm")</span>
-                                    <div class="d-flex gap-2 align-items-center">
-                                        @if (slot.IsBooked)
-                                        {
-                                            <span class="badge bg-warning text-dark">@L["Booked"]</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success">@L["Free"]</span>
-                                            <form asp-action="DeleteSlot" method="post" class="d-inline"
-                                                  onsubmit="return confirm('@L["ConfirmDelete"]')">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@slot.Id" />
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">@L["Delete"]</button>
-                                            </form>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
+                    @* Non-working day placeholder *@
+                    <div class="text-center text-muted py-3" style="font-size:.8rem">
+                        <div>@L["DayOff"]</div>
+                        <button type="button"
+                                class="btn btn-link btn-sm p-0 text-secondary"
+                                style="font-size:.75rem"
+                                onclick="toggleDay(@((int)day.DayOfWeek))">
+                            @L["ToggleOn"]
+                        </button>
+                    </div>
                 }
             </div>
         </div>
-    </div>
-
+    }
 </div>
+
+@* Add Block Modal *@
+<div class="modal fade" id="addBlockModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <form asp-action="AddBlock" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-header py-2">
+                    <h6 class="modal-title">@L["AddBlock"]</h6>
+                    <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="DayOfWeek" id="ab-day" />
+                    <input type="hidden" name="WeekStart" value="@weekStartStr" />
+                    <div class="mb-2">
+                        <label class="form-label small mb-1">@L["BreakLabel"]</label>
+                        <input type="text" name="Label" id="ab-label"
+                               class="form-control form-control-sm"
+                               placeholder="@L["Lunch"].Value" />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small mb-1">@L["BreakStart"]</label>
+                        <input type="time" name="BreakStart" id="ab-start"
+                               class="form-control form-control-sm" required />
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small mb-1">@L["BreakEnd"]</label>
+                        <input type="time" name="BreakEnd" id="ab-end"
+                               class="form-control form-control-sm" required />
+                    </div>
+                </div>
+                <div class="modal-footer py-2">
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            data-bs-dismiss="modal">@L["Close"]</button>
+                    <button type="submit" class="btn btn-sm btn-primary">@L["Save"]</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@* Remove block confirm modal *@
+<div class="modal fade" id="removeBlockModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title">@L["RemoveBlock"]</h6>
+                <button type="button" class="btn-close btn-sm" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body small" id="rb-label-text"></div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary"
+                        data-bs-dismiss="modal">@L["Close"]</button>
+                <button type="button" class="btn btn-sm btn-danger"
+                        onclick="confirmRemoveBlock()">@L["Remove"]</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Ootel (Waiting / Pending) Offcanvas *@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="ootelOffcanvas"
+     style="width:360px">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title">@L["OotelView"]
+            @if (Model.PendingBookings.Count > 0)
+            {
+                <span class="badge bg-danger ms-1">@Model.PendingBookings.Count</span>
+            }
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        @if (Model.PendingBookings.Count == 0)
+        {
+            <div class="text-center text-muted py-4 small">@L["NoPendingBookings"]</div>
+        }
+        else
+        {
+            <div class="list-group list-group-flush">
+                @foreach (var p in Model.PendingBookings)
+                {
+                    <div class="list-group-item py-2 px-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="fw-semibold small">@p.ClientName</div>
+                                <div class="text-muted" style="font-size:.8rem">@p.ServiceName</div>
+                                <div class="text-muted" style="font-size:.8rem">
+                                    @p.BookingDate.ToString("dd.MM.yyyy")
+                                    @p.StartTime.ToString(@"hh\:mm")–@p.EndTime.ToString(@"hh\:mm")
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-1 ms-2">
+                                <form asp-action="ConfirmBooking" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <input type="hidden" name="weekStart" value="@weekStartStr" />
+                                    <button type="submit" class="btn btn-sm btn-success py-0 px-2"
+                                            style="font-size:.75rem">@L["Confirm"]</button>
+                                </form>
+                                <form asp-action="RejectBooking" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@p.Id" />
+                                    <input type="hidden" name="weekStart" value="@weekStartStr" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2"
+                                            style="font-size:.75rem">@L["Reject"]</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // ── JS helpers ──────────────────────────────────────────────
+    function shiftTime(day, which, delta) {
+        document.getElementById('sf-day').value = day;
+        document.getElementById('sf-which').value = which;
+        document.getElementById('sf-delta').value = delta;
+        document.getElementById('shiftForm').submit();
+    }
+
+    function toggleDay(day) {
+        document.getElementById('tf-day').value = day;
+        document.getElementById('toggleForm').submit();
+    }
+
+    let pendingRemoveId = null;
+    function removeBlock(id, label) {
+        pendingRemoveId = id;
+        document.getElementById('rb-label-text').textContent =
+            '@L["RemoveBlockConfirm"].Value'.replace('{0}', label);
+        new bootstrap.Modal(document.getElementById('removeBlockModal')).show();
+    }
+    function confirmRemoveBlock() {
+        if (!pendingRemoveId) return;
+        document.getElementById('rb-id').value = pendingRemoveId;
+        bootstrap.Modal.getInstance(document.getElementById('removeBlockModal'))?.hide();
+        document.getElementById('removeBlockForm').submit();
+    }
+
+    function prepareAddBlock(day, startTime, endTime) {
+        document.getElementById('ab-day').value = day;
+        document.getElementById('ab-start').value = startTime;
+        document.getElementById('ab-end').value = endTime;
+        document.getElementById('ab-label').value = '';
+    }
+
+    // ── Current-time red line ────────────────────────────────────
+    (function () {
+        const line = document.getElementById('currentTimeLine');
+        if (!line) return;
+        const timeline = line.closest('.cal-timeline');
+        const windowStartMin = @(WindowStartHour) * 60;
+
+        function tick() {
+            const now = new Date();
+            const nowMin = now.getHours() * 60 + now.getMinutes();
+            line.style.top = Math.max(0, nowMin - windowStartMin) + 'px';
+        }
+        tick();
+        setInterval(tick, 60000);
+    })();
+</script>

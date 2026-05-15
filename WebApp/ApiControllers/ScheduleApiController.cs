@@ -43,17 +43,11 @@ public class ScheduleApiController : BaseApiController
             .OrderBy(s => s.DayOfWeek)
             .ToListAsync();
 
-        return Ok(rows.Select(s => new ScheduleDayResponse
-        {
-            DayOfWeek = s.DayOfWeek,
-            IsWorkingDay = s.IsWorkingDay,
-            StartTime = s.StartTime,
-            EndTime = s.EndTime
-        }));
+        return Ok(rows.Select(ToResponse));
     }
 
     [HttpPut]
-    public async Task<ActionResult<IEnumerable<ScheduleDayResponse>>> PutSchedule(
+    public async Task<ActionResult<ScheduleSaveResponse>> PutSchedule(
         [FromBody] List<ScheduleDayUpsertRequest> request)
     {
         var provider = await GetProviderAsync();
@@ -89,7 +83,10 @@ public class ScheduleApiController : BaseApiController
         }
 
         await _context.SaveChangesAsync();
-        return await GetSchedule();
+
+        var regenerate = await _slotGenerationService.RegenerateUpcomingSlotsAsync(provider.Id);
+        var days = await GetScheduleDays(provider.Id);
+        return Ok(new ScheduleSaveResponse { Days = days, Warnings = regenerate.Warnings.ToList() });
     }
 
     [HttpGet("breaks")]
@@ -98,19 +95,7 @@ public class ScheduleApiController : BaseApiController
         var provider = await GetProviderAsync();
         if (provider == null) return NotFound();
 
-        var rows = await _context.ProviderBreaks
-            .Where(b => b.ProviderId == provider.Id)
-            .OrderBy(b => b.DayOfWeek)
-            .ThenBy(b => b.BreakStart)
-            .ToListAsync();
-
-        return Ok(rows.Select(b => new BreakResponse
-        {
-            Id = b.Id,
-            DayOfWeek = b.DayOfWeek,
-            BreakStart = b.BreakStart,
-            BreakEnd = b.BreakEnd
-        }));
+        return Ok(await FetchBreaks(provider.Id));
     }
 
     [HttpPut("breaks")]
@@ -138,11 +123,14 @@ public class ScheduleApiController : BaseApiController
             ProviderId = provider.Id,
             DayOfWeek = b.DayOfWeek,
             BreakStart = b.BreakStart,
-            BreakEnd = b.BreakEnd
+            BreakEnd = b.BreakEnd,
+            Label = b.Label
         }));
 
         await _context.SaveChangesAsync();
-        return await GetBreaks();
+
+        await _slotGenerationService.RegenerateUpcomingSlotsAsync(provider.Id);
+        return Ok(await FetchBreaks(provider.Id));
     }
 
     [HttpPost("generate-slots")]
@@ -163,4 +151,174 @@ public class ScheduleApiController : BaseApiController
 
         return Ok(new GenerateSlotsResponse { SlotsGenerated = count });
     }
+
+    [HttpGet("week")]
+    public async Task<ActionResult<WeekBundleResponse>> GetWeek([FromQuery] string? weekStart)
+    {
+        var provider = await GetProviderAsync();
+        if (provider == null) return NotFound();
+
+        DateOnly weekStartDate;
+        if (!DateOnly.TryParse(weekStart, out weekStartDate))
+            weekStartDate = ThisWeekMonday();
+
+        // Normalise to Monday
+        while (weekStartDate.DayOfWeek != DayOfWeek.Monday)
+            weekStartDate = weekStartDate.AddDays(-1);
+
+        var weekEnd = weekStartDate.AddDays(6);
+
+        var scheduleRows = await _context.ProviderSchedules
+            .Where(s => s.ProviderId == provider.Id)
+            .ToListAsync();
+
+        var breakRows = await _context.ProviderBreaks
+            .Where(b => b.ProviderId == provider.Id)
+            .ToListAsync();
+
+        var bookingRows = await _context.Bookings
+            .Include(b => b.Service)
+            .Include(b => b.User)
+            .Where(b => b.Service!.BeautyProvider!.UserId == GetCurrentUserId()
+                        && b.To == null
+                        && b.BookingDate >= weekStartDate
+                        && b.BookingDate <= weekEnd)
+            .ToListAsync();
+
+        var pendingRows = await _context.Bookings
+            .Include(b => b.Service)
+            .Include(b => b.User)
+            .Where(b => b.Service!.BeautyProvider!.UserId == GetCurrentUserId()
+                        && b.To == null
+                        && b.Status == Booking.StatusPending)
+            .OrderBy(b => b.BookingDate).ThenBy(b => b.StartTime)
+            .ToListAsync();
+
+        var days = new List<WeekDayBundle>();
+        for (int i = 0; i < 7; i++)
+        {
+            var date = weekStartDate.AddDays(i);
+            var dow = date.DayOfWeek;
+            var sched = scheduleRows.FirstOrDefault(s => s.DayOfWeek == dow);
+
+            days.Add(new WeekDayBundle
+            {
+                DayOfWeek = dow,
+                Date = date,
+                IsWorkingDay = sched?.IsWorkingDay ?? false,
+                StartTime = sched?.StartTime ?? new TimeSpan(9, 0, 0),
+                EndTime = sched?.EndTime ?? new TimeSpan(17, 0, 0),
+                Breaks = breakRows
+                    .Where(b => b.DayOfWeek == dow)
+                    .OrderBy(b => b.BreakStart)
+                    .Select(b => new BreakResponse
+                    {
+                        Id = b.Id, DayOfWeek = b.DayOfWeek,
+                        BreakStart = b.BreakStart, BreakEnd = b.BreakEnd, Label = b.Label
+                    }).ToList(),
+                Bookings = bookingRows
+                    .Where(b => b.BookingDate == date)
+                    .OrderBy(b => b.StartTime)
+                    .Select(b => new WeekBookingItem
+                    {
+                        Id = b.Id,
+                        ClientName = b.User?.Email ?? "—",
+                        ServiceName = b.Service?.Name.Translate() ?? "—",
+                        StartTime = b.StartTime,
+                        EndTime = b.EndTime,
+                        Status = b.Status
+                    }).ToList()
+            });
+        }
+
+        var pending = pendingRows.Select(b => new OotelBookingItem
+        {
+            Id = b.Id,
+            ClientName = b.User?.Email ?? "—",
+            ServiceName = b.Service?.Name.Translate() ?? "—",
+            BookingDate = b.BookingDate,
+            StartTime = b.StartTime,
+            EndTime = b.EndTime
+        }).ToList();
+
+        return Ok(new WeekBundleResponse
+        {
+            WeekStart = weekStartDate,
+            Days = days,
+            PendingBookings = pending
+        });
+    }
+
+    [HttpPatch("day")]
+    public async Task<ActionResult<ScheduleSaveResponse>> PatchDay([FromBody] PatchDayRequest request)
+    {
+        var provider = await GetProviderAsync();
+        if (provider == null) return NotFound();
+
+        var row = await _context.ProviderSchedules
+            .AsTracking()
+            .FirstOrDefaultAsync(s => s.ProviderId == provider.Id && s.DayOfWeek == request.DayOfWeek);
+
+        if (row == null)
+        {
+            row = new ProviderSchedule
+            {
+                ProviderId = provider.Id,
+                DayOfWeek = request.DayOfWeek,
+                IsWorkingDay = false,
+                StartTime = new TimeSpan(9, 0, 0),
+                EndTime = new TimeSpan(17, 0, 0)
+            };
+            _context.ProviderSchedules.Add(row);
+        }
+
+        if (request.IsWorkingDay.HasValue) row.IsWorkingDay = request.IsWorkingDay.Value;
+        if (request.StartTime.HasValue) row.StartTime = request.StartTime.Value;
+        if (request.EndTime.HasValue) row.EndTime = request.EndTime.Value;
+
+        if (row.IsWorkingDay && row.StartTime >= row.EndTime)
+            return ApiError(HttpStatusCode.BadRequest,
+                $"{request.DayOfWeek}: StartTime must be before EndTime.");
+
+        await _context.SaveChangesAsync();
+
+        var regenerate = await _slotGenerationService.RegenerateUpcomingSlotsAsync(provider.Id);
+        var days = await GetScheduleDays(provider.Id);
+        return Ok(new ScheduleSaveResponse { Days = days, Warnings = regenerate.Warnings.ToList() });
+    }
+
+    private static DateOnly ThisWeekMonday()
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var diff = ((int)today.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+        return today.AddDays(-diff);
+    }
+
+    private async Task<List<ScheduleDayResponse>> GetScheduleDays(Guid providerId)
+    {
+        var rows = await _context.ProviderSchedules
+            .Where(s => s.ProviderId == providerId)
+            .OrderBy(s => s.DayOfWeek)
+            .ToListAsync();
+        return rows.Select(ToResponse).ToList();
+    }
+
+    private async Task<List<BreakResponse>> FetchBreaks(Guid providerId) =>
+        await _context.ProviderBreaks
+            .Where(b => b.ProviderId == providerId)
+            .OrderBy(b => b.DayOfWeek).ThenBy(b => b.BreakStart)
+            .Select(b => new BreakResponse
+            {
+                Id = b.Id, DayOfWeek = b.DayOfWeek,
+                BreakStart = b.BreakStart, BreakEnd = b.BreakEnd, Label = b.Label
+            })
+            .ToListAsync();
+
+    private static ScheduleDayResponse ToResponse(ProviderSchedule s) => new()
+    {
+        DayOfWeek = s.DayOfWeek,
+        IsWorkingDay = s.IsWorkingDay,
+        StartTime = s.StartTime,
+        EndTime = s.EndTime
+    };
 }

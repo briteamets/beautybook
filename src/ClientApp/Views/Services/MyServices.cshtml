@@ -40,7 +40,13 @@ else
                 @foreach (var s in Model.Services)
                 {
                     <tr class="@(s.IsActive ? "" : "text-muted")">
-                        <td>@s.Name @if (!s.IsActive) { <span class="badge bg-secondary ms-1">inactive</span> }</td>
+                        <td>
+                            <div>@s.Name @if (!s.IsActive) { <span class="badge bg-secondary ms-1">inactive</span> }</div>
+                            @if (!string.IsNullOrWhiteSpace(s.Description))
+                            {
+                                <div class="text-muted small">@s.Description</div>
+                            }
+                        </td>
                         <td>@s.CategoryName</td>
                         <td>@s.Price.ToString("0.00") €</td>
                         <td>@s.DurationMinutes @L["Min"]</td>

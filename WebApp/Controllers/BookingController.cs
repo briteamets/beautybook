@@ -1,6 +1,7 @@
 using System.Text;
 using System.Globalization;
 using App.BLL.Services;
+using App.Contracts;
 using App.DAL.EF;
 using App.Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -152,6 +153,16 @@ public class BookingController : ClientControllerBase
             Reason = "Dynamic booking created",
             From = DateTime.UtcNow
         });
+        Context.Notifications.Add(new Notification
+        {
+            UserId = service.BeautyProvider!.UserId,
+            BookingId = booking.Id,
+            Type = Notification.TypeBookingRequested,
+            Title = "New booking request",
+            Body = $"New booking request for {service.Name.Translate()} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm}.",
+            IsRead = false,
+            From = DateTime.UtcNow
+        });
         await Context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Payment), new { bookingId = booking.Id });
@@ -273,6 +284,16 @@ public class BookingController : ClientControllerBase
                 UserId = booking.UserId,
                 ChangedAt = DateTime.UtcNow,
                 Reason = "Booking created",
+                From = DateTime.UtcNow
+            });
+            Context.Notifications.Add(new Notification
+            {
+                UserId = service.BeautyProvider!.UserId,
+                BookingId = booking.Id,
+                Type = Notification.TypeBookingRequested,
+                Title = "New booking request",
+                Body = $"New booking request for {service.Name.Translate()} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm}.",
+                IsRead = false,
                 From = DateTime.UtcNow
             });
             await Context.SaveChangesAsync();

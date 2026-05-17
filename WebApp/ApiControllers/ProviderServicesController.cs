@@ -1,4 +1,5 @@
 using App.BLL.Services;
+using App.Contracts;
 using App.DTO.v1;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

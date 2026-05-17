@@ -2,12 +2,6 @@ using App.Contracts;
 
 namespace App.BLL.Services;
 
-public interface ISlotGeneratorService
-{
-    Task<IReadOnlyCollection<TimeSlot>> GenerateSlotsAsync(Guid providerServiceId, DateOnly date, CancellationToken cancellationToken = default);
-    IReadOnlyCollection<TimeSlot> GenerateSlots(SlotGenerationInput input);
-}
-
 public class SlotGeneratorService : ISlotGeneratorService
 {
     private readonly ISchedulingRepository _schedulingRepository;

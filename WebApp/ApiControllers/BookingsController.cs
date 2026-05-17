@@ -1,5 +1,6 @@
 using System.Net;
 using App.BLL.Services;
+using App.Contracts;
 using App.DAL.EF;
 using App.Domain;
 using App.DTO.v1;
@@ -141,6 +142,16 @@ public class BookingsController : BaseApiController
             ChangedAt = DateTime.UtcNow,
             From = DateTime.UtcNow,
             Reason = "Booking created"
+        });
+        _context.Notifications.Add(new Notification
+        {
+            UserId = service.BeautyProvider!.UserId,
+            BookingId = booking.Id,
+            Type = Notification.TypeBookingRequested,
+            Title = "New booking request",
+            Body = $"New booking request for {service.Name.Translate()} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm}.",
+            IsRead = false,
+            From = DateTime.UtcNow
         });
         await _context.SaveChangesAsync();
         await transaction.CommitAsync();
@@ -352,6 +363,16 @@ public class BookingsController : BaseApiController
             UserId = userId,
             ChangedAt = DateTime.UtcNow,
             Reason = "Dynamic API booking created",
+            From = DateTime.UtcNow
+        });
+        _context.Notifications.Add(new Notification
+        {
+            UserId = service.BeautyProvider!.UserId,
+            BookingId = booking.Id,
+            Type = Notification.TypeBookingRequested,
+            Title = "New booking request",
+            Body = $"New booking request for {service.Name.Translate()} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm}.",
+            IsRead = false,
             From = DateTime.UtcNow
         });
         await _context.SaveChangesAsync();

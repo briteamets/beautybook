@@ -158,6 +158,7 @@ builder.Services.AddScoped<ISlotGeneratorService, SlotGeneratorService>();
 builder.Services.AddScoped<ISlotGenerationRepository, SlotGenerationRepository>();
 builder.Services.AddScoped<ISlotGenerationService, SlotGenerationService>();
 builder.Services.AddHostedService<BookingCompletionHostedService>();
+builder.Services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
 builder.Services.AddScoped<BookingExpiryService>();
 builder.Services.AddHostedService<PendingBookingExpiryService>();
 

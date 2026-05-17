@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientApp.Controllers;
 
-[ClientAuthorize]
 public class ServicesController : Controller
 {
     private readonly ServicesApiService _servicesApiService;
@@ -28,7 +27,7 @@ public class ServicesController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var services = await _servicesApiService.GetAllAsync();
+        var services = await _servicesApiService.GetPublicAsync();
         return View(new ServiceIndexViewModel
         {
             Services = services.Select(ToListItem).ToList()
@@ -37,11 +36,12 @@ public class ServicesController : Controller
 
     public async Task<IActionResult> Details(Guid id)
     {
-        var service = await _servicesApiService.GetAsync(id);
+        var service = await _servicesApiService.GetPublicAsync(id);
         if (service == null) return NotFound();
         return View(ToListItem(service));
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> Create()
     {
         var model = new ServiceFormViewModel();
@@ -49,6 +49,7 @@ public class ServicesController : Controller
         return View(model);
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ServiceFormViewModel model)
@@ -72,6 +73,7 @@ public class ServicesController : Controller
         }
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> Edit(Guid id)
     {
         var service = await _servicesApiService.GetAsync(id);
@@ -93,6 +95,7 @@ public class ServicesController : Controller
         return View(model);
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Guid id, ServiceFormViewModel model)
@@ -108,6 +111,7 @@ public class ServicesController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         var service = await _servicesApiService.GetAsync(id);
@@ -115,6 +119,7 @@ public class ServicesController : Controller
         return View(ToListItem(service));
     }
 
+    [ClientAuthorize]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -125,6 +130,7 @@ public class ServicesController : Controller
 
     // ── Provider self-service ──────────────────────────────────────────────────
 
+    [ClientAuthorize]
     public async Task<IActionResult> MyServices()
     {
         BeautyProviderResponse? provider;
@@ -158,6 +164,7 @@ public class ServicesController : Controller
         });
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> MyServiceCreate(Guid providerId)
     {
         var model = new ServiceFormViewModel { BeautyProviderId = providerId };
@@ -165,6 +172,7 @@ public class ServicesController : Controller
         return View(model);
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MyServiceCreate(ServiceFormViewModel model)
@@ -179,6 +187,7 @@ public class ServicesController : Controller
         return RedirectToAction(nameof(MyServices));
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> MyServiceEdit(Guid id)
     {
         var service = await _servicesApiService.GetAsync(id);
@@ -201,6 +210,7 @@ public class ServicesController : Controller
         return View(model);
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MyServiceEdit(Guid id, ServiceFormViewModel model)
@@ -216,6 +226,7 @@ public class ServicesController : Controller
         return RedirectToAction(nameof(MyServices));
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> MyServiceDelete(Guid id)
     {
         var service = await _servicesApiService.GetAsync(id);
@@ -223,6 +234,7 @@ public class ServicesController : Controller
         return View(ToListItem(service));
     }
 
+    [ClientAuthorize]
     [HttpPost, ActionName("MyServiceDelete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MyServiceDeleteConfirmed(Guid id)

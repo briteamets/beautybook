@@ -29,6 +29,9 @@ public class ServicesApiService
     public async Task<ServiceResponse?> GetAsync(Guid id)
         => (await GetAllAsync()).FirstOrDefault(s => s.Id == id);
 
+    public async Task<ServiceResponse?> GetPublicAsync(Guid id)
+        => (await GetPublicAsync()).FirstOrDefault(s => s.Id == id);
+
     public async Task<ICollection<ServiceResponse>> GetMyAsync()
         => await _api.GetAsync<List<ServiceResponse>>("/api/v1/services/mine") ?? [];
 

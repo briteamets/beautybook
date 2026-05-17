@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ClientApp.Controllers;
 
-[ClientAuthorize]
 public class ProvidersController : Controller
 {
     private readonly ProvidersApiService _providersApiService;
@@ -47,7 +46,7 @@ public class ProvidersController : Controller
 
     public async Task<IActionResult> Details(Guid id, Guid? salonId = null, string? salonName = null)
     {
-        var provider = await _providersApiService.GetAsync(id);
+        var provider = await _providersApiService.GetPublicAsync(id);
         if (provider == null) return NotFound();
 
         if (salonId == null)
@@ -67,14 +66,17 @@ public class ProvidersController : Controller
 
         var reviews = await _reviewsApiService.GetByProviderIdAsync(id);
 
-        ICollection<App.DTO.v1.FavoriteProviderResponse> favorites;
-        try
+        ICollection<FavoriteProviderResponse> favorites = [];
+        if (HttpContext.Session.HasUsableToken())
         {
-            favorites = await _favoritesApiService.GetAsync();
-        }
-        catch (HttpRequestException)
-        {
-            favorites = [];
+            try
+            {
+                favorites = await _favoritesApiService.GetAsync();
+            }
+            catch (HttpRequestException)
+            {
+                favorites = [];
+            }
         }
 
         var favorite = favorites.FirstOrDefault(f => f.ProviderId == id);
@@ -105,11 +107,13 @@ public class ProvidersController : Controller
         });
     }
 
+    [ClientAuthorize]
     public IActionResult Create()
     {
         return View(new ProviderFormViewModel());
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(ProviderFormViewModel model)
@@ -128,6 +132,7 @@ public class ProvidersController : Controller
         }
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> Edit(Guid id)
     {
         var provider = await _providersApiService.GetAsync(id);
@@ -145,6 +150,7 @@ public class ProvidersController : Controller
         });
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(Guid id, ProviderFormViewModel model)
@@ -164,6 +170,7 @@ public class ProvidersController : Controller
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> Delete(Guid id)
     {
         var provider = await _providersApiService.GetAsync(id);
@@ -179,6 +186,7 @@ public class ProvidersController : Controller
         });
     }
 
+    [ClientAuthorize]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -187,6 +195,7 @@ public class ProvidersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> EditProfile()
     {
         BeautyProviderResponse? provider;
@@ -214,6 +223,7 @@ public class ProvidersController : Controller
         });
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> EditProfile(ProviderFormViewModel model)
@@ -243,6 +253,7 @@ public class ProvidersController : Controller
         return RedirectToAction(nameof(EditProfile));
     }
 
+    [ClientAuthorize]
     public async Task<IActionResult> MyReviews()
     {
         BeautyProviderResponse? provider;
@@ -276,6 +287,7 @@ public class ProvidersController : Controller
         });
     }
 
+    [ClientAuthorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteReviewComment(Guid id)

@@ -54,6 +54,23 @@
         }
     </div>
 }
+else
+{
+    <div class="d-flex gap-3 mb-4 flex-wrap">
+        <a asp-controller="Auth" asp-action="Login"
+           asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+           class="btn btn-primary btn-lg">@L["Login"]</a>
+        @if (Model.SalonId.HasValue)
+        {
+            <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
+               class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+        }
+        else
+        {
+            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+        }
+    </div>
+}
 
 <h4>@L["Reviews"]</h4>
 

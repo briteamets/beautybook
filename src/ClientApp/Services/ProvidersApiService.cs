@@ -25,6 +25,9 @@ public class ProvidersApiService
     public Task<BeautyProviderResponse?> GetAsync(Guid id)
         => _api.GetAsync<BeautyProviderResponse>($"/api/v1/providers/{id}");
 
+    public Task<BeautyProviderResponse?> GetPublicAsync(Guid id)
+        => _api.AnonymousGetAsync<BeautyProviderResponse>($"/api/v1/providers/{id}");
+
     public Task<BeautyProviderResponse?> GetMineAsync()
         => _api.GetAsync<BeautyProviderResponse>("/api/v1/providers/mine");
 

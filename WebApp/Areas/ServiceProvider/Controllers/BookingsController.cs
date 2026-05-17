@@ -128,6 +128,22 @@ public class BookingsController : ServiceProviderControllerBase
             From = DateTime.UtcNow
         });
 
+        if (newStatus is Booking.StatusConfirmed or Booking.StatusCancelled)
+        {
+            Context.Notifications.Add(new Notification
+            {
+                UserId = booking.UserId,
+                BookingId = booking.Id,
+                Type = newStatus == Booking.StatusCancelled
+                    ? Notification.TypeBookingCancelled
+                    : Notification.TypeBookingConfirmed,
+                Title = newStatus == Booking.StatusCancelled ? "Booking cancelled by provider" : "Booking confirmed",
+                Body = $"Your booking for {Translate(booking.Service!.Name)} on {booking.AppointmentDateTime:yyyy-MM-dd HH:mm} has been updated.",
+                IsRead = false,
+                From = DateTime.UtcNow
+            });
+        }
+
         await Context.SaveChangesAsync();
         Success("BookingStatusUpdated");
         return RedirectToAction(nameof(Details), new { id });

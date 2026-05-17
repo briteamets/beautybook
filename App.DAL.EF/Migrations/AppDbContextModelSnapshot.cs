@@ -452,8 +452,7 @@ namespace App.DAL.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
+                    b.HasIndex("BookingId");
 
                     b.HasIndex("UserId");
 
@@ -1080,8 +1079,8 @@ namespace App.DAL.EF.Migrations
             modelBuilder.Entity("App.Domain.Notification", b =>
                 {
                     b.HasOne("App.Domain.Booking", "Booking")
-                        .WithOne("Notification")
-                        .HasForeignKey("App.Domain.Notification", "BookingId")
+                        .WithMany("Notifications")
+                        .HasForeignKey("BookingId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("App.Domain.Identity.AppUser", "User")
@@ -1319,7 +1318,7 @@ namespace App.DAL.EF.Migrations
 
                     b.Navigation("BookingPayments");
 
-                    b.Navigation("Notification");
+                    b.Navigation("Notifications");
 
                     b.Navigation("Review");
                 });

@@ -6,6 +6,7 @@ public class Notification : BaseEntity
 {
     public const string TypeBookingConfirmed = "BookingConfirmed";
     public const string TypeBookingCancelled = "BookingCancelled";
+    public const string TypeBookingRequested = "BookingRequested";
     public const string TypeReviewReceived = "ReviewReceived";
 
     public Guid UserId { get; set; }

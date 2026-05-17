@@ -9,6 +9,8 @@ public class Booking : BaseEntity
     public const string StatusCancelled = "Cancelled";
     public const string StatusCompleted = "Completed";
 
+    public const string ReasonAutoCancelledPendingExpired = "AutoCancelled_PendingExpired";
+
     public Guid UserId { get; set; }
     public Identity.AppUser? User { get; set; }
 
@@ -38,5 +40,5 @@ public class Booking : BaseEntity
     public ICollection<BookingHistory>? BookingHistory { get; set; }
     public ICollection<BookingPayment>? BookingPayments { get; set; }
     public Review? Review { get; set; }
-    public Notification? Notification { get; set; }
+    public ICollection<Notification>? Notifications { get; set; }
 }

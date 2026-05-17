@@ -39,9 +39,9 @@ public class üBookingConfiguration : IEntityTypeConfiguration<Booking>
             .HasForeignKey<Review>(e => e.BookingId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(e => e.Notification)
+        builder.HasMany(e => e.Notifications)
             .WithOne(e => e.Booking)
-            .HasForeignKey<Notification>(e => e.BookingId)
+            .HasForeignKey(e => e.BookingId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

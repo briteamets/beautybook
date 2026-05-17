@@ -35,7 +35,16 @@ public class AvailabilityController : BaseApiController
 
         if (date.HasValue) query = query.Where(a => a.Date == date.Value);
 
-        return Ok((await query.ToListAsync()).Select(a => a.ToResponse()));
+        var now = DateTime.Now;
+        var today = DateOnly.FromDateTime(now);
+        var nowTime = TimeOnly.FromDateTime(now);
+
+        var all = await query.ToListAsync();
+        var filtered = all
+            .Where(a => a.Date > today || (a.Date == today && a.StartTime > nowTime))
+            .Select(a => a.ToResponse());
+
+        return Ok(filtered);
     }
 
     [HttpGet("mine")]

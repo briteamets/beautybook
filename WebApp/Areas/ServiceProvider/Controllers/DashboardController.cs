@@ -1,4 +1,5 @@
 using App.DAL.EF;
+using App.DAL.EF.Extensions;
 using App.Domain;
 using App.Resources;
 using Microsoft.AspNetCore.Mvc;
@@ -29,8 +30,9 @@ public class DashboardController : ServiceProviderControllerBase
             ProviderName = provider.ProfileName,
             ActiveServicesCount = await Context.Services.CountAsync(s =>
                 s.BeautyProviderId == provider.Id && s.IsActive && s.To == null),
-            PendingBookingsCount = await Context.Bookings.CountAsync(b =>
-                b.Service!.BeautyProviderId == provider.Id && b.Status == Booking.StatusPending),
+            PendingBookingsCount = await Context.Bookings
+                .WhereActivelyPending()
+                .CountAsync(b => b.Service!.BeautyProviderId == provider.Id),
             CompletedBookingsCount = await Context.Bookings.CountAsync(b =>
                 b.Service!.BeautyProviderId == provider.Id && b.Status == Booking.StatusCompleted)
         };

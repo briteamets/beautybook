@@ -1,4 +1,4 @@
-using App.BLL.Contracts;
+using App.Contracts;
 using App.Domain;
 using Microsoft.EntityFrameworkCore;
 

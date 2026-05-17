@@ -1,6 +1,7 @@
 using System.Net;
-using App.BLL.Contracts;
+using App.Contracts;
 using App.DAL.EF;
+using App.DAL.EF.Extensions;
 using App.Domain;
 using App.DTO.v1;
 using Asp.Versioning;
@@ -188,9 +189,8 @@ public class ScheduleApiController : BaseApiController
         var pendingRows = await _context.Bookings
             .Include(b => b.Service)
             .Include(b => b.User)
-            .Where(b => b.Service!.BeautyProvider!.UserId == GetCurrentUserId()
-                        && b.To == null
-                        && b.Status == Booking.StatusPending)
+            .WhereActivelyPending()
+            .Where(b => b.Service!.BeautyProvider!.UserId == GetCurrentUserId())
             .OrderBy(b => b.BookingDate).ThenBy(b => b.StartTime)
             .ToListAsync();
 

@@ -1,4 +1,4 @@
-namespace App.BLL.Contracts;
+namespace App.Contracts;
 
 public record TimeSlot(TimeSpan StartTime, TimeSpan EndTime, bool IsAvailable = true);
 

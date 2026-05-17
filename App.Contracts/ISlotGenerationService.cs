@@ -1,4 +1,4 @@
-namespace App.BLL.Contracts;
+namespace App.Contracts;
 
 public record RegenerateResult(int SlotsAdded, IReadOnlyList<string> Warnings);
 

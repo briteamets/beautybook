@@ -1,4 +1,4 @@
-using App.BLL.Contracts;
+using App.Contracts;
 using App.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +51,6 @@ public class SchedulingRepository : ISchedulingRepository
             schedule,
             breaks,
             bookings,
-            DateTime.UtcNow);
+            DateTime.Now);
     }
 }

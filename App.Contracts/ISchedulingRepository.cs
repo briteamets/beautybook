@@ -1,4 +1,4 @@
-namespace App.BLL.Contracts;
+namespace App.Contracts;
 
 public interface ISchedulingRepository
 {

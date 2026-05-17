@@ -1,4 +1,4 @@
-using App.BLL.Contracts;
+using App.Contracts;
 
 namespace App.BLL.Services;
 

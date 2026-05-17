@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using App.BLL.Contracts;
+using App.Contracts;
 using App.BLL.Services;
 using App.DAL.EF;
 using App.DAL.EF.Repositories;
@@ -158,6 +158,8 @@ builder.Services.AddScoped<ISlotGeneratorService, SlotGeneratorService>();
 builder.Services.AddScoped<ISlotGenerationRepository, SlotGenerationRepository>();
 builder.Services.AddScoped<ISlotGenerationService, SlotGenerationService>();
 builder.Services.AddHostedService<BookingCompletionHostedService>();
+builder.Services.AddScoped<BookingExpiryService>();
+builder.Services.AddHostedService<PendingBookingExpiryService>();
 
 // ==============================================
 var app = builder.Build();

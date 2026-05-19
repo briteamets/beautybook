@@ -18,22 +18,21 @@
     <dd class="col-sm-9">&#9733; @Model.AverageRating.ToString("0.0") / 5 (@Model.ReviewCount)</dd>
 </dl>
 
-@if (Context.Session.HasUsableToken())
+@if (Context.Session.IsClient())
 {
     <div class="d-flex gap-3 mb-4 flex-wrap">
-        <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="providerId" value="@Model.Id" />
-            <button type="submit" class="btn btn-primary btn-lg">@L["BookNow"]</button>
-        </form>
+        @if (!Model.IsSalonOwner)
+        {
+            <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="providerId" value="@Model.Id" />
+                <button type="submit" class="btn btn-primary btn-lg">@L["BookNow"]</button>
+            </form>
+        }
         @if (Model.SalonId.HasValue)
         {
             <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
-               class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
-        }
-        else
-        {
-            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+               class="btn btn-outline-secondary btn-lg">@L["ViewSalon"]</a>
         }
         @if (Model.IsFavorited)
         {
@@ -54,7 +53,7 @@
         }
     </div>
 }
-else
+else if (!Context.Session.HasUsableToken())
 {
     <div class="d-flex gap-3 mb-4 flex-wrap">
         <a asp-controller="Auth" asp-action="Login"
@@ -63,11 +62,7 @@ else
         @if (Model.SalonId.HasValue)
         {
             <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
-               class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
-        }
-        else
-        {
-            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">@L["SeeProviders"]</a>
+               class="btn btn-outline-secondary btn-lg">@L["ViewSalon"]</a>
         }
     </div>
 }

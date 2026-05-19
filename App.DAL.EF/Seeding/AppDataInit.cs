@@ -466,19 +466,13 @@ public static class AppDataInit
             context.SaveChanges();
         }
 
-        var salonStaffExists = context.SalonStaff.Any(ss =>
-            ss.SalonId == salon.Id &&
-            ss.BeautyProviderId == provider.Id);
-
-        if (!salonStaffExists)
+        // BeautyBook Studio is an independent provider — remove any stale salon membership.
+        var staleStaff = context.SalonStaff.AsTracking()
+            .Where(ss => ss.SalonId == salon.Id && ss.BeautyProviderId == provider.Id && ss.To == null)
+            .ToList();
+        if (staleStaff.Count > 0)
         {
-            context.SalonStaff.Add(new SalonStaff
-            {
-                SalonId = salon.Id,
-                BeautyProviderId = provider.Id,
-                Role = SalonStaff.RoleOwner,
-                From = now
-            });
+            foreach (var ss in staleStaff) ss.To = now;
             context.SaveChanges();
         }
 

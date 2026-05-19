@@ -49,6 +49,7 @@ public class ProvidersController : Controller
         var provider = await _providersApiService.GetPublicAsync(id);
         if (provider == null) return NotFound();
 
+        var isSalonOwner = false;
         if (salonId == null)
         {
             try
@@ -59,6 +60,8 @@ public class ProvidersController : Controller
                 {
                     salonId = salon.Id;
                     salonName = salon.Name;
+                    var membership = salon.StaffMembers.FirstOrDefault(m => m.ProviderId == id);
+                    isSalonOwner = membership?.Role == "Owner";
                 }
             }
             catch (HttpRequestException) { }
@@ -100,6 +103,7 @@ public class ProvidersController : Controller
                 UserName = r.UserName,
                 CreatedAt = r.CreatedAt
             }).ToList(),
+            IsSalonOwner = isSalonOwner,
             IsFavorited = favorite != null,
             FavoriteId = favorite?.Id,
             SalonId = salonId,

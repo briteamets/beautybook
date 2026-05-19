@@ -88,6 +88,7 @@ public class ProviderDetailsViewModel : ProviderFormViewModel
     public Guid? FavoriteId { get; set; }
     public Guid? SalonId { get; set; }
     public string? SalonName { get; set; }
+    public bool IsSalonOwner { get; set; }
 }
 
 public class ProviderFormViewModel

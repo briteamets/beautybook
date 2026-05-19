@@ -22,7 +22,7 @@ public class SalonsController : BaseApiController
     {
         var salons = await _context.Salons
             .Where(s => s.To == null)
-            .Include(s => s.Staff!)
+            .Include(s => s.Staff!.Where(st => st.To == null))
             .ThenInclude(st => st.BeautyProvider)
             .OrderBy(s => s.Name)
             .ToListAsync();
@@ -35,7 +35,7 @@ public class SalonsController : BaseApiController
     {
         var salon = await _context.Salons
             .Where(s => s.Id == id && s.To == null)
-            .Include(s => s.Staff!)
+            .Include(s => s.Staff!.Where(st => st.To == null))
             .ThenInclude(st => st.BeautyProvider)
             .FirstOrDefaultAsync();
         if (salon == null) return NotFound();

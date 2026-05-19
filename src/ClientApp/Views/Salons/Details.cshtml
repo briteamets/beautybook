@@ -22,19 +22,19 @@
     }
 </dl>
 
-@if (Context.Session.HasUsableToken())
-{
-    <div class="d-flex gap-3 mb-4 flex-wrap">
+<div class="d-flex gap-3 mb-4 flex-wrap">
+    @if (Context.Session.IsClient())
+    {
         <a asp-controller="Bookings" asp-action="ServiceWizard"
            asp-route-salonId="@Model.Id"
            asp-route-salonName="@Model.Name"
            class="btn btn-primary btn-lg">@L["BookNow"]</a>
-        <button class="btn btn-outline-secondary btn-lg" type="button"
-                data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
-            @L["SeeProviders"]
-        </button>
-    </div>
-}
+    }
+    <button class="btn btn-outline-secondary btn-lg" type="button"
+            data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
+        @L["SeeProviders"]
+    </button>
+</div>
 
 <div class="collapse" id="staffPanel">
     <h4 class="mb-3">@L["SalonStaff"]</h4>
@@ -66,7 +66,7 @@
                                asp-route-salonId="@Model.Id"
                                asp-route-salonName="@Model.Name"
                                class="btn btn-outline-primary btn-sm flex-fill">@L["Details"]</a>
-                            @if (Context.Session.HasUsableToken())
+                            @if (Context.Session.IsClient() && member.Role != "Owner")
                             {
                                 <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post" class="flex-fill">
                                     @Html.AntiForgeryToken()

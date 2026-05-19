@@ -36,6 +36,8 @@ public class ProvidersController : BaseApiController
                 .ThenInclude(s => s.Bookings!)
                     .ThenInclude(b => b.Review);
 
+        query = query.Where(p => !p.SalonStaff!.Any(ss => ss.To == null && ss.Role == SalonStaff.RoleOwner));
+
         if (serviceTypeId.HasValue)
             query = query.Where(p => p.Services!.Any(s => s.ServiceTypeId == serviceTypeId.Value && s.IsActive && s.To == null));
 

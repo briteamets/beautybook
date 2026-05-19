@@ -26,7 +26,7 @@ public class HomeController : Controller
     public async Task<IActionResult> Index(string? filter = null, Guid? serviceTypeId = null, string? search = null)
     {
         var normalizedFilter = filter == "independent" ? "independent" : null;
-        var providersTask = _providersApiService.GetAllAsync(normalizedFilter, serviceTypeId, search);
+        var providersTask = _providersApiService.GetAllAsync("independent", serviceTypeId, search);
         var serviceTypesTask = _serviceTypesApiService.GetAsync();
 
         ICollection<App.DTO.v1.SalonResponse> salons;

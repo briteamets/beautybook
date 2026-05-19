@@ -1,10 +1,10 @@
 html {
-  font-size: 14px;
+  font-size: 16px;
 }
 
 @media (min-width: 768px) {
   html {
-    font-size: 16px;
+    font-size: 18px;
   }
 }
 
@@ -77,7 +77,7 @@ body {
 .bb-navbar .navbar-brand {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--bb-primary) !important;
+  color: #A02D5E !important;
   letter-spacing: -0.3px;
 }
 .bb-navbar .navbar-brand span {
@@ -272,7 +272,7 @@ body {
 .bb-footer-brand {
   font-weight: 600;
   font-size: 0.9rem;
-  color: var(--bb-primary);
+  color: #A02D5E;
 }
 .bb-footer-brand span { color: var(--bb-amber-dark); }
 .bb-footer-copy {
@@ -296,7 +296,7 @@ body {
   text-align: center;
   font-size: 1.4rem;
   font-weight: 700;
-  color: var(--bb-primary);
+  color: #A02D5E;
   letter-spacing: -0.3px;
   margin-bottom: 0.25rem;
 }

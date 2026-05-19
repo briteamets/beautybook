@@ -24,4 +24,20 @@ public static class TestJwtHelper
         );
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public static string CreateToken(Guid userId, params string[] roles)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SigningKey));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
+        claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+        var token = new JwtSecurityToken(
+            issuer: Issuer,
+            audience: Audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: creds
+        );
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
 }

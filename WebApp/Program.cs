@@ -161,6 +161,10 @@ builder.Services.AddHostedService<BookingCompletionHostedService>();
 builder.Services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
 builder.Services.AddScoped<BookingExpiryService>();
 builder.Services.AddHostedService<PendingBookingExpiryService>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IBookingService, BookingService>();
+builder.Services.AddScoped<IServiceManagementService, ServiceManagementService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 
 // ==============================================
 var app = builder.Build();

@@ -1,6 +1,8 @@
 using System.Data.Common;
 using System.Security.Claims;
+using App.BLL.Services;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
 using App.Domain;
 using App.Domain.Identity;
 using App.DTO.v1;
@@ -43,7 +45,7 @@ public class ReviewCommentDeleteTests : IDisposable
 
     private static ReviewsController CreateController(AppDbContext db, Guid userId)
     {
-        var controller = new ReviewsController(db);
+        var controller = new ReviewsController(new ReviewService(new AppUnitOfWork(db)));
         var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId.ToString()) };
         controller.ControllerContext = new ControllerContext
         {

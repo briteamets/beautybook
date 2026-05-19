@@ -189,4 +189,9 @@
   <data name="BrowseByService" xml:space="preserve"><value>Otsi teenuse järgi</value></data>
   <data name="BrowseByProvider" xml:space="preserve"><value>Otsi spetsialisti järgi</value></data>
   <data name="SeeProviders" xml:space="preserve"><value>Vaata spetsialiste</value></data>
+  <data name="HeroTitle" xml:space="preserve"><value>Broneeri iluteenused enda lähedal</value></data>
+  <data name="HeroSubtitle" xml:space="preserve"><value>Sirvi teenusepakkujaid, võrdle salonge ja kinnita kohtumine mõne sammuga.</value></data>
+  <data name="StepBrowse" xml:space="preserve"><value>Sirvi teenusepakkujaid</value></data>
+  <data name="StepCompare" xml:space="preserve"><value>Võrdle ja vali</value></data>
+  <data name="StepConfirm" xml:space="preserve"><value>Kinnita broneering</value></data>
 </root>

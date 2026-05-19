@@ -1,10 +1,28 @@
 @model HomeIndexViewModel
 
-<h1 class="mb-3">@L["Providers"]</h1>
+<div class="bb-hero">
+    <h1 class="bb-hero-title">@L["HeroTitle"]</h1>
+    <p class="bb-hero-sub">@L["HeroSubtitle"]</p>
+    <div class="bb-search-wrap">
+        <form method="get" asp-action="Index" class="bb-search-bar">
+            <input type="hidden" name="filter"        value="@Model.Filter" />
+            <input type="hidden" name="serviceTypeId" value="@Model.ServiceTypeId" />
+            <i class="ti ti-search bb-search-icon" aria-hidden="true"></i>
+            <input type="text" name="search" value="@Model.Search"
+                   class="bb-search-input" placeholder="@L["SearchByName"]" />
+            <button type="submit" class="bb-search-btn">@L["Search"]</button>
+        </form>
+    </div>
+    <div class="bb-steps">
+        <div class="bb-step"><span class="bb-step-dot bb-dot-pink">1</span>@L["StepBrowse"]</div>
+        <div class="bb-step"><span class="bb-step-dot bb-dot-lavender">2</span>@L["StepCompare"]</div>
+        <div class="bb-step"><span class="bb-step-dot bb-dot-mint">3</span>@L["StepConfirm"]</div>
+    </div>
+</div>
 
 <div class="row g-2 mb-3 align-items-end">
     <div class="col-auto">
-        <div class="btn-group" role="group">
+        <div class="btn-group bb-filter-group" role="group">
             <a href="@Url.Action("Index", "Home", new { serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
                class="btn btn-@(Model.Filter == "all" ? "primary" : "outline-primary")">@L["AllProviders"]</a>
             <a href="@Url.Action("Index", "Home", new { filter = "independent", serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
@@ -29,7 +47,7 @@
 
 @if (Model.ServiceTypes.Any())
 {
-    <div class="d-flex flex-wrap gap-2 mb-3">
+    <div class="d-flex flex-wrap gap-2 mb-3 bb-service-pills">
         <a href="@Url.Action("Index", "Home", new { filter = Model.Filter, search = Model.Search })"
            class="btn btn-sm btn-@(Model.ServiceTypeId == null ? "dark" : "outline-dark")">@L["AllServiceTypes"]</a>
         @foreach (var t in Model.ServiceTypes)
@@ -55,7 +73,7 @@ else
                         <h5 class="card-title">@provider.ProfileName</h5>
                         <p class="card-text text-muted small">@provider.Address</p>
                         <p class="card-text">
-                            <span>&#9733; @provider.AverageRating.ToString("0.0")</span>
+                            <span><span class="bb-rating-star">&#9733;</span> @provider.AverageRating.ToString("0.0")</span>
                             &nbsp;&bull;&nbsp;
                             <span class="text-success">@provider.TodayAvailabilityCount @L["SlotsToday"]</span>
                         </p>
@@ -73,7 +91,7 @@ else
 @if (Model.Salons.Any())
 {
     <hr class="my-4" />
-    <h2 class="mb-3">@L["Salons"]</h2>
+    <h2 class="bb-salons-heading">@L["Salons"]</h2>
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         @foreach (var salon in Model.Salons)
         {

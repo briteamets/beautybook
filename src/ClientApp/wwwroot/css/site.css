@@ -8,10 +8,6 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
 html {
   position: relative;
   min-height: 100%;
@@ -28,4 +24,258 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+/* ── Brand tokens ─────────────────────────────────────── */
+:root {
+  --bb-primary:       #C43670;
+  --bb-primary-dark:  #A02D5E;
+  --bb-primary-light: #F9E0EC;
+  --bb-primary-text:  #7A1F45;
+
+  --bb-amber:         #FFD592;
+  --bb-amber-dark:    #E8B84B;
+  --bb-amber-light:   #FFF5DC;
+  --bb-amber-text:    #7A5500;
+
+  --bb-lavender:      #EDE4FC;
+  --bb-lavender-text: #5B3DAB;
+
+  --bb-mint:          #C8EDE0;
+  --bb-mint-text:     #1B7A57;
+
+  /* Bootstrap primary override */
+  --bs-primary:                #C43670;
+  --bs-primary-rgb:            196, 54, 112;
+  --bs-link-color:             #C43670;
+  --bs-link-hover-color:       #A02D5E;
+  --bs-btn-bg:                 #C43670;
+  --bs-btn-border-color:       #C43670;
+  --bs-btn-hover-bg:           #A02D5E;
+  --bs-btn-hover-border-color: #A02D5E;
+  --bs-btn-active-bg:          #8E2652;
+  --bs-btn-active-border-color:#8E2652;
+  --bs-btn-color:              #C43670;
+  --bs-btn-hover-color:        #fff;
+
+  /* Bootstrap success override */
+  --bs-success:     #1D9E75;
+  --bs-success-rgb: 29, 158, 117;
+}
+
+/* ── Focus ring ───────────────────────────────────────── */
+.btn:focus, .btn:active:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(196, 54, 112, 0.35);
+}
+
+/* ── Navbar ───────────────────────────────────────────── */
+.bb-navbar {
+  background: #fff;
+  border-bottom: 2px solid var(--bb-primary-light);
+  padding: 0 1.5rem;
+}
+.bb-navbar .navbar-brand {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--bb-primary) !important;
+  letter-spacing: -0.3px;
+}
+.bb-navbar .navbar-brand span {
+  color: var(--bb-amber-dark);
+}
+.bb-navbar .nav-link {
+  font-size: 0.875rem;
+  color: #666 !important;
+  padding: 0.5rem 0.75rem;
+}
+.bb-navbar .nav-link:hover, .bb-navbar .nav-link.active {
+  color: var(--bb-primary) !important;
+}
+
+/* ── Hero ─────────────────────────────────────────────── */
+.bb-hero {
+  background: linear-gradient(135deg, #FDF4FA 0%, #F3EFFE 55%, #EDF8F4 100%);
+  border-radius: 1rem;
+  padding: 2.5rem 2rem 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.bb-hero-title {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.25;
+  margin-bottom: 0.5rem;
+}
+.bb-hero-sub {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+.bb-search-wrap {
+  max-width: 480px;
+  margin: 0 auto 1.5rem;
+}
+.bb-search-bar {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1.5px solid var(--bb-primary-light);
+  border-radius: 40px;
+  padding: 6px 6px 6px 16px;
+  gap: 8px;
+}
+.bb-search-icon {
+  font-size: 15px;
+  color: #aaa;
+  flex-shrink: 0;
+}
+.bb-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  background: transparent;
+  color: #1a1a1a;
+  min-width: 0;
+}
+.bb-search-input::placeholder { color: #bbb; }
+.bb-search-btn {
+  background: var(--bb-primary);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 6px 18px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.bb-search-btn:hover { background: var(--bb-primary-dark); }
+.bb-steps {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.bb-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  color: #666;
+}
+.bb-step-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.bb-dot-pink     { background: var(--bb-primary-light); color: var(--bb-primary-text); }
+.bb-dot-lavender { background: var(--bb-lavender);      color: var(--bb-lavender-text); }
+.bb-dot-mint     { background: var(--bb-mint);          color: var(--bb-mint-text); }
+
+/* ── Filter pills ─────────────────────────────────────── */
+.bb-filter-group .btn {
+  border-radius: 20px !important;
+  font-size: 0.8rem;
+  padding: 5px 16px;
+  border-color: var(--bb-primary-light) !important;
+}
+.bb-filter-group .btn-primary {
+  background: var(--bb-primary) !important;
+  color: #fff !important;
+}
+.bb-filter-group .btn-outline-primary {
+  color: var(--bb-primary) !important;
+  background: transparent !important;
+}
+.bb-filter-group .btn-outline-primary:hover {
+  background: var(--bb-primary-light) !important;
+}
+
+/* ── Service type pills ───────────────────────────────── */
+.bb-service-pills .btn-dark {
+  background: var(--bb-primary) !important;
+  border-color: var(--bb-primary) !important;
+  border-radius: 16px !important;
+  font-size: 0.75rem !important;
+  padding: 4px 12px !important;
+}
+.bb-service-pills .btn-outline-dark {
+  color: #555 !important;
+  border-color: #ddd !important;
+  border-radius: 16px !important;
+  font-size: 0.75rem !important;
+  padding: 4px 12px !important;
+  background: transparent !important;
+}
+.bb-service-pills .btn-outline-dark:hover {
+  background: var(--bb-lavender) !important;
+  border-color: var(--bb-lavender-text) !important;
+  color: var(--bb-lavender-text) !important;
+}
+
+/* ── Cards ────────────────────────────────────────────── */
+.card {
+  border: 1px solid #f0e0ea;
+  border-radius: 14px;
+  transition: transform .15s, box-shadow .15s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(196, 54, 112, 0.1);
+}
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.card-footer {
+  background: transparent !important;
+  border-top: 1px solid #f5e8f0;
+  padding: 0.5rem 0.75rem;
+}
+
+/* ── Rating and slots ─────────────────────────────────── */
+.bb-rating-star { color: var(--bb-amber-dark); }
+
+.text-success {
+  color: var(--bb-mint-text) !important;
+  font-weight: 500;
+}
+
+/* ── Salon section ────────────────────────────────────── */
+.bb-salons-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--bb-primary);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Footer ───────────────────────────────────────────── */
+.bb-footer {
+  border-top: 2px solid var(--bb-primary-light);
+  padding: 1rem 0;
+  margin-top: 2rem;
+}
+.bb-footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.bb-footer-brand {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--bb-primary);
+}
+.bb-footer-brand span { color: var(--bb-amber-dark); }
+.bb-footer-copy {
+  font-size: 0.8rem;
+  color: #999;
 }

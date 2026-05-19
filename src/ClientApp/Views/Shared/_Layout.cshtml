@@ -6,15 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@L["AppName"]</title>
     <script type="importmap"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@@2.44.0/tabler-icons.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ClientApp.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-lg bb-navbar">
             <div class="container-fluid">
-                <a class="navbar-brand fw-semibold" asp-area="" asp-controller="Home" asp-action="Index">@L["AppName"]</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Beauty<span>Book</span></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -92,9 +93,10 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="bb-footer">
         <div class="container">
-            &copy; 2026 - @L["AppName"]
+            <span class="bb-footer-brand">Beauty<span>Book</span></span>
+            <span class="bb-footer-copy">&copy; 2026</span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

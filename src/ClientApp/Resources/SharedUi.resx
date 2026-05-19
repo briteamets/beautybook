@@ -189,4 +189,9 @@
   <data name="BrowseByService" xml:space="preserve"><value>Find by service type</value></data>
   <data name="BrowseByProvider" xml:space="preserve"><value>Find by provider</value></data>
   <data name="SeeProviders" xml:space="preserve"><value>See Providers</value></data>
+  <data name="HeroTitle" xml:space="preserve"><value>Book beauty services nearby</value></data>
+  <data name="HeroSubtitle" xml:space="preserve"><value>Browse providers, compare salons, and confirm your appointment in a few steps.</value></data>
+  <data name="StepBrowse" xml:space="preserve"><value>Browse providers</value></data>
+  <data name="StepCompare" xml:space="preserve"><value>Compare &amp; pick</value></data>
+  <data name="StepConfirm" xml:space="preserve"><value>Confirm booking</value></data>
 </root>

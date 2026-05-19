@@ -58,6 +58,8 @@
   <data name="ProfileSetupHint" xml:space="preserve"><value>You don't have a provider profile yet. Fill in the details below and click Save to get started.</value></data>
   <data name="AllProviders" xml:space="preserve"><value>All</value></data>
   <data name="Independent" xml:space="preserve"><value>Independent</value></data>
+  <data name="IndependentProviders" xml:space="preserve"><value>Independent Providers</value></data>
+  <data name="BookViaSalon" xml:space="preserve"><value>Book via Salon</value></data>
   <data name="Salons" xml:space="preserve"><value>Salons</value></data>
   <data name="SlotsToday" xml:space="preserve"><value>slots today</value></data>
   <data name="BookNow" xml:space="preserve"><value>Book Now</value></data>
@@ -107,6 +109,7 @@
   <data name="PayMethodCash" xml:space="preserve"><value>Cash</value></data>
   <data name="PayMethodBank" xml:space="preserve"><value>Bank Transfer</value></data>
   <data name="SalonStaff" xml:space="preserve"><value>Staff</value></data>
+  <data name="OurTeam" xml:space="preserve"><value>Our Team</value></data>
   <data name="NoStaff" xml:space="preserve"><value>No staff members listed.</value></data>
   <data name="StaffOwner" xml:space="preserve"><value>Owner</value></data>
   <data name="StaffEmployee" xml:space="preserve"><value>Employee</value></data>

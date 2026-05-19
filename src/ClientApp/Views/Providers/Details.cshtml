@@ -21,7 +21,7 @@
 @if (Context.Session.IsClient())
 {
     <div class="d-flex gap-3 mb-4 flex-wrap">
-        @if (!Model.IsSalonOwner)
+        @if (!Model.SalonId.HasValue)
         {
             <form asp-controller="Bookings" asp-action="WizardStep1Post" method="post">
                 @Html.AntiForgeryToken()
@@ -29,8 +29,10 @@
                 <button type="submit" class="btn btn-primary btn-lg">@L["BookNow"]</button>
             </form>
         }
-        @if (Model.SalonId.HasValue)
+        else
         {
+            <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
+               class="btn btn-primary btn-lg">@L["BookViaSalon"]</a>
             <a asp-controller="Salons" asp-action="Details" asp-route-id="@Model.SalonId"
                class="btn btn-outline-secondary btn-lg">@L["ViewSalon"]</a>
         }

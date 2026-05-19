@@ -22,22 +22,18 @@
     }
 </dl>
 
-<div class="d-flex gap-3 mb-4 flex-wrap">
-    @if (Context.Session.IsClient())
-    {
+@if (Context.Session.IsClient())
+{
+    <div class="d-flex gap-3 mb-4 flex-wrap">
         <a asp-controller="Bookings" asp-action="ServiceWizard"
            asp-route-salonId="@Model.Id"
            asp-route-salonName="@Model.Name"
            class="btn btn-primary btn-lg">@L["BookNow"]</a>
-    }
-    <button class="btn btn-outline-secondary btn-lg" type="button"
-            data-bs-toggle="collapse" data-bs-target="#staffPanel" aria-expanded="false">
-        @L["SeeProviders"]
-    </button>
-</div>
+    </div>
+}
 
-<div class="collapse" id="staffPanel">
-    <h4 class="mb-3">@L["SalonStaff"]</h4>
+<div>
+    <h4 class="mb-3">@L["OurTeam"]</h4>
     @if (!Model.Staff.Any())
     {
         <p class="text-muted">@L["NoStaff"]</p>

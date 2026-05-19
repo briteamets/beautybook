@@ -30,7 +30,7 @@ public class ProvidersController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var providers = await _providersApiService.GetAllAsync();
+        var providers = await _providersApiService.GetAllAsync(providerType: "independent");
         return View(new ProviderIndexViewModel
         {
             Providers = providers.Select(p => new ProviderListItemViewModel

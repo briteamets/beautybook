@@ -58,6 +58,8 @@
   <data name="ProfileSetupHint" xml:space="preserve"><value>Sul pole veel teenusepakkuja profiili. Täida andmed allpool ja klõpsa Salvesta, et alustada.</value></data>
   <data name="AllProviders" xml:space="preserve"><value>Kõik</value></data>
   <data name="Independent" xml:space="preserve"><value>Sõltumatud</value></data>
+  <data name="IndependentProviders" xml:space="preserve"><value>Sõltumatud teenusepakkujad</value></data>
+  <data name="BookViaSalon" xml:space="preserve"><value>Broneeri salongi kaudu</value></data>
   <data name="Salons" xml:space="preserve"><value>Salongid</value></data>
   <data name="SlotsToday" xml:space="preserve"><value>aega täna</value></data>
   <data name="BookNow" xml:space="preserve"><value>Broneeri nüüd</value></data>
@@ -107,6 +109,7 @@
   <data name="PayMethodCash" xml:space="preserve"><value>Sularaha</value></data>
   <data name="PayMethodBank" xml:space="preserve"><value>Pangaülekanne</value></data>
   <data name="SalonStaff" xml:space="preserve"><value>Personal</value></data>
+  <data name="OurTeam" xml:space="preserve"><value>Meie meeskond</value></data>
   <data name="NoStaff" xml:space="preserve"><value>Personali pole loetletud.</value></data>
   <data name="StaffOwner" xml:space="preserve"><value>Omanik</value></data>
   <data name="StaffEmployee" xml:space="preserve"><value>Töötaja</value></data>

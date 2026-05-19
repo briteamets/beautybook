@@ -1,26 +1,33 @@
 @model LoginViewModel
 
-<h1>@L["Login"]</h1>
+<div class="bb-auth-wrap">
+    <div class="bb-auth-card">
+        <div class="bb-auth-brand">Beauty<span>Book</span></div>
+        <div class="bb-auth-title">@L["Login"]</div>
 
-<form asp-action="Login" method="post" class="mt-3 col-md-6">
-    <input type="hidden" asp-for="ReturnUrl"/>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">@L["Email"]</label>
-        <input asp-for="Email" class="form-control"/>
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label">@L["Password"]</label>
-        <input asp-for="Password" class="form-control"/>
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">@L["Login"]</button>
-</form>
+        <form asp-action="Login" method="post">
+            <input type="hidden" asp-for="ReturnUrl"/>
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-3"></div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label small fw-semibold">@L["Email"]</label>
+                <input asp-for="Email" class="form-control"/>
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label small fw-semibold">@L["Password"]</label>
+                <input asp-for="Password" class="form-control"/>
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-1">@L["Login"]</button>
+        </form>
 
-<div class="mt-3 col-md-6 d-flex gap-2">
-    <a asp-action="Register" class="btn btn-outline-primary flex-grow-1">@L["RegisterAsClient"]</a>
-    <a asp-action="RegisterProvider" class="btn btn-outline-secondary flex-grow-1">@L["RegisterAsProvider"]</a>
+        <div class="bb-auth-footer">
+            @L["NoAccount"]
+            <a asp-action="Register">@L["RegisterAsClient"]</a>
+            &nbsp;·&nbsp;
+            <a asp-action="RegisterProvider">@L["RegisterAsProvider"]</a>
+        </div>
+    </div>
 </div>
 
 @section Scripts {

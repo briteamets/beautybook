@@ -316,6 +316,46 @@ public class UsersController : AdminControllerBase
         return RedirectToAction(nameof(Details), new { id });
     }
 
+    public async Task<IActionResult> Profiles()
+    {
+        var users = await Context.Users.OrderBy(u => u.Email).ToListAsync();
+
+        var providers = await Context.BeautyProviders
+            .Where(p => p.To == null)
+            .Select(p => new { p.UserId, p.Id, p.ProfileName })
+            .ToListAsync();
+
+        var salonOwners = await Context.SalonOwners
+            .Where(so => so.To == null)
+            .Include(so => so.Salon)
+            .ToListAsync();
+
+        var providerByUser = providers.ToDictionary(p => p.UserId);
+        var salonByUser = salonOwners
+            .GroupBy(so => so.UserId)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        var items = new List<AdminProfileMapItem>();
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            providerByUser.TryGetValue(user.Id, out var provider);
+            salonByUser.TryGetValue(user.Id, out var salonOwner);
+            items.Add(new AdminProfileMapItem
+            {
+                UserId = user.Id,
+                Email = user.Email ?? string.Empty,
+                Role = GetPrimaryRole(roles),
+                ProviderProfileName = provider?.ProfileName,
+                ProviderProfileId = provider?.Id,
+                SalonName = salonOwner?.Salon?.Name.Translate(),
+                SalonId = salonOwner?.SalonId
+            });
+        }
+
+        return View(new AdminProfileMapViewModel { Items = items });
+    }
+
     private bool IsCurrentUser(Guid userId)
     {
         var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);

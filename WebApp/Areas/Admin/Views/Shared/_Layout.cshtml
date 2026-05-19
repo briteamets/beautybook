@@ -18,6 +18,7 @@
             <nav class="nav flex-column">
                 <a class="nav-link @(controller == "Dashboard" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">@L["Dashboard"]</a>
                 <a class="nav-link @(controller == "Users" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Users" asp-action="Index">@L["Users"]</a>
+                <a class="nav-link ps-4 small @(controller == "Users" && ViewContext.RouteData.Values["action"]?.ToString() == "Profiles" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Users" asp-action="Profiles">@L["EmailProfileMap"]</a>
                 <a class="nav-link @(controller == "BeautyProviders" ? "fw-bold" : "")" asp-area="Admin" asp-controller="BeautyProviders" asp-action="Index">@L["ServiceProviders"]</a>
                 <a class="nav-link @(controller is "ServiceTypes" or "Services" or "ServiceCategories" ? "fw-bold" : "")" asp-area="Admin" asp-controller="ServiceTypes" asp-action="Index">@L["ServiceCatalog"]</a>
                 <a class="nav-link @(controller == "Bookings" ? "fw-bold" : "")" asp-area="Admin" asp-controller="Bookings" asp-action="Index">@L["Bookings"]</a>

@@ -10,6 +10,7 @@ public class BookingResponse
     public string Status { get; set; } = default!;
     public decimal TotalPrice { get; set; }
     public bool IsPaid { get; set; }
+    public bool HasPayment { get; set; }
     public string? Notes { get; set; }
     public bool HasReview { get; set; }
     public string? ClientName { get; set; }

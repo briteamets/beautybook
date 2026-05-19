@@ -51,6 +51,22 @@ public class AdminUserDetailsViewModel
     public List<string> Roles { get; set; } = new();
 }
 
+public class AdminProfileMapItem
+{
+    public Guid UserId { get; set; }
+    public string Email { get; set; } = default!;
+    public string Role { get; set; } = default!;
+    public string? ProviderProfileName { get; set; }
+    public Guid? ProviderProfileId { get; set; }
+    public string? SalonName { get; set; }
+    public Guid? SalonId { get; set; }
+}
+
+public class AdminProfileMapViewModel
+{
+    public List<AdminProfileMapItem> Items { get; set; } = new();
+}
+
 public class AdminUserEditViewModel
 {
     public Guid Id { get; set; }

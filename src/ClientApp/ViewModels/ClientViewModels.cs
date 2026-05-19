@@ -183,6 +183,7 @@ public class BookingListItemViewModel
     public string Status { get; set; } = default!;
     public decimal TotalPrice { get; set; }
     public bool IsPaid { get; set; }
+    public bool HasPayment { get; set; }
     public bool HasReview { get; set; }
     public string? ErrorMessage { get; set; }
 }
@@ -219,6 +220,7 @@ public class HomeIndexViewModel
     public string? Search { get; set; }
     public ICollection<ServiceTypeOptionViewModel> ServiceTypes { get; set; } = [];
     public ICollection<ProviderListItemViewModel> Providers { get; set; } = [];
+    public ICollection<SalonListItemViewModel> Salons { get; set; } = [];
 }
 
 public class ProviderBookingItemViewModel

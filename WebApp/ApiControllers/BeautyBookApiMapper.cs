@@ -92,6 +92,7 @@ public static class BeautyBookApiMapper
             Status = entity.Status,
             TotalPrice = entity.Service?.Price ?? 0,
             IsPaid = entity.BookingPayments?.Any(bp => bp.Payment?.Status == Payment.StatusPaid) ?? false,
+            HasPayment = entity.BookingPayments?.Any() ?? false,
             Notes = entity.Notes,
             HasReview = entity.Review != null
         };

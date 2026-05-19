@@ -9,8 +9,6 @@
                class="btn btn-@(Model.Filter == "all" ? "primary" : "outline-primary")">@L["AllProviders"]</a>
             <a href="@Url.Action("Index", "Home", new { filter = "independent", serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
                class="btn btn-@(Model.Filter == "independent" ? "primary" : "outline-primary")">@L["Independent"]</a>
-            <a href="@Url.Action("Index", "Home", new { filter = "salon", serviceTypeId = Model.ServiceTypeId, search = Model.Search })"
-               class="btn btn-@(Model.Filter == "salon" ? "primary" : "outline-primary")">@L["Salons"]</a>
         </div>
     </div>
     <div class="col-auto">
@@ -65,6 +63,37 @@ else
                     <div class="card-footer bg-transparent">
                         <a asp-controller="Providers" asp-action="Details" asp-route-id="@provider.Id"
                            class="btn btn-sm btn-outline-primary">@L["Details"]</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.Salons.Any())
+{
+    <hr class="my-4" />
+    <h2 class="mb-3">@L["Salons"]</h2>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var salon in Model.Salons)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(salon.ProfilePictureUrl))
+                    {
+                        <img src="@salon.ProfilePictureUrl" class="card-img-top" alt="@salon.Name"
+                             style="height:180px;object-fit:cover" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@salon.Name</h5>
+                        <p class="card-text text-muted small">@salon.Address</p>
+                        <p class="card-text small">
+                            <span class="text-secondary">@L["SalonStaff"]: @salon.StaffCount</span>
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a asp-controller="Salons" asp-action="Details" asp-route-id="@salon.Id"
+                           class="btn btn-outline-primary btn-sm w-100">@L["Details"]</a>
                     </div>
                 </div>
             </div>

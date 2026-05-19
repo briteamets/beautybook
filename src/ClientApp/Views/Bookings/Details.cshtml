@@ -34,7 +34,7 @@
     </dd>
 </dl>
 
-@if (!Model.IsPaid && Model.Status == "Pending")
+@if (!Model.HasPayment && (Model.Status == "Pending" || Model.Status == "Confirmed"))
 {
     <div class="card mb-3" style="max-width:360px">
         <div class="card-header fw-semibold">@L["PayNow"]</div>

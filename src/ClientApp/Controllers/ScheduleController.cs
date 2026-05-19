@@ -38,6 +38,10 @@ public class ScheduleController : Controller
             return RedirectToAction("EditProfile", "Providers");
         }
 
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        try { await _scheduleApi.GenerateSlotsAsync(today, today.AddDays(56)); }
+        catch (HttpRequestException) { }
+
         var model = await BuildWeekViewModelAsync(provider, weekStart);
         return View(model);
     }

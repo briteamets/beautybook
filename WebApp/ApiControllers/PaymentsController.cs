@@ -62,15 +62,16 @@ public class PaymentsController : BaseApiController
             return ApiError(HttpStatusCode.BadRequest, "Payment already exists for one or more bookings.");
         }
 
+        var isCash = string.Equals(request.PaymentMethod, "Cash", StringComparison.OrdinalIgnoreCase);
         var payment = new Payment
         {
             UserId = userId,
             Amount = bookings.Sum(b => b.Service?.Price ?? 0),
             Currency = "EUR",
-            Status = Payment.StatusPaid,
+            Status = isCash ? Payment.StatusPending : Payment.StatusPaid,
             PaymentMethod = request.PaymentMethod,
             TransactionId = Guid.NewGuid().ToString("N"),
-            PaidAt = DateTime.UtcNow,
+            PaidAt = isCash ? null : DateTime.UtcNow,
             From = DateTime.UtcNow
         };
 
@@ -81,9 +82,6 @@ public class PaymentsController : BaseApiController
 
         foreach (var booking in bookings)
         {
-            var oldStatus = booking.Status;
-            booking.Status = Booking.StatusConfirmed;
-
             _context.BookingPayments.Add(new BookingPayment
             {
                 BookingId = booking.Id,
@@ -94,11 +92,11 @@ public class PaymentsController : BaseApiController
             _context.BookingHistories.Add(new BookingHistory
             {
                 BookingId = booking.Id,
-                OldStatus = oldStatus,
-                NewStatus = Booking.StatusConfirmed,
+                OldStatus = booking.Status,
+                NewStatus = booking.Status,
                 UserId = userId,
                 ChangedAt = DateTime.UtcNow,
-                Reason = "Payment completed",
+                Reason = isCash ? "Cash payment registered — to be collected on site" : "Payment registered",
                 From = DateTime.UtcNow
             });
 
@@ -106,9 +104,9 @@ public class PaymentsController : BaseApiController
             {
                 UserId = userId,
                 BookingId = booking.Id,
-                Type = Notification.TypeBookingConfirmed,
-                Title = "Booking confirmed",
-                Body = "Your booking has been confirmed.",
+                Type = Notification.TypeBookingRequested,
+                Title = "Booking request received",
+                Body = "Your booking request has been received and is awaiting provider confirmation.",
                 IsRead = false,
                 From = DateTime.UtcNow
             });

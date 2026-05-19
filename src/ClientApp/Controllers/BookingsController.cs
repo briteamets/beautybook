@@ -490,6 +490,7 @@ public class BookingsController : Controller
         Status = booking.Status,
         TotalPrice = booking.TotalPrice,
         IsPaid = booking.IsPaid,
+        HasPayment = booking.HasPayment,
         HasReview = booking.HasReview
     };
 }

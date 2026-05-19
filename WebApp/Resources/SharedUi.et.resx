@@ -133,6 +133,9 @@
   <data name="ProviderAddedToFavorites" xml:space="preserve"><value>Teenusepakkuja lisati lemmikutesse.</value></data>
   <data name="FavoriteRemoved" xml:space="preserve"><value>Lemmik eemaldati.</value></data>
   <data name="NoProviderProfile" xml:space="preserve"><value>Praegusele kasutajale ei leitud teenusepakkuja profiili.</value></data>
+  <data name="EmailProfileMap" xml:space="preserve"><value>E-post → Profiil</value></data>
+  <data name="EmailProfileMapHelp" xml:space="preserve"><value>Näitab, milline e-posti konto on seotud millise teenusepakkuja või salongiga.</value></data>
+  <data name="ProviderProfile" xml:space="preserve"><value>Teenusepakkuja profiil</value></data>
   <data name="SelectedCategoryNotFound" xml:space="preserve"><value>Valitud kategooriat ei leitud.</value></data>
   <data name="ServiceAdded" xml:space="preserve"><value>Teenus lisati.</value></data>
   <data name="ServiceDeactivated" xml:space="preserve"><value>Teenus deaktiveeriti.</value></data>

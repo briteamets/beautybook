@@ -133,6 +133,9 @@
   <data name="ProviderAddedToFavorites" xml:space="preserve"><value>Provider added to favorites.</value></data>
   <data name="FavoriteRemoved" xml:space="preserve"><value>Favorite removed.</value></data>
   <data name="NoProviderProfile" xml:space="preserve"><value>No provider profile found for the current user.</value></data>
+  <data name="EmailProfileMap" xml:space="preserve"><value>Email → Profile</value></data>
+  <data name="EmailProfileMapHelp" xml:space="preserve"><value>Shows which email account is linked to which provider or salon profile.</value></data>
+  <data name="ProviderProfile" xml:space="preserve"><value>Provider Profile</value></data>
   <data name="SelectedCategoryNotFound" xml:space="preserve"><value>Selected category was not found.</value></data>
   <data name="ServiceAdded" xml:space="preserve"><value>Service added.</value></data>
   <data name="ServiceDeactivated" xml:space="preserve"><value>Service deactivated.</value></data>

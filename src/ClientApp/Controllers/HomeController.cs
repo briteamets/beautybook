@@ -11,19 +11,38 @@ public class HomeController : Controller
 {
     private readonly ProvidersApiService _providersApiService;
     private readonly ServiceTypesApiService _serviceTypesApiService;
+    private readonly SalonsApiService _salonsApiService;
 
-    public HomeController(ProvidersApiService providersApiService, ServiceTypesApiService serviceTypesApiService)
+    public HomeController(
+        ProvidersApiService providersApiService,
+        ServiceTypesApiService serviceTypesApiService,
+        SalonsApiService salonsApiService)
     {
         _providersApiService = providersApiService;
         _serviceTypesApiService = serviceTypesApiService;
+        _salonsApiService = salonsApiService;
     }
 
     public async Task<IActionResult> Index(string? filter = null, Guid? serviceTypeId = null, string? search = null)
     {
-        var normalizedFilter = filter is "independent" or "salon" ? filter : null;
-        var providers = await _providersApiService.GetAllAsync(normalizedFilter, serviceTypeId, search);
-        var serviceTypes = await _serviceTypesApiService.GetAsync();
+        var normalizedFilter = filter == "independent" ? "independent" : null;
+        var providersTask = _providersApiService.GetAllAsync(normalizedFilter, serviceTypeId, search);
+        var serviceTypesTask = _serviceTypesApiService.GetAsync();
+
+        ICollection<App.DTO.v1.SalonResponse> salons;
+        try
+        {
+            salons = await _salonsApiService.GetAllAsync();
+        }
+        catch (HttpRequestException)
+        {
+            salons = [];
+        }
+
+        var providers = await providersTask;
+        var serviceTypes = await serviceTypesTask;
         var lang = System.Threading.Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName;
+
         return View(new HomeIndexViewModel
         {
             Filter = normalizedFilter ?? "all",
@@ -41,6 +60,14 @@ public class HomeController : Controller
                 Address = p.Address,
                 AverageRating = p.AverageRating,
                 TodayAvailabilityCount = p.TodayAvailability.Count
+            }).ToList(),
+            Salons = salons.Select(s => new SalonListItemViewModel
+            {
+                Id = s.Id,
+                Name = s.Name,
+                Address = s.Address,
+                ProfilePictureUrl = s.ProfilePictureUrl,
+                StaffCount = s.StaffMembers.Count
             }).ToList()
         });
     }

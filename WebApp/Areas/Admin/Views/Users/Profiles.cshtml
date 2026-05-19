@@ -1,0 +1,68 @@
+@model AdminProfileMapViewModel
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">@L["EmailProfileMap"]</h1>
+        <p class="text-muted mb-0">@L["EmailProfileMapHelp"]</p>
+    </div>
+    <span class="badge bg-secondary">@Model.Items.Count</span>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover mb-0">
+            <thead>
+            <tr>
+                <th>@L["Email"]</th>
+                <th>@L["Role"]</th>
+                <th>@L["ProviderProfile"]</th>
+                <th>@L["Salon"]</th>
+                <th class="text-end">@L["Actions"]</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.Email</td>
+                    <td>
+                        <span class="badge @(item.Role switch {
+                            "Admin" => "bg-danger",
+                            "ServiceProvider" => "bg-primary",
+                            "SalonOwner" => "bg-warning text-dark",
+                            "Client" => "bg-success",
+                            _ => "bg-secondary"
+                        })">@item.Role</span>
+                    </td>
+                    <td>
+                        @if (item.ProviderProfileId.HasValue)
+                        {
+                            <a asp-area="Admin" asp-controller="BeautyProviders" asp-action="Details"
+                               asp-route-id="@item.ProviderProfileId">@item.ProviderProfileName</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.SalonId.HasValue)
+                        {
+                            <a asp-area="Admin" asp-controller="Salons" asp-action="Details"
+                               asp-route-id="@item.SalonId">@item.SalonName</a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Details"
+                           asp-route-id="@item.UserId">@L["Details"]</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

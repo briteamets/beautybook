@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import i18n from '@/i18n'
 
 const httpClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -8,6 +9,7 @@ const httpClient = axios.create({
 httpClient.interceptors.request.use((config) => {
   const auth = useAuthStore()
   if (auth.jwt) config.headers.Authorization = `Bearer ${auth.jwt}`
+  config.headers['Accept-Language'] = i18n.global.locale.value
   return config
 })
 

@@ -37,3 +37,15 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+**/bin/
+**/obj/
+**/out/
+.git/
+.idea/
+.vs/
+*.user
+*.suo
+node_modules/
+**/node_modules/
+vue-client/node_modules/

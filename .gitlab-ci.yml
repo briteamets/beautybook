@@ -1,25 +1,5 @@
 stages:
-  - build
   - deploy
-
-vue-client-build:
-  stage: build
-  tags:
-    - shared
-  only:
-    - main
-  before_script:
-    - docker run --rm -v "$CI_PROJECT_DIR/vue-client:/app" node:22-alpine sh -c "rm -rf /app/node_modules" 2>/dev/null || true
-  script:
-    - docker build --target build -t vue-client-build-$CI_JOB_ID vue-client/
-    - container=$(docker create vue-client-build-$CI_JOB_ID)
-    - docker cp $container:/app/dist vue-client/dist
-    - docker rm $container
-    - docker rmi vue-client-build-$CI_JOB_ID
-  artifacts:
-    paths:
-      - vue-client/dist/
-    expire_in: 1 hour
 
 deploy:
   stage: deploy
@@ -35,7 +15,7 @@ deploy:
     - test -f docker-compose.yml
     - test -f WebApp/Dockerfile
     - test -f src/ClientApp/Dockerfile
-    - docker compose -f docker-compose.yml config
+    - docker compose -f docker-compose.yml -p beautybook config
     - docker compose -f docker-compose.yml -p beautybook pull db
-    - docker compose -f docker-compose.yml -p beautybook build --no-cache --progress=plain 2>&1
-    - docker compose -f docker-compose.yml -p beautybook up --remove-orphans --detach || (docker compose -f docker-compose.yml -p beautybook logs --tail=200 db backend client-app && false)
+    - docker compose -f docker-compose.yml -p beautybook build --no-cache --progress=plain
+    - docker compose -f docker-compose.yml -p beautybook up --remove-orphans --detach

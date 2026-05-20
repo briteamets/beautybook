@@ -48,7 +48,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
-      ApiBaseUrl: http://webapp:8080/
+      Api__BaseUrl: http://webapp:8080/
       TZ: Europe/Tallinn
     ports:
       - "8081:8080"

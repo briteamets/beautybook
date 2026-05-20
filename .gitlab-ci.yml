@@ -5,6 +5,8 @@ stages:
 vue-client-build:
   stage: build
   image: node:22-alpine
+  tags:
+    - shared
   only:
     - main
   cache:

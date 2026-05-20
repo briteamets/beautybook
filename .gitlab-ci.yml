@@ -10,6 +10,7 @@ vue-client-build:
     - main
   script:
     - docker run --rm
+        --user "$(id -u):$(id -g)"
         -v "$CI_PROJECT_DIR/vue-client:/app"
         -w /app
         node:22-alpine

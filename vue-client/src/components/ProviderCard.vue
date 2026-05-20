@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n'
 import type { IBeautyProvider } from '@/types/IBeautyProvider'
 import RatingStars from './RatingStars.vue'
 
-defineProps<{ provider: IBeautyProvider }>()
+defineProps<{ provider: IBeautyProvider; isFavorited?: boolean }>()
 const emit = defineEmits<{ (e: 'favorite', id: string): void }>()
 const { t } = useI18n()
 </script>
@@ -37,8 +37,13 @@ const { t } = useI18n()
         >
           {{ t('providers.bookNow') }}
         </RouterLink>
-        <button class="btn btn-outline-danger btn-sm" @click="emit('favorite', provider.id)" :title="t('providers.addFavorite')">
-          ♡
+        <button
+          class="btn btn-sm"
+          :class="isFavorited ? 'btn-danger' : 'btn-outline-danger'"
+          :title="isFavorited ? t('providers.removeFavorite') : t('providers.addFavorite')"
+          @click="emit('favorite', provider.id)"
+        >
+          {{ isFavorited ? '♥' : '♡' }}
         </button>
       </div>
     </div>

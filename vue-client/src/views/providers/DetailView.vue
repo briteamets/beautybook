@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ProvidersService } from '@/services/ProvidersService'
@@ -14,6 +14,7 @@ import ErrorAlert from '@/components/ErrorAlert.vue'
 import RatingStars from '@/components/RatingStars.vue'
 import type { IService } from '@/types/IService'
 import type { IAvailableSlot } from '@/types/IAvailableSlot'
+import type { IFavorite } from '@/types/IFavorite'
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
@@ -36,6 +37,30 @@ const selectedDate = ref('')
 const slots = ref<IAvailableSlot[]>([])
 const slotsLoading = ref(false)
 const slotsError = ref<string | null>(null)
+
+const favorites = ref<IFavorite[]>([])
+const favError = ref<string | null>(null)
+const currentFavorite = computed(() => favorites.value.find((f) => f.providerId === props.id))
+
+async function loadFavorites() {
+  if (!auth.isAuthenticated) return
+  const result = await FavoritesService.getAll()
+  if (result.data) favorites.value = result.data
+}
+
+async function toggleFavorite() {
+  if (!auth.isAuthenticated) return
+  favError.value = null
+  const fav = currentFavorite.value
+  const result = fav
+    ? await FavoritesService.remove(fav.id)
+    : await FavoritesService.create({ beautyProviderId: props.id })
+  if (result.errors) {
+    favError.value = result.errors.join(', ')
+  } else {
+    await loadFavorites()
+  }
+}
 
 async function loadSlots() {
   if (!selectedService.value || !selectedDate.value) return
@@ -76,17 +101,13 @@ function selectSlot(slot: IAvailableSlot) {
   })
 }
 
-async function addFavorite() {
-  if (!auth.isAuthenticated) return
-  await FavoritesService.create({ beautyProviderId: props.id })
-}
 
 onMounted(async () => {
-  await Promise.all([loadProvider(), loadServices(), loadReviews()])
+  await Promise.all([loadProvider(), loadServices(), loadReviews(), loadFavorites()])
 })
 
 watch(() => props.id, async () => {
-  await Promise.all([loadProvider(), loadServices(), loadReviews()])
+  await Promise.all([loadProvider(), loadServices(), loadReviews(), loadFavorites()])
   selectedService.value = null
   selectedDate.value = ''
   slots.value = []
@@ -125,7 +146,18 @@ function serviceName(s: IService) {
                 <span class="text-muted">{{ provider.averageRating.toFixed(1) }} ({{ provider.reviewCount }} {{ t('providers.reviews') }})</span>
               </div>
             </div>
-            <button v-if="auth.isAuthenticated && auth.hasRole('Client')" class="btn btn-outline-danger" @click="addFavorite">♡ {{ t('providers.addFavorite') }}</button>
+            <div>
+              <div v-if="favError" class="text-danger small mb-1">{{ favError }}</div>
+              <button
+                v-if="auth.isAuthenticated && auth.hasRole('Client')"
+                class="btn"
+                :class="currentFavorite ? 'btn-danger' : 'btn-outline-danger'"
+                @click="toggleFavorite"
+              >
+                {{ currentFavorite ? '♥' : '♡' }}
+                {{ currentFavorite ? t('providers.removeFavorite') : t('providers.addFavorite') }}
+              </button>
+            </div>
           </div>
           <p v-if="provider.bio" class="mt-3">{{ provider.bio }}</p>
         </div>

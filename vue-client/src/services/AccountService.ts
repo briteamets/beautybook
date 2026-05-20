@@ -50,9 +50,13 @@ export const AccountService = {
     }
   },
 
-  async logout(refreshToken: string): Promise<IResultObject<void>> {
+  async logout(refreshToken: string, jwt?: string): Promise<IResultObject<void>> {
     try {
-      await accountClient.post('identity/account/Logout', { refreshToken })
+      await accountClient.post(
+        'identity/account/Logout',
+        { refreshToken },
+        jwt ? { headers: { Authorization: `Bearer ${jwt}` } } : undefined,
+      )
       return {}
     } catch (e) {
       return { errors: extractErrors(e) }

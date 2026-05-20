@@ -46,3 +46,16 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Run E2E Tests with [Playwright](https://playwright.dev/)
+
+```sh
+npx playwright install --with-deps chromium
+npm run test:e2e
+```
+
+## Development — CORS
+
+The Vue dev server runs on `http://localhost:5173` and the ASP.NET Core backend on `http://localhost:5065`.
+CORS is configured in the backend (`WebApp/Program.cs`) to allow this origin.
+Set `VITE_API_BASE_URL=http://localhost:5065/api/v1/` in a `.env.local` file (git-ignored) to point the client at your local backend.

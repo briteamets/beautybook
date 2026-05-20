@@ -18,5 +18,9 @@ export const useNotificationsStore = defineStore('notifications', () => {
     if (unreadCount.value > 0) unreadCount.value--
   }
 
-  return { unreadCount, hasUnread, fetchUnreadCount, decrement }
+  function reset() {
+    unreadCount.value = 0
+  }
+
+  return { unreadCount, hasUnread, fetchUnreadCount, decrement, reset }
 })

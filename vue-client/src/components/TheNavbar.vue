@@ -2,16 +2,20 @@
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useRouter } from 'vue-router'
-import { onMounted } from 'vue'
+import { watch } from 'vue'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
 const auth = useAuthStore()
 const notif = useNotificationsStore()
 const router = useRouter()
 
-onMounted(async () => {
-  if (auth.isAuthenticated) await notif.fetchUnreadCount()
-})
+watch(
+  () => auth.isAuthenticated,
+  async (authenticated) => {
+    if (authenticated) await notif.fetchUnreadCount()
+  },
+  { immediate: true },
+)
 
 async function logout() {
   await auth.logoutAsync()

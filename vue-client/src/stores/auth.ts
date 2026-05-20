@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { AccountService } from '@/services/AccountService'
+import { useNotificationsStore } from '@/stores/notifications'
 import type { IRegisterInfo } from '@/types/IRegisterInfo'
 
 function parseRoles(jwt: string): string[] {
@@ -81,8 +82,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function logoutAsync(): Promise<void> {
     if (refreshToken.value) {
-      await AccountService.logout(refreshToken.value)
+      await AccountService.logout(refreshToken.value, jwt.value)
     }
+    useNotificationsStore().reset()
     clear()
   }
 

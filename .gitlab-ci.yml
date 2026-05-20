@@ -1,5 +1,25 @@
 stages:
+  - build
   - deploy
+
+vue-client-build:
+  stage: build
+  image: node:22-alpine
+  only:
+    - main
+  cache:
+    key: vue-client-$CI_COMMIT_REF_SLUG
+    paths:
+      - vue-client/node_modules/
+  script:
+    - cd vue-client
+    - npm ci
+    - npm run type-check
+    - npm run build
+  artifacts:
+    paths:
+      - vue-client/dist/
+    expire_in: 1 hour
 
 deploy:
   stage: deploy

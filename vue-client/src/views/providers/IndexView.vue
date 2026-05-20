@@ -11,6 +11,7 @@ import ProviderCard from '@/components/ProviderCard.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import ErrorAlert from '@/components/ErrorAlert.vue'
 import type { IServiceType } from '@/types/IServiceType'
+import type { IFavorite } from '@/types/IFavorite'
 
 const { t } = useI18n()
 const auth = useAuthStore()
@@ -43,13 +44,31 @@ watch(search, () => {
 })
 watch([categoryId, serviceTypeId, providerType], () => loadProviders())
 
+const favorites = ref<IFavorite[]>([])
+
+async function loadFavorites() {
+  if (!auth.isAuthenticated) return
+  const result = await FavoritesService.getAll()
+  if (result.data) favorites.value = result.data
+}
+
+function isFavorited(providerId: string): boolean {
+  return favorites.value.some((f) => f.providerId === providerId)
+}
+
 async function toggleFavorite(providerId: string) {
   if (!auth.isAuthenticated) return
-  await FavoritesService.create({ beautyProviderId: providerId })
+  const fav = favorites.value.find((f) => f.providerId === providerId)
+  if (fav) {
+    await FavoritesService.remove(fav.id)
+  } else {
+    await FavoritesService.create({ beautyProviderId: providerId })
+  }
+  await loadFavorites()
 }
 
 onMounted(async () => {
-  await Promise.all([loadCats(), loadTypes(), loadProviders()])
+  await Promise.all([loadCats(), loadTypes(), loadProviders(), loadFavorites()])
 })
 </script>
 
@@ -90,11 +109,11 @@ onMounted(async () => {
             <label for="anyType" class="form-check-label">{{ t('providers.any') }}</label>
           </div>
           <div class="form-check">
-            <input id="indType" v-model="providerType" type="radio" value="Independent" class="form-check-input" />
+            <input id="indType" v-model="providerType" type="radio" value="independent" class="form-check-input" />
             <label for="indType" class="form-check-label">{{ t('providers.independent') }}</label>
           </div>
           <div class="form-check">
-            <input id="salonType" v-model="providerType" type="radio" value="SalonBased" class="form-check-input" />
+            <input id="salonType" v-model="providerType" type="radio" value="salon" class="form-check-input" />
             <label for="salonType" class="form-check-label">{{ t('providers.salonBased') }}</label>
           </div>
         </div>
@@ -105,7 +124,7 @@ onMounted(async () => {
     <ErrorAlert v-else-if="error" :errors="[error]" />
     <div v-else class="row g-3">
       <div v-for="p in providers ?? []" :key="p.id" class="col-sm-6 col-lg-4">
-        <ProviderCard :provider="p" @favorite="toggleFavorite" />
+        <ProviderCard :provider="p" :is-favorited="isFavorited(p.id)" @favorite="toggleFavorite" />
       </div>
       <div v-if="!(providers ?? []).length" class="text-muted">{{ t('providers.noProviders') }}</div>
     </div>

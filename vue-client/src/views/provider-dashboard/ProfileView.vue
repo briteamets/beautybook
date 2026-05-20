@@ -58,7 +58,7 @@ async function submit() {
     <LoadingSpinner v-if="isLoading" />
     <div v-else>
       <ErrorAlert v-if="errors.length" :errors="errors" />
-      <div v-if="success" class="alert alert-success">{{ t('common.save') }}d!</div>
+      <div v-if="success" class="alert alert-success">{{ t('common.saved') }}</div>
       <form @submit.prevent="submit">
         <div class="form-floating mb-3">
           <input id="pname" v-model="profileName" type="text" class="form-control" placeholder="Name" required />

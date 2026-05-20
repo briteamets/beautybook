@@ -44,6 +44,7 @@ export default {
     no: 'Ei',
     noData: 'Andmed puuduvad.',
     error: 'Ilmnes viga.',
+    saved: 'Salvestatud!',
     search: 'Otsi',
     all: 'Kõik',
     active: 'Aktiivne',
@@ -95,6 +96,9 @@ export default {
     selectSlot: 'Vali ajavahemik',
     notesPlaceholder: 'Märkused teenusepakkujale…',
     confirmBooking: 'Kinnita broneering',
+    reviewSubmitted: 'Arvustus esitatud.',
+    noMatchingSlot: 'Sobivat ajavahemikku ei leitud. Palun mine tagasi ja vali uuesti.',
+    cancelError: 'Broneeringu tühistamine ebaõnnestus.',
   },
   reviews: {
     title: 'Arvustused',

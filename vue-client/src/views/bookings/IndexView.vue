@@ -11,6 +11,7 @@ const { t, locale } = useI18n()
 const { data: bookings, isLoading, error, execute } = useApi(() => BookingsService.getAll())
 
 const activeTab = ref<'upcoming' | 'past' | 'cancelled'>('upcoming')
+const cancelError = ref<string | null>(null)
 
 const filtered = computed(() => {
   const now = new Date()
@@ -32,8 +33,10 @@ function fmtDate(iso: string) {
 async function cancel(id: string) {
   if (!confirm(t('bookings.confirmCancel'))) return
   const reason = prompt(t('bookings.cancelReason')) ?? undefined
-  await BookingsService.cancel(id, { reason })
-  execute()
+  cancelError.value = null
+  const result = await BookingsService.cancel(id, { reason })
+  if (result.errors) cancelError.value = result.errors.join(', ')
+  else execute()
 }
 
 onMounted(execute)
@@ -63,7 +66,8 @@ onMounted(execute)
 
     <LoadingSpinner v-if="isLoading" />
     <ErrorAlert v-else-if="error" :errors="[error]" />
-    <div v-else>
+    <ErrorAlert v-if="cancelError" :errors="[cancelError]" />
+    <div v-if="!isLoading && !error">
       <div v-if="!filtered.length" class="text-muted">{{ t('bookings.noBookings') }}</div>
       <div class="table-responsive" v-else>
         <table class="table table-hover align-middle">

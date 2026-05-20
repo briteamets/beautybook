@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ServicesService } from '@/services/ServicesService'
 import { useApi } from '@/composables/useApi'
@@ -10,11 +10,14 @@ import ErrorAlert from '@/components/ErrorAlert.vue'
 const { t } = useI18n()
 const localeText = useLocaleText()
 const { data: services, isLoading, error, execute } = useApi(() => ServicesService.getMine())
+const removeError = ref<string | null>(null)
 
 async function remove(id: string) {
   if (!confirm(t('providerDashboard.confirmDelete'))) return
-  await ServicesService.remove(id)
-  execute()
+  removeError.value = null
+  const result = await ServicesService.remove(id)
+  if (result.errors) removeError.value = result.errors.join(', ')
+  else execute()
 }
 
 onMounted(execute)
@@ -30,7 +33,8 @@ onMounted(execute)
     </div>
     <LoadingSpinner v-if="isLoading" />
     <ErrorAlert v-else-if="error" :errors="[error]" />
-    <div v-else>
+    <ErrorAlert v-if="removeError" :errors="[removeError]" />
+    <div v-if="!isLoading && !error">
       <p v-if="!(services ?? []).length" class="text-muted">{{ t('common.noData') }}</p>
       <table v-else class="table table-hover align-middle">
         <thead class="table-light">

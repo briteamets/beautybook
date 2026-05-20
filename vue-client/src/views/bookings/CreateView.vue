@@ -82,7 +82,7 @@ async function submit() {
       </dl>
 
       <div v-if="!availability" class="alert alert-warning">
-        No matching availability slot found. Please go back and select a slot.
+        {{ t('bookings.noMatchingSlot') }}
       </div>
 
       <form @submit.prevent="submit">

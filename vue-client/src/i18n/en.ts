@@ -44,6 +44,7 @@ export default {
     no: 'No',
     noData: 'No data available.',
     error: 'An error occurred.',
+    saved: 'Saved!',
     search: 'Search',
     all: 'All',
     active: 'Active',
@@ -95,6 +96,9 @@ export default {
     selectSlot: 'Select a time slot',
     notesPlaceholder: 'Any notes for the provider…',
     confirmBooking: 'Confirm Booking',
+    reviewSubmitted: 'Review submitted.',
+    noMatchingSlot: 'No available slot found. Please go back and choose again.',
+    cancelError: 'Failed to cancel booking.',
   },
   reviews: {
     title: 'Reviews',

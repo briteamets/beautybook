@@ -112,7 +112,7 @@ watch(() => props.id, execute)
           </button>
         </form>
       </div>
-      <div v-if="reviewDone" class="alert alert-success">Review submitted!</div>
+      <div v-if="reviewDone" class="alert alert-success">{{ t('bookings.reviewSubmitted') }}</div>
 
       <!-- Pay -->
       <RouterLink

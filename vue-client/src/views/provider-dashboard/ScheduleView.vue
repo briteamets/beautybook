@@ -81,7 +81,7 @@ async function generateSlots() {
     <div v-else>
       <!-- Weekly schedule -->
       <ErrorAlert v-if="saveErrors.length" :errors="saveErrors" />
-      <div v-if="scheduleSuccess" class="alert alert-success">Saved!</div>
+      <div v-if="scheduleSuccess" class="alert alert-success">{{ t('common.saved') }}</div>
       <div class="table-responsive mb-3">
         <table class="table align-middle">
           <thead class="table-light">
@@ -117,7 +117,7 @@ async function generateSlots() {
 
       <!-- Breaks -->
       <h4>{{ t('schedule.breaks') }}</h4>
-      <div v-if="breaksSuccess" class="alert alert-success">Saved!</div>
+      <div v-if="breaksSuccess" class="alert alert-success">{{ t('common.saved') }}</div>
       <div v-for="(brk, i) in breaks" :key="i" class="row g-2 align-items-end mb-2">
         <div class="col-2">
           <label class="form-label small">{{ t('schedule.day') }}</label>

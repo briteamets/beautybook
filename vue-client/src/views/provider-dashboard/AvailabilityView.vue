@@ -20,6 +20,7 @@ const addStart = ref('09:00')
 const addEnd = ref('10:00')
 const addErrors = ref<string[]>([])
 const addLoading = ref(false)
+const deleteError = ref<string | null>(null)
 
 onMounted(async () => {
   const result = await ProvidersService.getMine()
@@ -31,8 +32,10 @@ watch(selectedDate, loadSlots)
 
 async function deleteSlot(id: string) {
   if (!confirm(t('availability.confirmDelete'))) return
-  await AvailabilityService.remove(id)
-  loadSlots()
+  deleteError.value = null
+  const result = await AvailabilityService.remove(id)
+  if (result.errors) deleteError.value = result.errors.join(', ')
+  else loadSlots()
 }
 
 async function addSlot() {
@@ -61,7 +64,8 @@ async function addSlot() {
 
     <LoadingSpinner v-if="isLoading" />
     <ErrorAlert v-else-if="error" :errors="[error]" />
-    <div v-else class="mb-4">
+    <ErrorAlert v-if="deleteError" :errors="[deleteError]" />
+    <div v-if="!isLoading && !error" class="mb-4">
       <p v-if="!(slots ?? []).length" class="text-muted">{{ t('availability.noSlots') }}</p>
       <div class="list-group" style="max-width:500px">
         <div

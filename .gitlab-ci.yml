@@ -4,20 +4,16 @@ stages:
 
 vue-client-build:
   stage: build
-  image: node:22-alpine
   tags:
     - shared
   only:
     - main
-  cache:
-    key: vue-client-$CI_COMMIT_REF_SLUG
-    paths:
-      - vue-client/node_modules/
   script:
-    - cd vue-client
-    - npm ci
-    - npm run type-check
-    - npm run build
+    - docker run --rm
+        -v "$CI_PROJECT_DIR/vue-client:/app"
+        -w /app
+        node:22-alpine
+        sh -c "npm ci && npm run type-check && npm run build"
   artifacts:
     paths:
       - vue-client/dist/

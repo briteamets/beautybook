@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:16
+    restart: unless-stopped
     environment:
       POSTGRES_DB: beautybook
       POSTGRES_USER: beautybook
@@ -8,43 +9,59 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U beautybook"]
+      test: ["CMD-SHELL", "pg_isready -U beautybook -d beautybook"]
       interval: 5s
-      retries: 5
+      timeout: 5s
+      retries: 30
 
-  backend:
+  webapp:
     build:
       context: .
       dockerfile: WebApp/Dockerfile
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=beautybook;Username=beautybook;Password=${DB_PASSWORD:?DB_PASSWORD is required}
       JWT__Key: ${JWT_KEY:?JWT_KEY is required}
       JWT__Issuer: beautybook-api
       JWT__Audience: beautybook-client
       JWT__ExpiresInSeconds: 3600
-      Cors__ClientOrigins__0: http://localhost:8081
-      Cors__ClientOrigins__1: http://client-app:8081
-      ASPNETCORE_URLS: http://+:8080
       DataInitialization__MigrateDatabase: "true"
       DataInitialization__SeedIdentity: "true"
       DataInitialization__SeedData: "true"
+      Cors__ClientOrigins__0: http://localhost:8081
+      Cors__ClientOrigins__1: http://localhost:8082
     ports:
       - "82:8080"
 
-  client-app:
+  clientapp:
     build:
       context: .
       dockerfile: src/ClientApp/Dockerfile
+    restart: unless-stopped
     depends_on:
-      - backend
+      - webapp
     environment:
-      Api__BaseUrl: http://backend:8080
-      ASPNETCORE_URLS: http://+:8081
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ApiBaseUrl: http://webapp:8080/
+      TZ: Europe/Tallinn
     ports:
-      - "8081:8081"
+      - "8081:8080"
+
+  vue-client:
+    build:
+      context: ./vue-client
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - webapp
+    ports:
+      - "8082:80"
 
 volumes:
   pgdata:

@@ -15,7 +15,8 @@ deploy:
     - test -f docker-compose.yml
     - test -f WebApp/Dockerfile
     - test -f src/ClientApp/Dockerfile
+    - test -f vue-client/Dockerfile
     - docker compose -f docker-compose.yml -p beautybook config
     - docker compose -f docker-compose.yml -p beautybook pull db
     - docker compose -f docker-compose.yml -p beautybook build --no-cache --progress=plain
-    - docker compose -f docker-compose.yml -p beautybook up --remove-orphans --detach
+    - docker compose -f docker-compose.yml -p beautybook up --remove-orphans --detach || (docker compose -f docker-compose.yml -p beautybook logs --tail=200 db webapp clientapp vue-client && false)

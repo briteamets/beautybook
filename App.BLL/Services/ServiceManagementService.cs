@@ -14,6 +14,12 @@ public class ServiceManagementService : IServiceManagementService
         _uow = uow;
     }
 
+    public async Task<Service?> GetByIdAsync(Guid id)
+    {
+        try { return await _uow.Services.GetByIdWithIncludesAsync(id); }
+        catch { return null; }
+    }
+
     public Task<IEnumerable<Service>> GetPublicAsync(Guid? providerId, Guid? categoryId, Guid? serviceTypeId) =>
         _uow.Services.GetPublicAsync(providerId, categoryId, serviceTypeId);
 

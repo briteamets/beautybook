@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { BookingsService } from '@/services/BookingsService'
 import { useApi } from '@/composables/useApi'
@@ -10,6 +10,9 @@ import type { BookingStatus } from '@/types/IBooking'
 
 const { t, locale } = useI18n()
 const { data: bookings, isLoading, error, execute } = useApi(() => BookingsService.getIncoming())
+const actionError = ref<string | null>(null)
+const actionSuccess = ref<string | null>(null)
+const actionPending = ref<string | null>(null)
 
 function fmtDate(iso: string) {
   return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(iso))
@@ -22,8 +25,17 @@ async function setStatus(id: string, status: BookingStatus) {
     if (input === null) return
     reason = input || undefined
   }
-  await BookingsService.updateStatus(id, { status, reason })
-  execute()
+  actionError.value = null
+  actionSuccess.value = null
+  actionPending.value = id
+  const result = await BookingsService.updateStatus(id, { status, reason })
+  actionPending.value = null
+  if (result.errors) {
+    actionError.value = result.errors.join(', ')
+  } else {
+    actionSuccess.value = status
+    await execute()
+  }
 }
 
 onMounted(execute)
@@ -32,6 +44,12 @@ onMounted(execute)
 <template>
   <div class="container py-4">
     <h2 class="mb-3">{{ t('providerDashboard.incoming2') }}</h2>
+    <ErrorAlert v-if="actionError" :errors="[actionError]" class="mb-3" />
+    <div v-if="actionSuccess" class="alert alert-success mb-3">
+      {{ actionSuccess === 'Confirmed' ? t('providerDashboard.statusConfirmed', 'Booking confirmed.') :
+         actionSuccess === 'Cancelled' ? t('providerDashboard.statusCancelled', 'Booking cancelled.') :
+         t('providerDashboard.statusCompleted', 'Booking marked as completed.') }}
+    </div>
     <LoadingSpinner v-if="isLoading" />
     <ErrorAlert v-else-if="error" :errors="[error]" />
     <div v-else>
@@ -57,16 +75,19 @@ onMounted(execute)
                 <button
                   v-if="b.status === 'Pending'"
                   class="btn btn-sm btn-success"
+                  :disabled="actionPending === b.id"
                   @click="setStatus(b.id, 'Confirmed')"
                 >{{ t('providerDashboard.statusConfirm') }}</button>
                 <button
                   v-if="b.status === 'Pending' || b.status === 'Confirmed'"
                   class="btn btn-sm btn-danger"
+                  :disabled="actionPending === b.id"
                   @click="setStatus(b.id, 'Cancelled')"
                 >{{ t('providerDashboard.statusReject') }}</button>
                 <button
                   v-if="b.status === 'Confirmed'"
                   class="btn btn-sm btn-secondary"
+                  :disabled="actionPending === b.id"
                   @click="setStatus(b.id, 'Completed')"
                 >{{ t('providerDashboard.statusComplete') }}</button>
               </div>

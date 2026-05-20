@@ -160,6 +160,7 @@ public class BookingService : IBookingService
 
         var oldStatus = booking.Status;
         booking.Status = Booking.StatusCancelled;
+        _uow.Bookings.Update(booking);
 
         var now = DateTime.UtcNow;
         _uow.Bookings.AddHistory(new BookingHistory
@@ -207,6 +208,7 @@ public class BookingService : IBookingService
 
         var oldStatus = booking.Status;
         booking.Status = newStatus;
+        _uow.Bookings.Update(booking);
         if (newStatus == Booking.StatusCancelled && booking.AvailabilityId.HasValue)
         {
             var availability = await _uow.Availabilities.GetByIdTrackedAsync(booking.AvailabilityId.Value);
@@ -260,6 +262,7 @@ public class BookingService : IBookingService
             throw new UnauthorizedAccessException();
 
         booking.Notes = notes;
+        _uow.Bookings.Update(booking);
         await _uow.SaveChangesAsync();
 
         return (await _uow.Bookings.GetByIdWithDetailsAsync(booking.Id))!;

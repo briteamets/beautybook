@@ -29,6 +29,14 @@ public class ServicesController : BaseApiController
         return Ok(services.Select(s => s.ToResponse()));
     }
 
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ServiceResponse>> GetService(Guid id)
+    {
+        var service = await _serviceManagement.GetByIdAsync(id);
+        if (service == null) return NotFound();
+        return Ok(service.ToResponse());
+    }
+
     [HttpGet("mine")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public async Task<ActionResult<IEnumerable<ServiceResponse>>> GetMyServices()

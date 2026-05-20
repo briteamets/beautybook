@@ -24,7 +24,7 @@ const router = createRouter({
       name: 'BookProvider',
       component: () => import('@/views/bookings/CreateView.vue'),
       props: true,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, role: 'Client' },
     },
     {
       path: '/bookings',
@@ -107,6 +107,7 @@ const router = createRouter({
       component: () => import('@/views/provider-dashboard/IncomingBookingsView.vue'),
       meta: { requiresAuth: true, role: 'ServiceProvider' },
     },
+    { path: '/forbidden', name: 'Forbidden', component: () => import('@/views/ForbiddenView.vue') },
     { path: '/:pathMatch(.*)*', name: 'NotFound', component: () => import('@/views/NotFoundView.vue') },
   ],
 })
@@ -118,7 +119,7 @@ router.beforeEach((to, _from, next) => {
   }
   const requiredRole = to.meta.role as string | undefined
   if (requiredRole && !auth.hasRole(requiredRole)) {
-    return next({ name: 'Home' })
+    return next({ name: 'Forbidden' })
   }
   next()
 })

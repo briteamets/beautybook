@@ -219,4 +219,8 @@ export default {
     message: 'Otsitavat lehte ei eksisteeri.',
     home: 'Mine avalehele',
   },
+  forbidden: {
+    title: 'Juurdepääs keelatud',
+    message: 'See leht on mõeldud ainult klientidele. Teenusepakkujad ei saa broneeringuid teha.',
+  },
 }

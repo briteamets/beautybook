@@ -219,4 +219,8 @@ export default {
     message: 'The page you are looking for does not exist.',
     home: 'Go home',
   },
+  forbidden: {
+    title: 'Access Denied',
+    message: 'This page is only available to clients. Service providers cannot book appointments.',
+  },
 }

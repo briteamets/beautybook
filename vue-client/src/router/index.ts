@@ -24,7 +24,7 @@ const router = createRouter({
       name: 'BookProvider',
       component: () => import('@/views/bookings/CreateView.vue'),
       props: true,
-      meta: { requiresAuth: true, role: 'Client' },
+      meta: { requiresAuth: true },
     },
     {
       path: '/bookings',

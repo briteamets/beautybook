@@ -8,13 +8,14 @@ vue-client-build:
     - shared
   only:
     - main
+  before_script:
+    - docker run --rm -v "$CI_PROJECT_DIR/vue-client:/app" node:22-alpine sh -c "rm -rf /app/node_modules" 2>/dev/null || true
   script:
-    - docker run --rm
-        --user "$(id -u):$(id -g)"
-        -v "$CI_PROJECT_DIR/vue-client:/app"
-        -w /app
-        node:22-alpine
-        sh -c "npm ci && npm run type-check && npm run build"
+    - docker build --target build -t vue-client-build-$CI_JOB_ID vue-client/
+    - container=$(docker create vue-client-build-$CI_JOB_ID)
+    - docker cp $container:/app/dist vue-client/dist
+    - docker rm $container
+    - docker rmi vue-client-build-$CI_JOB_ID
   artifacts:
     paths:
       - vue-client/dist/

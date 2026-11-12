@@ -1,109 +1,119 @@
-## Useful commands in .net console CLI
+# BeautyBook
 
-Install tooling
+A booking platform for beauty services. Clients find independent providers and salons, book a time slot, pay and leave reviews. Providers manage their services and weekly schedule, salon owners manage their staff, and admins manage the whole platform.
 
-~~~bash
-dotnet tool update -g dotnet-ef
-dotnet tool update -g dotnet-aspnet-codegenerator 
-~~~
+The solution contains a REST API, a server-rendered web app with role-based areas, a separate MVC client that talks to the API, and a separate Vue 3 single-page client that talks to the same API.
 
-## EF Core migrations
+## Features
 
-Run from solution folder
+**Clients**
+- Browse and filter providers and salons, and view their services and portfolios
+- Book a free time slot, view and cancel your own bookings
+- Pay for bookings and see your payment history
+- Rate and review providers, with comments
+- Save favourite providers
+- In-app notifications
 
-~~~bash
-dotnet ef migrations --project App.DAL.EF --startup-project WebApp add FOOBAR
-dotnet ef migrations --project App.DAL.EF --startup-project WebApp remove
+**Service providers**
+- Edit profile and portfolio
+- Create and edit services, each with a category and type
+- Set a weekly schedule and breaks. Bookable slots are generated from them for the coming weeks
+- Review incoming booking requests. Requests that nobody answers expire automatically
 
-dotnet ef database   --project App.DAL.EF --startup-project WebApp update
-dotnet ef database   --project App.DAL.EF --startup-project WebApp drop
-~~~
+**Salon owners**
+- Manage their salons, staff and services, and see their bookings and dashboard
 
+**Admins**
+- Dashboard plus management of users, providers, salons, bookings, reviews, services, service categories and service types
 
-## MVC controllers
+**Cross-cutting**
+- Two UI languages (English and Estonian). The interface uses `.resx` resource files, and service names and categories are translated in the database with a `LangStr` type
+- Users can only read and change their own data in the API (IDOR protection), covered by tests
 
-Install from nuget:
-- Microsoft.VisualStudio.Web.CodeGeneration.Design
-- Microsoft.EntityFrameworkCore.SqlServer
+## Architecture
 
+| Project | Purpose |
+|---|---|
+| `Base.Domain`, `Base.Contracts`, `Base.Helpers` | Shared building blocks: base entity, `LangStr`, helpers |
+| `App.Domain` | Domain entities (bookings, payments, providers, salons, schedules, reviews, identity, ...) |
+| `App.Contracts` | Interfaces for repositories, unit of work and services |
+| `App.DAL.EF` | EF Core DbContext, entity configurations, migrations, repositories, unit of work, seed data |
+| `App.BLL` | Business logic: booking rules, slot generation, reviews, service management, booking expiry |
+| `App.DTO` | Public DTOs used by the API |
+| `App.Resources` | Translation resources (`.resx`) |
+| `WebApp` | REST API (versioned, Swagger), the web UI and the Admin, ServiceProvider and SalonOwner areas |
+| `src/ClientApp` | Separate ASP.NET Core MVC client that consumes the REST API |
+| `vue-client` | Separate Vue 3 + TypeScript client that consumes the REST API |
+| `Tests.Unit`, `Tests.Integration` | xUnit tests |
 
-Run from WebApp folder!
+The layers follow a clean/onion structure. Architecture tests check that, for example, the DAL doesn't reference the BLL.
 
-~~~bash
+**Stack:** .NET 10 · ASP.NET Core · Entity Framework Core · PostgreSQL 16 · ASP.NET Identity · JWT with refresh tokens · Swagger with API versioning · Vue 3 · TypeScript · Vite · Pinia · vue-i18n · Bootstrap 5 · Docker Compose · Playwright
+
+## Running it with Docker
+
+You need Docker. The stack starts the database, the API, the MVC client and the Vue client.
+
+1. Create a `.env` file next to `docker-compose.yml`:
+   ```env
+   DB_PASSWORD=choose-a-database-password
+   JWT_KEY=a-long-random-string-of-at-least-64-characters
+   ```
+   You can generate a key with `openssl rand -base64 64`.
+2. Start everything:
+   ```bash
+   docker compose up --build
+   ```
+
+| Service | Address |
+|---|---|
+| REST API | http://localhost:82 (Swagger UI at `/swagger`) |
+| MVC client | http://localhost:8081 |
+| Vue client | http://localhost:8082 |
+
+On first start the database is migrated and filled with demo data, including one demo account for each role. The accounts are defined in `App.DAL.EF/Seeding/InitialData.cs`. Change or disable the seeding (`DataInitialization__SeedIdentity` and `DataInitialization__SeedData` in `docker-compose.yml`) before running a real deployment.
+
+## Running it for development
+
+You need the .NET 10 SDK, Node.js and a PostgreSQL server.
+
+**API (`http://localhost:5065`)**
+```bash
 cd WebApp
+dotnet user-secrets set "JWT:Key" "a-long-random-string-of-at-least-64-characters"
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=beautybook;Username=postgres;Password=<your-password>"
+dotnet run
+```
+The database is migrated and seeded on startup (see `DataInitialization` in `appsettings.json`).
 
-dotnet aspnet-codegenerator controller -name AppUserCompaniesController        -actions -m  App.Domain.AppUserCompany        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
-dotnet aspnet-codegenerator controller -name CompaniesController        -actions -m  App.Domain.Company        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
-dotnet aspnet-codegenerator controller -name ContactsController        -actions -m  App.Domain.Contact        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
-dotnet aspnet-codegenerator controller -name ContactTypesController        -actions -m  App.Domain.ContactType        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
-dotnet aspnet-codegenerator controller -name PersonsController        -actions -m  App.Domain.Person        -dc AppDbContext -outDir Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+**MVC client (`http://localhost:5024`)**
+```bash
+dotnet run --project src/ClientApp
+```
 
+**Vue client (`http://localhost:5173`)**
+```bash
+cd vue-client
+npm install
+npm run dev
+```
+The API address is set in `vue-client/.env.development`.
 
-# use area
+## Tests
 
-dotnet aspnet-codegenerator controller -name RefreshTokensController        -actions -m  App.Domain.Identity.AppRefreshToken        -dc AppDbContext -outDir Areas/Admin/Controllers --useDefaultLayout --useAsyncActions --referenceScriptLibraries -f
+```bash
+dotnet test                      # unit and integration tests
+cd vue-client && npm run test:e2e   # Playwright end-to-end tests
+```
 
-~~~
+- **Unit tests** include architecture tests that guard the layer dependencies.
+- **Integration tests** run the API against an in-memory SQLite database and cover booking creation and cancellation, review creation and deletion, provider filtering, and authentication and IDOR protection.
+- **End-to-end tests** (Playwright) cover login and logout in the Vue client.
 
-Api controllers
-~~~bash
-dotnet aspnet-codegenerator controller -name AppUserCompaniesController  -m  App.Domain.AppUserCompany        -dc AppDbContext -outDir ApiControllers -api --useAsyncActions -f
-dotnet aspnet-codegenerator controller -name CompaniesController  -m  App.Domain.Company        -dc AppDbContext -outDir ApiControllers -api --useAsyncActions -f
-dotnet aspnet-codegenerator controller -name ContactsController  -m  App.Domain.Contact        -dc AppDbContext -outDir ApiControllers -api --useAsyncActions -f
-dotnet aspnet-codegenerator controller -name ContactTypesController  -m  App.Domain.ContactType        -dc AppDbContext -outDir ApiControllers -api --useAsyncActions -f
-dotnet aspnet-codegenerator controller -name PersonsController  -m  App.Domain.Person        -dc AppDbContext -outDir ApiControllers -api --useAsyncActions -f
-~~~
+## Deployment
 
+`.gitlab-ci.yml` deploys the Docker Compose stack when changes reach `main`. It expects `DB_PASSWORD` and `JWT_KEY` to be set as CI variables. The two clients are separate containers, and the API allows them through CORS.
 
-## Docker
+## Notes
 
-~~~bash
-docker buildx build --progress=plain --force-rm --push -t akaver/webapp:latest . 
-
-# multiplatform build on apple silicon
-# https://docs.docker.com/build/building/multi-platform/
-docker buildx create --name mybuilder --bootstrap --use
-docker buildx build --platform linux/amd64 -t akaver/webapp:latest --push .
-~~~
-
-
-## Prompt engineering for Cursor
-Context: Article.cs, Organization.cs, AppDbContext.cs
-~~~xml
-<purpose>
-   Article must be categorized
-</purpose>
-
-<instructions>
-   <instruction>Generate new model class in App.Domain project. named ArticleCategroy</instruction>
-   <instruction>Add optional 1:m relationship between Article and ArticleCategroy</instruction>
-   <instruction>Category is owned by Organization</instruction>
-   <instruction>Use LangStr for CategoryDisplayName</instruction>
-   <instruction>Use string for CategoryName, limited to 64 characters</instruction>
-   <instruction>ArticleCategory must also have optional collection navigation property to Article</instruction>
-   <instruction>Do not modify entity relationship rules in OnModelCreating</instruction>
-</instructions>
-~~~
-
-Optimize generated controller - use viewmodels
-
-Context: ArticleCategoryController.cs, Organization.cs
-~~~xml
-<purpose>
-   Optimize  controller and associated views - use viewmodels and nameof. Entity is in ArticleCategory.cs
-</purpose>
-
-<instructions>
-   <instruction>Controllers, Views and Viemodels folders and files are located in Admin area - WebApp/Areas/Admin</instruction>
-   <instruction>Generate and use viewmodel for entity</instruction>
-   <instruction>Do not copy properties over from entity - use it directly inside viewmodel</instruction>
-   <instruction>Avoid using ViewBag and ViewData</instruction>
-   <instruction>Use nameof function in selectlist creation</instruction>
-   <instruction>Extract selectlist creation to separate method, order data by selectlist value field. Support also to set specific selected value - needed in Edit methods</instruction>
-   <instruction>Selectlist creation methods should have default value as null for selected value. Example: (Guid? selectedValue = null)</instruction>
-   <instruction>Use async methods with await as needed</instruction>
-   <instruction>Update views to use the viewmodel</instruction>
-   <instruction>In viewmodels use [ValidateNever] attribute for selectlists</instruction>
-</instructions>
-~~~
-
+Built as a personal project for the C# web application development course at TalTech.

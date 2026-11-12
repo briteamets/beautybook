@@ -74,3 +74,6 @@ vue-client/node_modules
 vue-client/dist
 vue-client/.env.local
 vue-client/.env.*.local
+.idea/
+**/.idea/
+.claude/

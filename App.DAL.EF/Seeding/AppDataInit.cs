@@ -867,7 +867,18 @@ public static class AppDataInit
         }
     }
     
-     public static void SeedIdentity(UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
+    /// <summary>
+    /// Creates the application roles and the initial users.
+    /// Demo accounts (with well-known passwords from <see cref="InitialData.Users"/>) are only created when
+    /// <paramref name="seedDemoUsers"/> is true - it must be false outside development.
+    /// An admin account is created when both <paramref name="adminEmail"/> and <paramref name="adminPassword"/> are given.
+    /// </summary>
+    public static void SeedIdentity(
+        UserManager<AppUser> userManager,
+        RoleManager<AppRole> roleManager,
+        bool seedDemoUsers,
+        string? adminEmail = null,
+        string? adminPassword = null)
     {
         // Remove legacy "User" role if it still exists in the database
         var userRole = roleManager.FindByNameAsync("User").Result;
@@ -900,7 +911,22 @@ public static class AppDataInit
         }
 
 
-        foreach (var userInfo in InitialData.Users)
+        var usersToSeed = new List<(string email, string password, string[] roles)>();
+        if (seedDemoUsers)
+        {
+            usersToSeed.AddRange(InitialData.Users);
+        }
+
+        if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminPassword))
+        {
+            usersToSeed.Add((adminEmail.Trim(), adminPassword, new[] { "Admin" }));
+        }
+        else if (!seedDemoUsers)
+        {
+            Console.WriteLine("No admin user seeded: set AdminUser:Email and AdminUser:Password to create one.");
+        }
+
+        foreach (var userInfo in usersToSeed)
         {
             var user = userManager.FindByEmailAsync(userInfo.email).Result;
             if (user == null)
@@ -914,7 +940,7 @@ public static class AppDataInit
                 var result = userManager.CreateAsync(user, userInfo.password).Result;
                 if (!result.Succeeded)
                 {
-                    throw new ApplicationException("User creation failed!");
+                    throw new ApplicationException("User creation failed: " + string.Join("; ", result.Errors.Select(e => e.Description)));
                 }
             }
 

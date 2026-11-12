@@ -259,13 +259,27 @@ static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConf
     if (configuration.GetValue<bool>("DataInitialization:SeedIdentity"))
     {
         logger.LogInformation("SeedIdentity");
-        AppDataInit.SeedIdentity(userManager, roleManager);
+        // Demo accounts have well-known passwords - they are only created in Development.
+        // Elsewhere an admin is created only from the AdminUser:Email / AdminUser:Password settings.
+        AppDataInit.SeedIdentity(
+            userManager,
+            roleManager,
+            seedDemoUsers: env.IsDevelopment(),
+            adminEmail: configuration["AdminUser:Email"],
+            adminPassword: configuration["AdminUser:Password"]);
     }
 
     if (configuration.GetValue<bool>("DataInitialization:SeedData"))
     {
-        logger.LogInformation("SeedData");
-        AppDataInit.SeedAppData(context);
+        if (env.IsDevelopment())
+        {
+            logger.LogInformation("SeedData");
+            AppDataInit.SeedAppData(context);
+        }
+        else
+        {
+            logger.LogWarning("SeedData skipped: demo data (and its demo accounts) is only seeded in Development.");
+        }
     }
 }
 

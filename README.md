@@ -58,8 +58,10 @@ You need Docker. The stack starts the database, the API, the MVC client and the 
    ```env
    DB_PASSWORD=choose-a-database-password
    JWT_KEY=a-long-random-string-of-at-least-64-characters
+   ADMIN_EMAIL=you@example.com
+   ADMIN_PASSWORD=choose-a-strong-admin-password
    ```
-   You can generate a key with `openssl rand -base64 64`.
+   You can generate a key with `openssl rand -base64 64`. `ADMIN_EMAIL` and `ADMIN_PASSWORD` are optional: when both are set, an admin account with that login is created on startup.
 2. Start everything:
    ```bash
    docker compose up --build
@@ -71,7 +73,9 @@ You need Docker. The stack starts the database, the API, the MVC client and the 
 | MVC client | http://localhost:8081 |
 | Vue client | http://localhost:8082 |
 
-On first start the database is migrated and filled with demo data, including one demo account for each role. The accounts are defined in `App.DAL.EF/Seeding/InitialData.cs`. Change or disable the seeding (`DataInitialization__SeedIdentity` and `DataInitialization__SeedData` in `docker-compose.yml`) before running a real deployment.
+On first start the database is migrated and the roles are created. By default the stack runs in the `Production` environment, so **no demo accounts or demo data are created**. Log in with the admin account from your `.env` to get started.
+
+To try the app with demo data locally, add `ASPNETCORE_ENVIRONMENT=Development` to `.env`. This seeds one demo account for each role and sample providers, salons and bookings (the accounts are defined in `App.DAL.EF/Seeding/InitialData.cs`). Never use the `Development` environment on a public server, because the demo passwords are public.
 
 ## Running it for development
 
@@ -84,7 +88,7 @@ dotnet user-secrets set "JWT:Key" "a-long-random-string-of-at-least-64-character
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Port=5432;Database=beautybook;Username=postgres;Password=<your-password>"
 dotnet run
 ```
-The database is migrated and seeded on startup (see `DataInitialization` in `appsettings.json`).
+The database is migrated and seeded on startup (see `DataInitialization` in `appsettings.json`). In the `Development` environment this includes the demo accounts and sample data described above.
 
 **MVC client (`http://localhost:5024`)**
 ```bash
@@ -103,7 +107,7 @@ The API address is set in `vue-client/.env.development`.
 
 ```bash
 dotnet test                      # unit and integration tests
-cd vue-client && npm run test:e2e   # Playwright end-to-end tests
+cd vue-client && npm run test:e2e   # Playwright end-to-end tests (need the API running in Development, because they log in with a demo account)
 ```
 
 - **Unit tests** include architecture tests that guard the layer dependencies.
@@ -112,7 +116,7 @@ cd vue-client && npm run test:e2e   # Playwright end-to-end tests
 
 ## Deployment
 
-`.gitlab-ci.yml` deploys the Docker Compose stack when changes reach `main`. It expects `DB_PASSWORD` and `JWT_KEY` to be set as CI variables. The two clients are separate containers, and the API allows them through CORS.
+`.gitlab-ci.yml` deploys the Docker Compose stack when changes reach `main`. It expects `DB_PASSWORD` and `JWT_KEY` to be set as CI variables. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` as well to create an admin account on a fresh database. The two clients are separate containers, and the API allows them through CORS.
 
 ## Notes
 
